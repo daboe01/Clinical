@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsmarkup>
+<gsmarkup>
+
+<objects>
+
+<accountsController id="myadmincontroller"/>
+
+<window bridge="YES" id="trialswindow" delegate="#myadmincontroller">
+   <splitView vertical="YES" autosaveName="vsplitter_main">
+      <vbox>
+	<searchField valueBinding="myadmincontroller.searchTerm"/>
+	<scrollView hasHorizontalScroller="NO">
+	 <tableView zebra="yes" autosaveName="alltrials_tv" id="trialstv" valueBinding="#CPOwner.trialsController" target="#myadmincontroller">
+		<tableColumn identifier="name" title="Name" editable="YES"/>
+		<tableColumn identifier="group.name" title="AG" editable="NO"/>
+		<tableColumn identifier="global_state" title="State" editable="NO"/>
+	 </tableView>
+	</scrollView>
+	<ButtonBar actionsButton="YES" target="#myadmincontroller" plusButtonAction="newTrial:" minusButtonAction="removeTrial:">
+ 		<popUpButtonItem title="Config..." target="#myadmincontroller" action="runConfig:"/>
+ 		<popUpButtonItem title="Calendar..." target="#myadmincontroller" action="runCalendar:"/>
+ 		<popUpButtonItem title="Download list" target="#myadmincontroller" action="downloadExcel:"/>
+ 		<popUpButtonItem title="Drittmittelanzeige" target="#myadmincontroller" action="printDrittmittelanzeige:"/>
+ 		<popUpButtonItem title="Anschreiben Vertrag" target="#myadmincontroller" action="printAnschreibenVertrag:"/>
+	</ButtonBar>
+	</vbox>
+	<vbox>
+	<scrollView hasHorizontalScroller="NO">
+	 <tableView zebra="yes" id="propstv" autosaveName="props_tv" delegate="#myadmincontroller" target="#myadmincontroller" doubleAction="openAnnotation:" valueBinding="#CPOwner.propertiesController">
+		<tableColumn identifier="property.name" title="name"/>
+		<tableColumn identifier="value" title="val" editable="YES"/>
+	 </tableView>
+	</scrollView>
+	<ButtonBar target="#myadmincontroller" plusButtonAction="addProperty:" minusButtonAction="removeProperty:" actionsButton="YES">
+  		<popUpButtonItem title="Add all fields" target="#myadmincontroller" action="makeAllFields:"/>
+		<popUpButtonItem title="Open URL" target="#myadmincontroller" action="openURL:"/>
+ 		<popUpButtonItem title="Send email" target="#myadmincontroller" action="sendEmail:"/>
+	</ButtonBar>
+	</vbox>
+   </splitView>
+ </window>
+</objects>
+
+<connectors>
+	<outlet source="myadmincontroller" target="trialswindow" label="trialsWindow"/>
+</connectors>
+
+
+</gsmarkup>

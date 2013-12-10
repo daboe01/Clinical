@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsmarkup>
+<gsmarkup>
+
+<objects>
+  <arrayController id="stacks_controller" entity="patients"/>
+  <arrayController id="stacks_dir_controller" entity="patient_images" valueBinding ="stacks_controller.selection.dirs"/>
+  <arrayController id="stacks_content_controller" entity="patient_images" valueBinding ="stacks_controller.selection.images"/>
+  <menu type="main"/>
+  <window title="Patientenakte" id="mywindow" x="335" y="35" width="400" height="640">
+	 <vbox>
+		<hbox>
+			<label valign="center">PIZ</label>
+			<textField halign="min" width="100" id="piz_field" target="#CPOwner" action="loadPIZ:"/>
+			<button id="toggle_button" width="80"  alternateTitle =">>Hyde" target="#CPOwner" action="toggleBase:" type="toggle" title=">>DocsCal" />
+			<popUpButton id="type_popup" target="#CPOwner" action="changeType:" width="200" itemsBinding="stacks_dir_controller.arrangedObjects.name"/>
+			<slider continuous="NO" min="100" max="1500" current="200" valueBinding="#CPOwner.itemSize" halign="right"/>
+		</hbox>
+		<vbox>
+			<scrollView hasHorizontalScroller="NO" hasVerticalScroller="YES">
+				<myCollectionView id="stacks_collection_view" itemWidth="100" itemHeight="100" delegate="#CPOwner" valueBinding="stacks_content_controller.arrangedObjects" itemsClassName="SimpleImageViewCollectionItem" selectable="YES"/>
+			</scrollView>
+		</vbox>
+	 </vbox>
+  </window>
+</objects>
+
+<entities>
+	<entity id="patients">
+		<column name="piz" primaryKey="YES"/>
+		<relationship type="toMany" name="images" targetColumn="piz" target="patient_images"/>
+		<relationship type="toMany" name="dirs" targetColumn="piz" target="patient_dirs"/>
+	</entity>
+	<entity id="patient_dirs">
+		<column name="name" primaryKey="YES"/>
+		<column name="piz"/>
+	</entity>
+	<entity id="patient_images">
+		<column name="name" primaryKey="YES"/>
+		<column name="piz"/>
+	</entity>
+
+</entities>
+
+
+<connectors>
+	<outlet source="#CPOwner" target="stacks_controller" label="stacksController"/>
+	<outlet source="#CPOwner" target="stacks_dir_controller" label="stacksDirController"/>
+	<outlet source="#CPOwner" target="stacks_content_controller" label="stacksContentController"/>
+	<outlet source="#CPOwner" target="stacks_collection_view" label="stacksCollectionView"/>
+	<outlet source="#CPOwner" target="type_popup" label="typePopup"/>
+	<outlet source="#CPOwner" target="piz_field" label="pizField"/>
+	<outlet source="#CPOwner" target="mywindow" label="mainWindow"/>
+	<outlet source="#CPOwner" target="toggle_button" label="toggleButton"/>
+	<outlet source="#CPOwner" target="filter_witch" label="filterButton"/>
+</connectors>
+
+</gsmarkup>

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsmarkup>
+<gsmarkup>
+
+<objects>
+  <window title="Upload: drag files into the table" id="mywindow" x="10" y="30" width="500"  height="400">
+   <vbox>
+	<scrollView hasHorizontalScroller="NO">
+	    <tableView id="my_tv" valueBinding="#CPOwner.queueController">
+		 <tableColumn identifier="name" title="name"/>
+		 <tableColumn identifier="size" title="size"/>
+		 <tableColumn identifier="percentComplete" title="progress"/>
+	  </tableView>
+	</scrollView>
+	 <hbox>
+		<button title="Add" target="#CPOwner.myCuploader" action="addFiles:"/>
+		<progresIndicator id="my_progress" style="Bar" valueBinding="#CPOwner.myCuploader.progress.percentComplete"/>
+	 </hbox>
+   </vbox>
+  </window>
+</objects>
+
+<connectors>
+	<outlet source="#CPOwner" target="my_tv" label="tableView"/>
+	<outlet source="#CPOwner" target="mywindow" label="uploadWindow"/>
+</connectors>
+
+</gsmarkup>

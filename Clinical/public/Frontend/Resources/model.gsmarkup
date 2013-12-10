@@ -1,0 +1,260 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsmarkup>
+<gsmarkup>
+
+<objects>
+  <predicate id="displayfilters_pred" format="type == '1'"/>
+
+  <sortDescriptor id="by_id" key="id" ascending="YES" numeric="YES"/>
+  <sortDescriptor id="by_reverse_id" key="id" ascending="NO"/>
+  <sortDescriptor id="by_name" key="name"/>
+  <sortDescriptor id="by_proporder" key="property.ordering" numeric="YES"/>
+  <sortDescriptor id="by_order" key="ordering" numeric="YES"/>
+  <sortDescriptor id="by_caldate" key="caldate"/>
+
+
+  <arrayController id="groups_controller" entity="groups_catalogue" autoFetch="YES"/>
+  <arrayController id="trials_controller" entity="all_trials" autoFetch="YES" sortDescriptor="by_name"/>
+  <arrayController id="trial_properties_controller" entity="trial_properties" valueBinding="trials_controller.selection.props" sortDescriptor="by_proporder"/>
+  <arrayController id="process_steps" entity="trial_process_step" valueBinding="trials_controller.selection.steps"/>
+  <arrayController id="dokus_controller" entity="documents" valueBinding="trials_controller.selection.dokus"/>
+  <arrayController id="personnel_controller" entity="personnel_catalogue" autoFetch="YES"/>
+  <arrayController id="trialpersonnel_controller" entity="trial_personnel" valueBinding="trials_controller.selection.personnel"/>
+  <arrayController id="roles_controller" entity="roles_catalogue" autoFetch="YES"/>
+  <arrayController id="states_controller" entity="process_steps_catalogue" autoFetch="YES" sortDescriptor="by_name"/>
+  <arrayController id="doctags_controller" entity="doctags_catalogue" autoFetch="YES" sortDescriptor="by_name"/>
+  <arrayController id="properties_controller" entity="trial_properties_catalogue" autoFetch="YES" sortDescriptor="by_order"/>
+  <arrayController id="perso_properties_cat_controller" entity="personnel_properties_catalogue" autoFetch="YES" sortDescriptor="by_order"/>
+  <arrayController id="perso_properties_controller" entity="personnel_properties" valueBinding="personnel_controller.selection.props" sortDescriptor="by_proporder"/>
+  <arrayController id="group_assignment_controller" entity="group_assignments" valueBinding="personnel_controller.selection.groups"/>
+  <arrayController id="patients_controller" entity="patients" sortDescriptor="by_id" valueBinding="trials_controller.selection.patients"/>
+  <arrayController id="patient_visits_controller" entity="patient_visits" sortDescriptor="by_id"  valueBinding="patients_controller.selection.visits"/>
+  <arrayController id="visits_controller" entity="trial_visits" valueBinding="trials_controller.selection.visits"/>
+  <arrayController id="visit_dates_controller" entity="visit_dates" valueBinding="patient_visits_controller.selection.date_proposals" sortDescriptor="by_caldate"/>
+  <arrayController id="tagesinfos_controller" entity="tagesinfos" valueBinding="visit_dates_controller.selection.tagesinfos"/>
+  <arrayController id="status_controller" entity="status_catalogue" valueBinding="trials_controller.selection.status_values"/>
+  <arrayController id="trial_property_annotations_controller" entity="trial_property_annotations" valueBinding="trial_properties_controller.selection.annotations"/>
+  <arrayController id="billings_controller" entity="billings" valueBinding="trials_controller.selection.billings"/>
+</objects>
+
+<entities>
+	<entity id="groups_catalogue" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="name"/>
+		<column name="sprechstunde"/>
+		<relationship type="toMany" name="trials" targetColumn="idgroup" target="all_trials"/>
+	</entity>
+	<entity id="all_trials" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="name"/>
+		<column name="idgroup"/>
+		<column name="codename"/>
+		<column name="infotext"/>
+		<column name="global_state"/>
+		<column name="fulltext"/>
+		<relationship type="toOne" name="group" bindingColumn="idgroup" target="groups_catalogue"/>
+		<relationship type="toMany" name="steps" targetColumn="idtrial" target="trial_process_step"/>
+		<relationship type="toMany" name="props" targetColumn="idtrial" target="trial_properties"/>
+		<relationship type="toMany" name="dokus" targetColumn="idtrial" target="documents"/>
+		<relationship type="toMany" name="personnel" targetColumn="idtrial" target="trial_personnel"/>
+		<relationship type="toMany" name="visits" targetColumn="idtrial" target="trial_visits"/>
+		<relationship type="toMany" name="patients" targetColumn="idtrial" target="patients"/>
+		<relationship type="toMany" name="status_values" targetColumn="idtrial" target="status_catalogue"/>
+		<relationship type="toMany" name="billings" targetColumn="idtrial" target="billings"/>
+
+	</entity>
+	<entity id="personnel_catalogue" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="name"/>
+		<column name="ldap"/>
+		<column name="email"/>
+		<column name="function"/>
+		<column name="tel"/>
+		<relationship type="toMany" name="groups" targetColumn="idpersonnel" target="group_assignments"/>
+		<relationship type="toMany" name="props" targetColumn="idpersonnel" target="personnel_properties"/>
+	</entity>
+	<entity id="trial_personnel" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="idtrial"/>
+		<column name="idpersonnel"/>
+		<column name="role"/>
+		<relationship type="toOne" name="person" bindingColumn="idpersonnel" target="personnel_catalogue"/>
+	</entity>
+	<entity id="group_assignments" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="idgroup"/>
+		<column name="idpersonnel"/>
+		<relationship type="toOne" name="group" bindingColumn="idgroup" target="groups_catalogue"/>
+		<relationship type="toOne" name="person" bindingColumn ="idpersonnel" target="personnel_catalogue"/>
+	</entity>
+	<entity id="process_steps_catalogue" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="type"/>
+		<column name="name"/>
+	</entity>
+	<entity id="trial_process_step" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="idtrial"/>
+		<column name="type"/>
+		<column name="start_date"/>
+		<column name="end_date"/>
+		<column name="deadline"/>
+		<column name="idpersonnel"/>
+		<column name="title"/>
+		<relationship type="toOne" name="process" bindingColumn="type" target="process_steps_catalogue"/>
+		<relationship type="toOne" name="person" bindingColumn="idpersonnel" target="personnel_catalogue"/>
+	</entity>
+	<entity id="trial_properties_catalogue" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="ordering"/>
+		<column name="type"/>
+		<column name="name"/>
+	</entity>
+	<entity id="personnel_properties_catalogue" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="ordering"/>
+		<column name="type"/>
+		<column name="name"/>
+		<column name="expires"/>
+	</entity>
+	<entity id="trial_properties" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="idtrial"/>
+		<column name="idproperty"/>
+		<column name="value"/>
+		<relationship type="toOne" name="property" bindingColumn="idproperty" target="trial_properties_catalogue"/>
+		<relationship type="toOne" name="trial" bindingColumn="idtrial" target="all_trials"/>
+		<relationship type="toMany" name="annotations" targetColumn="idfield" target="trial_property_annotations"/>
+	</entity>
+	<entity id="trial_property_annotations" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="ldap"/>
+		<column name="idfield"/>
+		<column name="key"/>
+		<column name="value"/>
+	</entity>
+	<entity id="personnel_properties" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="idpersonnel"/>
+		<column name="propertydate"/>
+		<column name="idproperty"/>
+		<column name="value"/>
+		<relationship type="toOne" name="property" bindingColumn="idproperty" target="personnel_properties_catalogue"/>
+		<relationship type="toOne" name="person" bindingColumn="idpersonnel" target="trial_personnel"/>
+	</entity>
+	<entity id="documents" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="idtrial"/>
+		<column name="tag"/>
+		<column name="name"/>
+		<relationship type="toOne" name="trial" bindingColumn="idtrial" target="all_trials"/>
+	</entity>
+	<entity id="roles_catalogue" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="name"/>
+	</entity>
+	<entity id="doctags_catalogue" store="#CPOwner.store">
+		<column name="name" primaryKey="YES"/>
+	</entity>
+	<entity id="trial_visits" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="idtrial"/>
+		<column name="name"/>
+		<column name="idreference_visit"/>
+		<column name="visit_interval"/>
+		<column name="lower_margin"/>
+		<column name="upper_margin"/>
+		<column name="reimbursement"/>
+		<column name="additional_docscal_booking_name"/>
+		<relationship type="toOne" name="trial" bindingColumn="idtrial" target="all_trials"/>
+		<relationship type="toOne" name="reference_visit" bindingColumn="idreference_visit" target="trial_visits"/>
+	</entity>
+	<entity id="patients" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="idtrial"/>
+		<column name="piz"/>
+		<column name="code1"/>
+		<column name="code2"/>
+		<column name="name"/>
+		<column name="givenname"/>
+		<column name="birthdate"/>
+		<column name="comment"/>
+		<column name="state"/>
+		<column name="street"/>
+		<column name="zip"/>
+		<column name="town"/>
+		<column name="telephone"/>
+		<relationship type="toOne" name="trial" bindingColumn="state" target="all_trials"/>
+		<relationship type="toOne" name="state_value" bindingColumn="state" target="status_catalogue"/>
+		<relationship type="toMany" name="visits" targetColumn="idpatient" target="patient_visits"/>
+	</entity>
+	<entity id="patient_visits" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="idpatient"/>
+		<column name="idvisit"/>
+		<column name="visit_date"/>
+		<column name="state"/>
+		<column name="lower_margin"/>
+		<column name="center_margin"/>
+		<column name="upper_margin"/>
+		<column name="missing_service"/>
+		<relationship type="toOne" name="patient" bindingColumn="idpatient" target="patients"/>
+		<relationship type="toOne" name="visit" bindingColumn="idvisit" target="trial_visits"/>
+		<relationship type="toMany" name="date_proposals" bindingColumn="idvisit" targetColumn="idvisit" target="visit_dates"/>
+	</entity>
+	<entity id="visit_dates" store="#CPOwner.store">
+		<column name="startdate" primaryKey="YES"/>
+		<column name="source"/>
+		<column name="caldate"/>
+		<column name="idvisit"/>
+		<column name="dcid"/>
+		<relationship type="toMany" name="tagesinfos" bindingColumn="caldate" target="tagesinfos"/>
+	</entity>
+	<entity id="tagesinfos" store="#CPOwner.store">
+		<column name="caldate" primaryKey="YES"/>
+		<column name="summary"/>
+	</entity>
+	<entity id="status_catalogue" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="idtrial"/>
+		<column name="name"/>
+		<relationship type="toOne" name="trial" bindingColumn="idtrial" target="all_trials"/>
+	</entity>
+	<entity id="billings" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="idtrial"/>
+		<column name="creation_date"/>
+		<column name="start_date"/>
+		<column name="end_date"/>
+		<column name="comment"/>
+		<column name="visit_ids"/>
+	</entity>
+</entities>
+
+<connectors>
+	<outlet source="#CPOwner" target="trials_controller" label="trialsController"/>
+	<outlet source="#CPOwner" target="trial_properties_controller" label="propertiesController"/>
+	<outlet source="#CPOwner" target="process_steps" label="processesController"/>
+	<outlet source="#CPOwner" target="dokus_controller" label="dokusController"/>
+	<outlet source="#CPOwner" target="personnel_controller" label="personnelController"/>
+	<outlet source="#CPOwner" target="trialpersonnel_controller" label="trialpersonnelController"/>
+	<outlet source="#CPOwner" target="groups_controller" label="groupsController"/>
+	<outlet source="#CPOwner" target="roles_controller" label="rolesController"/>
+	<outlet source="#CPOwner" target="states_controller" label="statesController"/>
+	<outlet source="#CPOwner" target="doctags_controller" label="doctagsController"/>
+	<outlet source="#CPOwner" target="properties_controller" label="propertiesCatController"/>
+	<outlet source="#CPOwner" target="group_assignment_controller" label="groupassignmentController"/>
+	<outlet source="#CPOwner" target="perso_properties_cat_controller" label="personnelPropCatController"/>
+	<outlet source="#CPOwner" target="perso_properties_controller" label="personnelPropController"/>
+	<outlet source="#CPOwner" target="patients_controller" label="patientsController"/>
+	<outlet source="#CPOwner" target="patient_visits_controller" label="patientVisitsController"/>
+	<outlet source="#CPOwner" target="visits_controller" label="visitsController"/>
+	<outlet source="#CPOwner" target="visit_dates_controller" label="visitDatesController"/>
+	<outlet source="#CPOwner" target="status_controller" label="statusController"/>
+	<outlet source="#CPOwner" target="tagesinfos_controller" label="tagesinfosController"/>
+	<outlet source="#CPOwner" target="trial_property_annotations_controller" label="trialPropAnnotationsController"/>
+	<outlet source="#CPOwner" target="billings_controller" label="billingsController"/>
+</connectors>
+
+
+</gsmarkup>
