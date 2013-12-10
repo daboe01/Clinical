@@ -351,7 +351,7 @@ get '/CT/make_properties/:idtrial'=> sub {
 };
 		
 helper performBooking => sub { my ($self, $piz, $dcid, $text)=@_;
-	my $r= system("cd /Users/Shared/bin/BookAugDateCmd; java -jar /Users/Shared/bin/BookAugDateCmd/BookAugDateCmd.jar 10.210.21.10 augdb2 mko09ijn $piz $dcid");
+	my $r= system("cd /Users/Shared/bin/BookAugDateCmd; java -jar /Users/Shared/bin/BookAugDateCmd/BookAugDateCmd.jar 10.210.21.10 augdb2 XXXXX $piz $dcid");
 	if(!$r)
 	{	my $dbh_dc = DBI->connect("dbi:JDBC:hostname=localhost:9003;url=jdbc:sapdb://10.210.21.10:7210/augdb", 'daniel', 'XXXXX') || warn "Database connection not made: $DBI::errstr";
 		my $sql='update "AUGDATE" set "ANNOTATION"=? where "AUGDATEID"=?';
