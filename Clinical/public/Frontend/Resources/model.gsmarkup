@@ -21,6 +21,7 @@
   <arrayController id="process_steps" entity="trial_process_step" valueBinding="trials_controller.selection.steps"/>
   <arrayController id="dokus_controller" entity="documents" valueBinding="trials_controller.selection.dokus"/>
   <arrayController id="personnel_controller" entity="personnel_catalogue" autoFetch="YES"/>
+  <arrayController id="personnel_costs_controller" entity="personnel_costs" valueBinding="personnel_controller.selection.costs"/>
   <arrayController id="trialpersonnel_controller" entity="trial_personnel" valueBinding="trials_controller.selection.personnel"/>
   <arrayController id="roles_controller" entity="roles_catalogue" autoFetch="YES"/>
   <arrayController id="states_controller" entity="process_steps_catalogue" autoFetch="YES" sortDescriptor="by_name"/>
@@ -76,6 +77,7 @@
 		<column name="tel"/>
 		<relationship type="toMany" name="groups" targetColumn="idpersonnel" target="group_assignments"/>
 		<relationship type="toMany" name="props" targetColumn="idpersonnel" target="personnel_properties"/>
+		<relationship type="toMany" name="costs" targetColumn="idpersonnel" target="personnel_costs"/>
 	</entity>
 	<entity id="trial_personnel" store="#CPOwner.store">
 		<column name="id" primaryKey="YES"/>
@@ -248,6 +250,14 @@
 		<column name="amount_change"/>
 		<column name="description"/>
 	</entity>
+	<entity id="personnel_costs" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="idpersonnel"/>
+		<column name="idaccount"/>
+		<column name="date_active"/>
+		<column name="amount"/>
+		<column name="comment"/>
+	</entity>
 </entities>
 
 <connectors>
@@ -275,7 +285,7 @@
 	<outlet source="#CPOwner" target="billings_controller" label="billingsController"/>
 	<outlet source="#CPOwner" target="accounts_controller" label="accountsController"/>
 	<outlet source="#CPOwner" target="transactions_controller" label="transactionsController"/>
-
+	<outlet source="#CPOwner" target="personnel_costs_controller" label="personnelCostsController"/>
 </connectors>
 
 
