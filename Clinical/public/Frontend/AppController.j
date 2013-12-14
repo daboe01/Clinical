@@ -17,6 +17,7 @@ BaseURL=HostURL+"/";
 @import <Foundation/CPObject.j>
 @import <Renaissance/Renaissance.j>
 @import "OperationsController.j"
+@import "AdminController.j"
 @import "UploadManager.j"
 @import "TableViewControl.j"
 @import "CalendarController.j"

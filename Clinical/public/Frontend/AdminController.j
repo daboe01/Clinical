@@ -39,7 +39,6 @@
 }
 -(void) addProperty: sender
 {
-
 	if( !popover)
 	{	 popover=[CPPopover new];
 		[popover setDelegate:self];
@@ -71,7 +70,7 @@
 @end
 
 
-@implementation GSMarkupTagOperationsController:GSMarkupTagObject
+@implementation GSMarkupTagAdminController:GSMarkupTagObject
 + (CPString) tagName
 {
   return @"adminController";
