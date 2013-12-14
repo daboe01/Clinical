@@ -69,6 +69,8 @@ BaseURL=HostURL+"/";
 	id	tagesinfosController;
 	id  trialPropAnnotationsController;
 	id	billingsController;
+	id	accountsController;
+	id	transactionsController;
 
 	id mainController @accessors;
 }
@@ -83,7 +85,6 @@ BaseURL=HostURL+"/";
 {	return [[CPApp mainWindow] delegate] || mainController;
 }
 
-
 - (void) applicationDidFinishLaunching:(CPNotification)aNotification
 {	store=[[SessionStore alloc] initWithBaseURL: HostURL+"/DBI"];
 	[CPBundle loadRessourceNamed: "model.gsmarkup" owner:self];
@@ -94,7 +95,6 @@ BaseURL=HostURL+"/";
 	[CPBundle loadRessourceNamed: mainFile owner: self ];
 }
 
-
 -(void) delete:sender
 {	[[[CPApp keyWindow] delegate] delete:sender];
 }
@@ -102,6 +102,12 @@ BaseURL=HostURL+"/";
 -(void) unsetReferenceVisit:sender
 {	[[visitsController selectedObject] setValue: [CPNull null] forKey:"idreference_visit"];
 }
-
+-(void) insertTransaction: sender
+{	[transactionsController insert:sender];
+   [[transactionsController selectedObject] reload]
+}
+-(void) deleteTransaction: sender
+{	[transactionsController remove:sender];
+}
 @end
 

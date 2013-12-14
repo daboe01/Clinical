@@ -181,8 +181,6 @@
 
 <window visible="NO">
   <popUpButton width="200" id="popupdataview"		itemsBinding="#CPOwner.personnelController.arrangedObjects.name"/>
-  <popUpButton width="200" id="popupdataviewgroup"	itemsBinding="#CPOwner.groupsController.arrangedObjects.name"/>
-  <popUpButton width="200" id="popupdataviewroles"	itemsBinding="#CPOwner.rolesController.arrangedObjects.name"/>
   <popUpButton width="200" id="popupdataviewstates"	itemsBinding="#CPOwner.statesController.arrangedObjects.name"/>
   <popUpButton width="200" id="popupdataviewdoctags"	itemsBinding="#CPOwner.doctagsController.arrangedObjects.name"/>
   <tableViewPopup   width="100" height="23"  id="column_idvisit" itemsController="#CPOwner.visitsController" itemsValue="arrangedObjects.id" itemsFace="arrangedObjects.name"/>

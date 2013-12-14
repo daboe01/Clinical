@@ -4,46 +4,45 @@
 
 <objects>
 
-<accountsController id="myadmincontroller"/>
+<accountsController id="mycontroller"/>
 
-<window bridge="YES" id="trialswindow" delegate="#myadmincontroller">
-   <splitView vertical="YES" autosaveName="vsplitter_main">
+<window bridge="YES" id="accountswindow" delegate="#mycontroller">
+   <splitView vertical="YES" autosaveName="vsplitter_accounts">
       <vbox>
-	<searchField valueBinding="myadmincontroller.searchTerm"/>
 	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" autosaveName="alltrials_tv" id="trialstv" valueBinding="#CPOwner.trialsController" target="#myadmincontroller">
+	 <tableView zebra="yes" autosaveName="alltrials_tv" id="accounts_tv" valueBinding="#CPOwner.accountsController" target="#mycontroller">
+		<tableColumn identifier="account_number" title="Nummer" editable="YES"/>
 		<tableColumn identifier="name" title="Name" editable="YES"/>
-		<tableColumn identifier="group.name" title="AG" editable="NO"/>
-		<tableColumn identifier="global_state" title="State" editable="NO"/>
+		<tableColumn identifier="idtrial" title="trial" dataView="#column_idtrial" editable="YES"/>
 	 </tableView>
 	</scrollView>
-	<ButtonBar actionsButton="YES" target="#myadmincontroller" plusButtonAction="newTrial:" minusButtonAction="removeTrial:">
- 		<popUpButtonItem title="Config..." target="#myadmincontroller" action="runConfig:"/>
- 		<popUpButtonItem title="Calendar..." target="#myadmincontroller" action="runCalendar:"/>
- 		<popUpButtonItem title="Download list" target="#myadmincontroller" action="downloadExcel:"/>
- 		<popUpButtonItem title="Drittmittelanzeige" target="#myadmincontroller" action="printDrittmittelanzeige:"/>
- 		<popUpButtonItem title="Anschreiben Vertrag" target="#myadmincontroller" action="printAnschreibenVertrag:"/>
+	<ButtonBar actionsButton="YES" target="#CPOwner.accountsController" plusButtonAction="insert:" minusButtonAction="delete:">
+ 		<popUpButtonItem title="Config..." target="#mycontroller" action="runConfig:"/>
 	</ButtonBar>
 	</vbox>
 	<vbox>
 	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" id="propstv" autosaveName="props_tv" delegate="#myadmincontroller" target="#myadmincontroller" doubleAction="openAnnotation:" valueBinding="#CPOwner.propertiesController">
-		<tableColumn identifier="property.name" title="name"/>
-		<tableColumn identifier="value" title="val" editable="YES"/>
+	 <tableView zebra="yes" id="transactions_tv" autosaveName="transactions_tv" valueBinding="#CPOwner.transactionsController">
+		<tableColumn identifier="date_transaction" title="date" editable="YES"/>
+		<tableColumn identifier="type" title="type" editable="YES"/>
+		<tableColumn identifier="amount_change" title="amount" editable="YES"/>
+		<tableColumn identifier="description" title="description" editable="YES"/>
 	 </tableView>
 	</scrollView>
-	<ButtonBar target="#myadmincontroller" plusButtonAction="addProperty:" minusButtonAction="removeProperty:" actionsButton="YES">
-  		<popUpButtonItem title="Add all fields" target="#myadmincontroller" action="makeAllFields:"/>
-		<popUpButtonItem title="Open URL" target="#myadmincontroller" action="openURL:"/>
- 		<popUpButtonItem title="Send email" target="#myadmincontroller" action="sendEmail:"/>
+	<ButtonBar target="#CPOwner" plusButtonAction="insertTransaction:" minusButtonAction="deleteTransaction:" actionsButton="YES">
+ 		<popUpButtonItem title="Do something..." target="#mycontroller" action="sendEmail:"/>
 	</ButtonBar>
 	</vbox>
    </splitView>
  </window>
+ <window visible="NO">
+  <tableViewPopup width="100" height="23" id="column_idtrial" itemsController="#CPOwner.trialsController" itemsValue="arrangedObjects.id" itemsFace="arrangedObjects.name"/>
+ </window>
+
 </objects>
 
 <connectors>
-	<outlet source="myadmincontroller" target="trialswindow" label="trialsWindow"/>
+	<outlet source="mycontroller" target="accountswindow" label="accountsWindow"/>
 </connectors>
 
 

@@ -11,6 +11,8 @@
   <sortDescriptor id="by_proporder" key="property.ordering" numeric="YES"/>
   <sortDescriptor id="by_order" key="ordering" numeric="YES"/>
   <sortDescriptor id="by_caldate" key="caldate"/>
+  <sortDescriptor id="by_date_transaction" key="date_transaction"/>
+  <sortDescriptor id="by_account_number" key="account_number"/>
 
 
   <arrayController id="groups_controller" entity="groups_catalogue" autoFetch="YES"/>
@@ -35,6 +37,8 @@
   <arrayController id="status_controller" entity="status_catalogue" valueBinding="trials_controller.selection.status_values"/>
   <arrayController id="trial_property_annotations_controller" entity="trial_property_annotations" valueBinding="trial_properties_controller.selection.annotations"/>
   <arrayController id="billings_controller" entity="billings" valueBinding="trials_controller.selection.billings"/>
+  <arrayController id="accounts_controller" entity="shadow_accounts" autoFetch="YES" sortDescriptor="by_account_number"/>
+  <arrayController id="transactions_controller" entity="account_transaction" valueBinding="accounts_controller.selection.transactions" sortDescriptor="by_date_transaction"/>
 </objects>
 
 <entities>
@@ -229,6 +233,21 @@
 		<column name="comment"/>
 		<column name="visit_ids"/>
 	</entity>
+	<entity id="shadow_accounts" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="account_number"/>
+		<column name="name"/>
+		<column name="idtrial"/>
+		<relationship type="toMany" bindingColumn="id" targetColumn="idaccount" name="transactions" target="account_transaction"/>
+	</entity>
+	<entity id="account_transaction" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="idaccount"/>
+		<column name="date_transaction"/>
+		<column name="type"/>
+		<column name="amount_change"/>
+		<column name="description"/>
+	</entity>
 </entities>
 
 <connectors>
@@ -254,6 +273,9 @@
 	<outlet source="#CPOwner" target="tagesinfos_controller" label="tagesinfosController"/>
 	<outlet source="#CPOwner" target="trial_property_annotations_controller" label="trialPropAnnotationsController"/>
 	<outlet source="#CPOwner" target="billings_controller" label="billingsController"/>
+	<outlet source="#CPOwner" target="accounts_controller" label="accountsController"/>
+	<outlet source="#CPOwner" target="transactions_controller" label="transactionsController"/>
+
 </connectors>
 
 
