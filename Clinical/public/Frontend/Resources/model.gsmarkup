@@ -250,6 +250,14 @@
 		<column name="amount_change"/>
 		<column name="description"/>
 	</entity>
+	<entity id="accounts_balanced" store="#CPOwner.store">
+		<column name="idaccount"/>
+		<column name="date_transaction"/>
+		<column name="type"/>
+		<column name="amount_change"/>
+		<column name="description"/>
+		<column name="balance"/>
+	</entity>
 	<entity id="personnel_costs" store="#CPOwner.store">
 		<column name="id" primaryKey="YES"/>
 		<column name="idpersonnel"/>

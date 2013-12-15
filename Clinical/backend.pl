@@ -531,6 +531,15 @@ get '/CT/DC/:download/fetch/:name/:scale'=> [download =>qr/[a-z]+/, name =>qr/.+
 ###################################################################
 # to be factored out
 #<!> fixme: this ugly stuff should be factored out in a driver module
+
+helper requiresUmsatzsteuer => sub { my ($self, $id)=@_;
+	my $dbh=$self->db;		
+	my $sth = $dbh->prepare( qq/SELECT value~*'^[jY1]' as umsatzsteuer  FROM trial_properties JOIN trial_properties_catalogue ON trial_properties.idproperty = trial_properties_catalogue.id WHERE trial_properties_catalogue.name ~* 'umsatzst'::text and idtrial=?/);
+	$sth->execute(($id));
+	my $r=$sth->fetchrow_hashref();
+	return $r? ($r->{umsatzsteuer}=='t') : 0;
+};
+
 get '/CT/print_bill/:idtrial'=> [idtrial =>qr/\d+/] => sub
 {	my $self=shift;
 	my $idtrial = $self->param('idtrial');
@@ -563,6 +572,8 @@ get '/CT/print_bill/:idtrial'=> [idtrial =>qr/\d+/] => sub
 	$template->AddCell( 0,28, 3, $keyvaldict->{Drittmittelnummer} );
 	$template->AddCell( 0,29, 3, $keyvaldict->{'Voller Titel'} );
 
+	my $requires_ust=$self-> requiresUmsatzsteuer($idtrial);
+
 	my $sql = SQL::Abstract::More->new;
 	my($stmt, @bind) = $sql->select( -columns  => qw/*/, -from => 'list_for_billing', -where => {idtrial => $idtrial});
 	my $sth = $self->db->prepare($stmt);
@@ -585,7 +596,7 @@ get '/CT/print_bill/:idtrial'=> [idtrial =>qr/\d+/] => sub
 	}
 	#	my $format = $worksheet->add_format();
 	#	$format->set_bold();
-	my $ust=$sum*0.19;
+	my $ust= $requires_ust? $sum*0.19: 0;
 	$template->AddCell( 0,$i, 0, 'Summe', $formatfooter_number);
 	$template->AddCell( 0,$i, $_, '', $formatfooter_number) for 1..5;
 	$template->AddCell( 0,$i, 6, sprintf('%4.2f EUR',$sum), $formatfooter_number2);
@@ -601,7 +612,7 @@ get '/CT/print_bill/:idtrial'=> [idtrial =>qr/\d+/] => sub
 	my $xls=readFile ($tmpfilename);
 
 	my $insert = SQL::Abstract->new;
-	($stmt, @bind) = $insert->insert( 'billings', {idtrial=>$idtrial, comment=> sprintf('%4.2f EUR',$sum+$ust), visit_ids=>$idstr});
+	($stmt, @bind) = $insert->insert( 'billings', {idtrial=>$idtrial, amount=> $sum+$ust, comment=> sprintf('%4.2f EUR',$sum+$ust), visit_ids=>$idstr});
 	$sth = $self->db->prepare($stmt);
 	$sth->execute(@bind);
 
