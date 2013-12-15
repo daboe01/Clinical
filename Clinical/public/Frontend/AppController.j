@@ -73,6 +73,7 @@ BaseURL=HostURL+"/";
 	id	accountsController;
 	id	transactionsController;
 	id	personnelCostsController;
+	id	balancedController;
 
 	id mainController @accessors;
 }

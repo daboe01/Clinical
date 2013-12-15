@@ -40,11 +40,13 @@
  	<scrollView hasHorizontalScroller="NO">
 	 <tableView zebra="yes" autosaveName="pers_costs_tv" delegate="#mycontroller" valueBinding="#CPOwner.personnelCostsController">
 		<tableColumn identifier="idaccount" dataView="#popupdataviewaccount"  title="account" editable="YES"/>
-		<tableColumn identifier="date_active" title="active since" editable="YES"/>
+		<tableColumn identifier="date_active" title="active date" editable="YES"/>
 		<tableColumn identifier="amount" title="monthly costs" editable="YES"/>
 	 </tableView>
 	</scrollView>
-	<ButtonBar target="#CPOwner.personnelCostsController" plusButtonAction="insert:" minusButtonAction="remove:"/>
+	<ButtonBar target="#CPOwner.personnelCostsController" plusButtonAction="insert:" minusButtonAction="remove:" actionsButton="YES">
+ 		<popUpButtonItem title="Generate for the rest of this year" target="#myadmincontroller" action="runConfig:"/>
+	</ButtonBar>
 
 
   </vbox>

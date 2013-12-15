@@ -22,15 +22,15 @@
 	</vbox>
 	<vbox>
 	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" id="transactions_tv" autosaveName="transactions_tv" valueBinding="#CPOwner.transactionsController">
-		<tableColumn identifier="date_transaction" title="date" editable="YES"/>
-		<tableColumn identifier="type" title="type" editable="YES"/>
-		<tableColumn identifier="amount_change" title="amount" editable="YES"/>
-		<tableColumn identifier="description" title="description" editable="YES"/>
+	 <tableView zebra="yes" id="transactions_tv" autosaveName="transactions_tv" valueBinding="#CPOwner.balancedController">
+		<tableColumn identifier="date_transaction" title="date" editable="NO"/>
+		<tableColumn identifier="amount_change" title="amount" editable="NO"/>
+		<tableColumn identifier="description" title="description" editable="NO"/>
+		<tableColumn identifier="balance" title="kontostand" editable="NO"/>
 	 </tableView>
 	</scrollView>
 	<ButtonBar target="#CPOwner" plusButtonAction="insertTransaction:" minusButtonAction="deleteTransaction:" actionsButton="YES">
- 		<popUpButtonItem title="Do something..." target="#mycontroller" action="sendEmail:"/>
+ 		<popUpButtonItem title="Korrekurbuchungen..." target="#mycontroller" action="makeKorrekturbuchung:"/>
 	</ButtonBar>
 	</vbox>
    </splitView>

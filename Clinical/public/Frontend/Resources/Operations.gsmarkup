@@ -70,6 +70,7 @@
 		<tableColumn identifier="creation_date" title="creation_date" editable="YES"/>
 		<tableColumn identifier="start_date" title="due date" editable="YES"/>
 		<tableColumn identifier="end_date" title="date payed" editable="YES"/>
+		<tableColumn identifier="amount" title="EUR" editable="YES"/>
 		<tableColumn identifier="comment" title="comment" editable="YES"/>
 		<tableColumn identifier="visit_ids" title="visit_ids" editable="NO"/>
 	 </tableView>
