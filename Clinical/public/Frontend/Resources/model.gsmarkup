@@ -239,7 +239,7 @@
 		<column name="id" primaryKey="YES"/>
 		<column name="account_number"/>
 		<column name="name"/>
-		<column name="idtrial"/>
+		<column name="idgroup"/>
 		<relationship type="toMany" bindingColumn="id" targetColumn="idaccount" name="transactions" target="account_transaction"/>
 	</entity>
 	<entity id="account_transaction" store="#CPOwner.store">

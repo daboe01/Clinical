@@ -21,19 +21,32 @@
 	<ButtonBar target="#CPOwner.personnelController" plusButtonAction="insert:" minusButtonAction="remove:"/>
    </vbox>
    <vbox>
+
 	<scrollView hasHorizontalScroller="NO">
 	 <tableView zebra="yes" autosaveName="trialpersonnel2_tv" valueBinding="#CPOwner.groupassignmentController">
 		<tableColumn identifier="idgroup" dataView="#popupdataviewgroup"  title="group"/>
 	 </tableView>
 	</scrollView>
 	<ButtonBar target="#CPOwner.groupassignmentController" plusButtonAction="insert:" minusButtonAction="remove:"/>
- 	<scrollView hasHorizontalScroller="NO">
+ 
+	<scrollView hasHorizontalScroller="NO">
 	 <tableView zebra="yes" autosaveName="pers_props_tv" delegate="#mycontroller" valueBinding="#CPOwner.personnelPropController">
 		<tableColumn identifier="property.name" title="name"/>
-		<tableColumn identifier="value" title="value" editable="YES"/>
+		<tableColumn identifier="value" title="value0" editable="YES"/>
 	 </tableView>
 	</scrollView>
 	<ButtonBar target="#mycontroller" plusButtonAction="addProperty:" minusButtonAction="removeProperty:"/>
+
+ 	<scrollView hasHorizontalScroller="NO">
+	 <tableView zebra="yes" autosaveName="pers_costs_tv" delegate="#mycontroller" valueBinding="#CPOwner.personnelCostsController">
+		<tableColumn identifier="idaccount" dataView="#popupdataviewaccount"  title="account" editable="YES"/>
+		<tableColumn identifier="date_active" title="active since" editable="YES"/>
+		<tableColumn identifier="amount" title="monthly costs" editable="YES"/>
+	 </tableView>
+	</scrollView>
+	<ButtonBar target="#CPOwner.personnelCostsController" plusButtonAction="insert:" minusButtonAction="remove:"/>
+
+
   </vbox>
  </splitView>
 </window>
@@ -41,6 +54,7 @@
 <window visible="NO">
  <vbox>
   <popUpButton width="200" id="popupdataviewgroup" itemsBinding="#CPOwner.groupsController.arrangedObjects.name"/>
+  <popUpButton width="200" id="popupdataviewaccount" itemsBinding="#CPOwner.accountsController.arrangedObjects.name"/>
  </vbox>
 </window>
 
