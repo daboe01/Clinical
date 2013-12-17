@@ -196,14 +196,14 @@
 -(void) addPatient: sender
 {	var trialsController=[CPApp delegate].trialsController;
 	var idtrial=[trialsController valueForKeyPath:"selection.id"];
-	var myreq=[CPURLRequest requestWithURL: BaseURL+"CT/new_patient/"+idtrial];
-	var pk=[[CPURLConnection sendSynchronousRequest: myreq returningResponse: nil] rawString];
-
 	var patientsController=[CPApp delegate].patientsController;
-	[[trialsController selectedObject] willChangeValueForKey:"patients"];
-	 [trialsController._entity._relations makeObjectsPerformSelector:@selector(_invalidateCache)];
-	[[trialsController selectedObject] didChangeValueForKey:"patients"];
-	[patientsController performSelector: @selector(selectObjectWithPK:) withObject: pk afterDelay:0.1];
+	[patientsController insert: self];
+	var idpatient=[patientsController valueForKeyPath: "selection.id"];
+	var myreq=[CPURLRequest requestWithURL: BaseURL+"CT/new_patient/"+idpatient];
+	[[CPURLConnection sendSynchronousRequest: myreq returningResponse: nil] rawString];
+	[[patientsController selectedObject] willChangeValueForKey:"visits"];
+	 [patientsController._entity._relations makeObjectsPerformSelector:@selector(_invalidateCache)];
+	[[patientsController selectedObject] didChangeValueForKey:"visits"];
 
 }
 

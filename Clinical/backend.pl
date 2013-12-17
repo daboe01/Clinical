@@ -479,11 +479,11 @@ helper insertDictIntoTable => sub { my ($self, $table, $dict)=@_;
 	$sth->execute(@bind);
 	return $dbh->last_insert_id(undef, undef, $table, 'id');
 };
-get '/CT/new_patient/:idtrial' => [idtrial=>qr/[0-9]+/] => sub	# post
-{	my $self	= shift;
-	my $idtrial	= $self->param('idtrial');
+get '/CT/new_patient/:idpatient' => [idpatient =>qr/[0-9]+/] => sub	# post
+{	my $self = shift;
+	my $idpatient = $self->param('idpatient');
+	my $idtrial= $self->getObjectFromTable('patients', $idpatient)->{idtrial};
 	my $dbh=$self->db;
-	my $idpatient= $self->insertDictIntoTable('patients',  {idtrial=> $idtrial} );
 	my $stmt = 'select idreference_visit from trial_visits where idtrial=? and idreference_visit is not null limit 1';
 	my $sth = $dbh->prepare($stmt);
 	$sth->execute(($idtrial));
@@ -495,7 +495,7 @@ get '/CT/new_patient/:idtrial' => [idtrial=>qr/[0-9]+/] => sub	# post
 	$stmt = "insert into  patient_visits (idpatient, idvisit) select $idpatient as idpatient, trial_visits.id as idvisit from trial_visits where idtrial=? and idreference_visit is not null and id not in (?) order by visit_interval";
 	$sth = $dbh->prepare($stmt);
 	$sth->execute(($idtrial, $idreference_visit));
-	$self->render(text=>$idpatient);
+	$self->render(text=>'OK');
 };
 		
 ###################################################################
