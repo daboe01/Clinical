@@ -21,6 +21,7 @@
   <arrayController id="process_steps" entity="trial_process_step" valueBinding="trials_controller.selection.steps"/>
   <arrayController id="dokus_controller" entity="documents" valueBinding="trials_controller.selection.dokus"/>
   <arrayController id="personnel_controller" entity="personnel_catalogue" autoFetch="YES"/>
+  <arrayController id="group_personnel_controller" entity="personnel_catalogue" valueBinding="groups_controller.selection.personnel"/>
   <arrayController id="personnel_costs_controller" entity="personnel_costs" valueBinding="personnel_controller.selection.costs"/>
   <arrayController id="trialpersonnel_controller" entity="trial_personnel" valueBinding="trials_controller.selection.personnel"/>
   <arrayController id="roles_controller" entity="roles_catalogue" autoFetch="YES"/>
@@ -40,7 +41,9 @@
   <arrayController id="billings_controller" entity="billings" valueBinding="trials_controller.selection.billings"/>
   <arrayController id="accounts_controller" entity="shadow_accounts" autoFetch="YES" sortDescriptor="by_account_number"/>
   <arrayController id="transactions_controller" entity="account_transaction" valueBinding="accounts_controller.selection.transactions" sortDescriptor="by_date_transaction"/>
-  <arrayController id="balanced_controller" entity="account_transaction" valueBinding="accounts_controller.selection.balanced" sortDescriptor="by_date_transaction"/>
+  <arrayController id="balanced_controller" entity="accounts_balanced" valueBinding="accounts_controller.selection.balanced" sortDescriptor="by_date_transaction"/>
+  <arrayController id="procedures_catalogue_controller" entity="procedures_catalogue" autoFetch="YES" sortDescriptor="by_name"/>
+  <arrayController id="procedures_visit_controller" entity="visit_procedures" valueBinding="visits_controller.selection.procedures"/>
 
 </objects>
 
@@ -50,6 +53,7 @@
 		<column name="name"/>
 		<column name="sprechstunde"/>
 		<relationship type="toMany" name="trials" targetColumn="idgroup" target="all_trials"/>
+		<relationship type="toMany" name="personnel" targetColumn="idgroup" target="group_assignments_name"/>
 	</entity>
 	<entity id="all_trials" store="#CPOwner.store">
 		<column name="id" primaryKey="YES"/>
@@ -77,6 +81,8 @@
 		<column name="email"/>
 		<column name="function"/>
 		<column name="tel"/>
+		<column name="level"/>
+		<column name="abrechnungsname"/>
 		<relationship type="toMany" name="groups" targetColumn="idpersonnel" target="group_assignments"/>
 		<relationship type="toMany" name="props" targetColumn="idpersonnel" target="personnel_properties"/>
 		<relationship type="toMany" name="costs" targetColumn="idpersonnel" target="personnel_costs"/>
@@ -87,6 +93,13 @@
 		<column name="idpersonnel"/>
 		<column name="role"/>
 		<relationship type="toOne" name="person" bindingColumn="idpersonnel" target="personnel_catalogue"/>
+	</entity>
+	<entity id="group_assignments_name" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="idgroup"/>
+		<column name="idpersonnel"/>
+		<column name="name"/>
+		<relationship type="toOne" name="group" bindingColumn="idgroup" target="groups_catalogue"/>
 	</entity>
 	<entity id="group_assignments" store="#CPOwner.store">
 		<column name="id" primaryKey="YES"/>
@@ -176,6 +189,7 @@
 		<column name="additional_docscal_booking_name"/>
 		<relationship type="toOne" name="trial" bindingColumn="idtrial" target="all_trials"/>
 		<relationship type="toOne" name="reference_visit" bindingColumn="idreference_visit" target="trial_visits"/>
+		<relationship type="toMany" name="procedures" bindingColumn="id" targetColumn="idvisit" target="visit_procedures"/>
 	</entity>
 	<entity id="patients" store="#CPOwner.store">
 		<column name="id" primaryKey="YES"/>
@@ -192,6 +206,7 @@
 		<column name="zip"/>
 		<column name="town"/>
 		<column name="telephone"/>
+		<column name="insertion_date"/>
 		<relationship type="toOne" name="trial" bindingColumn="state" target="all_trials"/>
 		<relationship type="toOne" name="state_value" bindingColumn="state" target="status_catalogue"/>
 		<relationship type="toMany" name="visits" targetColumn="idpatient" target="patient_visits"/>
@@ -208,7 +223,7 @@
 		<column name="missing_service"/>
 		<relationship type="toOne" name="patient" bindingColumn="idpatient" target="patients"/>
 		<relationship type="toOne" name="visit" bindingColumn="idvisit" target="trial_visits"/>
-		<relationship type="toMany" name="date_proposals" bindingColumn="idvisit" targetColumn="idvisit" target="visit_dates"/>
+		<relationship type="toMany" name="date_proposals" bindingColumn="id" targetColumn="idvisit" target="visit_dates"/>
 	</entity>
 	<entity id="visit_dates" store="#CPOwner.store">
 		<column name="startdate" primaryKey="YES"/>
@@ -243,6 +258,7 @@
 		<column name="account_number"/>
 		<column name="name"/>
 		<column name="idgroup"/>
+		<column name="balance"/>
 		<relationship type="toMany" bindingColumn="id" targetColumn="idaccount" name="transactions" target="account_transaction"/>
 		<relationship type="toMany" bindingColumn="id" targetColumn="idaccount" name="balanced" target="accounts_balanced"/>
 	</entity>
@@ -269,6 +285,26 @@
 		<column name="date_active"/>
 		<column name="amount"/>
 		<column name="comment"/>
+	</entity>
+	<entity id="procedures_catalogue" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="name"/>
+		<column name="type"/>
+		<column name="base_cost"/>
+	</entity>
+	<entity id="visit_procedures" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="idvisit"/>
+		<column name="idprocedure"/>
+		<column name="actual_cost"/>
+		<relationship type="toOne" name="procedure" bindingColumn="idprocedure" target="procedure_statistics"/>
+	</entity>
+	<entity id="procedure_statistics" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="base_cost"/>
+		<column name="min_cost"/>
+		<column name="max_cost"/>
+		<column name="avg_cost"/>
 	</entity>
 </entities>
 
@@ -299,6 +335,10 @@
 	<outlet source="#CPOwner" target="transactions_controller" label="transactionsController"/>
 	<outlet source="#CPOwner" target="personnel_costs_controller" label="personnelCostsController"/>
 	<outlet source="#CPOwner" target="balanced_controller" label="balancedController"/>
+	<outlet source="#CPOwner" target="procedures_catalogue_controller" label="proceduresCatController"/>
+	<outlet source="#CPOwner" target="procedures_visit_controller" label="proceduresVisitController"/>
+	<outlet source="#CPOwner" target="group_personnel_controller" label="groupPersonnelController"/>
+
 </connectors>
 
 

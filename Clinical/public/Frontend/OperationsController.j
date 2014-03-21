@@ -36,6 +36,7 @@
 	id	bookingCancel;
 	id	bookingProgress;
 	id	searchTerm @accessors;
+    id  accountsWindow;
 }
 
 
@@ -79,7 +80,7 @@
 -(void) performAddProperty: sender
 {	[popover close];
 	var pcController=[CPApp delegate].propertiesCatController;
-	var pController=[CPApp delegate].propertiesController;
+	var pController= [CPApp delegate].propertiesController;
 	var selected=[pcController selectedObjects];
 	var idtrial=[[CPApp delegate].trialsController valueForKeyPath:"selection.id"];
 	var l=[selected count];
@@ -169,6 +170,7 @@
 	var idtrial=[trialsController valueForKeyPath:"selection.id"];
 	var myreq=[CPURLRequest requestWithURL: BaseURL+"CT/make_properties/"+idtrial];
 	[CPURLConnection sendSynchronousRequest: myreq returningResponse: nil];
+// fixme:  use [[CPApp delegate].SOMECONTROLLER reload];
 	[[trialsController selectedObject] willChangeValueForKey:"props"];
 	 [trialsController._entity._relations makeObjectsPerformSelector:@selector(_invalidateCache)];
 	[[trialsController selectedObject] didChangeValueForKey:"props"];
@@ -198,13 +200,12 @@
 	var idtrial=[trialsController valueForKeyPath:"selection.id"];
 	var patientsController=[CPApp delegate].patientsController;
 	[patientsController insert: self];
+    [patientsController rearrangeObjects];
 	var idpatient=[patientsController valueForKeyPath: "selection.id"];
 	var myreq=[CPURLRequest requestWithURL: BaseURL+"CT/new_patient/"+idpatient];
 	[[CPURLConnection sendSynchronousRequest: myreq returningResponse: nil] rawString];
-	[[patientsController selectedObject] willChangeValueForKey:"visits"];
-	 [patientsController._entity._relations makeObjectsPerformSelector:@selector(_invalidateCache)];
-	[[patientsController selectedObject] didChangeValueForKey:"visits"];
 
+    [[CPApp delegate].patientVisitsController reload];
 }
 
 -(void) connection: someConnection didReceiveData: data
@@ -213,13 +214,15 @@
 	[bookingPopover close];
 	if(data === '0')
 	{	var pvController=[CPApp delegate].patientVisitsController;
-		[[pvController selectedObject] setValue: someConnection._bookingDate forKey:"visit_date"];
+		[someConnection._bookingObject setValue: someConnection._bookingDate forKey:"visit_date"];
 		someConnection._bookingDate=nil;
+        someConnection._bookingObject=nil;
 	} else if(data === 'NOK')
 	{	alert("termin war schon vergeben. nochmal buchen");		// <!> fixme
 	}
 	// reload dc-termine to remove the allocated entry
 	var pvController=[CPApp delegate].patientVisitsController;
+// fixme:  use [[CPApp delegate].SOMECONTROLLER reload];
 	[[pvController selectedObject] willChangeValueForKey:"date_proposals"];
 	 [pvController._entity._relations makeObjectsPerformSelector:@selector(_invalidateCache)];
 	[[pvController selectedObject] didChangeValueForKey:"date_proposals"];
@@ -242,6 +245,7 @@
 	[myreq setHTTPBody: text];
 	 bookingConnection=[CPURLConnection connectionWithRequest: myreq delegate: self];
 	 bookingConnection._bookingDate=[[visitDatesController selectedObject] valueForKey:"caldate"];
+     bookingConnection._bookingObject= [[CPApp delegate].patientVisitsController selectedObject];
 	[bookingProgress startAnimation: self];
 	[bookingOk setEnabled: NO];
 	[bookingCancel setEnabled: NO];
@@ -273,6 +277,7 @@
 
 -(void) recalcVisits: sender
 {	var pController=[CPApp delegate].patientsController;
+// fixme:  use [[CPApp delegate].SOMECONTROLLER reload];
 	[[pController selectedObject] willChangeValueForKey:"visits"];
 	 [pController._entity._relations  makeObjectsPerformSelector:@selector(_invalidateCache)];
 	[[pController selectedObject] didChangeValueForKey:"visits"];
@@ -313,6 +318,18 @@
 {	var idtrial=[[CPApp delegate].trialsController valueForKeyPath:"selection.id"];
 	document.location='/CT/download_patients/'+idtrial+'?session='+ window.G_SESSION;
 }
+-(void)createTodoList: sender
+{	var idtrial=[[CPApp delegate].trialsController valueForKeyPath:"selection.id"];
+	document.location='/CT/todolist_trial/'+idtrial+'?session='+ window.G_SESSION;
+}
+-(void)downloadKoKa: sender
+{	var idtrial=[[CPApp delegate].trialsController valueForKeyPath:"selection.id"];
+	document.location='/CT/download_koka/'+idtrial+'?session='+ window.G_SESSION;
+}
+
+-(void)createTodoListGlobal: sender
+{	document.location='/CT/todolist?session='+ window.G_SESSION;
+}
 
 -(void) runDCV: sender
 {	var patController=[CPApp delegate].patientsController;
@@ -326,10 +343,23 @@
 
 -(void) reloadBillings: sender
 {	var trialsController=[CPApp delegate].trialsController;
+// fixme:  use [[CPApp delegate].SOMECONTROLLER reload];
 	[[trialsController selectedObject] willChangeValueForKey:"billings"];
 	 [trialsController._entity._relations makeObjectsPerformSelector:@selector(_invalidateCache)];
 	[[trialsController selectedObject] didChangeValueForKey:"billings"];
 }
+
+-(void) addBill: sender
+{	var billingsController=[CPApp delegate].billingsController;
+	[billingsController insert: sender];
+	[[billingsController selectedObject] reload];
+}
+-(void) removeBill: sender
+{	var billingsController=[CPApp delegate].billingsController;
+	[billingsController remove: sender];
+}
+
+
 
 -(void) createBill: sender
 {	var trialsController=[CPApp delegate].trialsController;
@@ -342,6 +372,26 @@
 {	if(aTerm && aTerm.length)
 	{	[[CPApp delegate].trialsController setFilterPredicate: [CPPredicate predicateWithFormat:"fulltext CONTAINS %@", aTerm.toLowerCase()]];
 	} else [[CPApp delegate].trialsController setFilterPredicate: nil];
+}
+
+-(void) openKontoauszuege: sender
+{
+	var trialsController=[CPApp delegate].trialsController;
+	var idtrial=[trialsController valueForKeyPath:"selection.id"];
+	var accountsController=[CPApp delegate].accountsController;
+	var myreq=[CPURLRequest requestWithURL: '/CT/trial_properties/'+idtrial];
+	var mpackage=[[CPURLConnection sendSynchronousRequest: myreq returningResponse: nil]  rawString];
+	var o  = JSON.parse( mpackage );
+    if(o['Drittmittelnummer']);
+    {   var myoptions=[CPDictionary dictionaryWithObject: "1" forKey: "FSSynchronous"];
+        var a=[accountsController._entity._store fetchObjectsWithKey:"account_number" equallingValue: o['Drittmittelnummer'] inEntity: accountsController._entity options: myoptions];
+        if([a count]==1)
+        {   a=[a objectAtIndex: 0];
+            [accountsWindow setTitle: [a valueForKey:"name"]];
+            [accountsController selectObjectWithPK:[a valueForKey:"id"]]
+            [accountsWindow makeKeyAndOrderFront:self];
+        }
+    }
 }
 
 @end
