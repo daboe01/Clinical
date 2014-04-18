@@ -4,7 +4,7 @@
 
 <objects>
 
-<window id="configwindow" x="5" y="5" width="1000" height="600">
+<window id="configwindow" x="5" y="5" width="1500" height="600">
   <vbox>
     <hbox>
 	<vbox>
@@ -33,18 +33,48 @@
 	   </tableView>
 	  </scrollView>
 	  <hbox>
-	   <ButtonBar target="#CPOwner.visitsController" plusButtonAction="insert:" minusButtonAction="remove:"/>
+	   <ButtonBar target="#CPOwner.visitsController" plusButtonAction="insert:" minusButtonAction="remove:" actionsButton="YES">
+ 		<popUpButtonItem title="Duplicate" target="#CPOwner" action="duplicateKoKaVisit:"/>
+	  </ButtonBar>
 	   <button title="Unset reference visit" target="#CPOwner" action="unsetReferenceVisit:"/>
 	  </hbox>
 	</vbox>
+	<vbox>
+	  <label> Procedures </label>
+	  <scrollView hasHorizontalScroller="NO">
+	    <tableView zebra="yes" autosaveName="visitprocs_tv" valueBinding="#CPOwner.proceduresVisitController" target="#CPOwner">
+		<tableColumn identifier="idprocedure" title="procedure" dataView="#column_idprocedure" editable="YES"/>
+		<tableColumn identifier="actual_cost" title="acatual costs" editable="YES"/>
+		<tableColumn identifier="procedure.base_cost" title="base costs" editable="NO"/>
+		<tableColumn identifier="procedure.min_cost" title="min" editable="NO"/>
+		<tableColumn identifier="procedure.avg_cost" title="avg" editable="NO"/>
+		<tableColumn identifier="procedure.max_cost" title="max" editable="NO"/>
+	   </tableView>
+	  </scrollView>
+	  <ButtonBar target="#CPOwner.proceduresVisitController" plusButtonAction="insert:" minusButtonAction="remove:" actionsButton="YES">
+ 		<popUpButtonItem title="Config..." target="#procedureswindow" action="makeKeyAndOrderFront:"/>
+	  </ButtonBar>
+	</vbox>
   </hbox>
-
  </vbox>
 </window>
 
+<window id="procedureswindow" delegate="#CPOwner" x="1000" y="600" width="400" height="400" visible="NO">
+      <vbox>
+	<scrollView hasHorizontalScroller="NO">
+	 <tableView zebra="yes" autosaveName="allprocedures_tv" id="allprocedures_tv" valueBinding="#CPOwner.proceduresCatController" target="#CPOwner">
+		<tableColumn identifier="name" title="name" editable="YES"/>
+		<tableColumn identifier="base_cost" title="standardforderung EUR" editable="YES"/>
+	 </tableView>
+	</scrollView>
+	<ButtonBar target="#CPOwner.proceduresCatController" plusButtonAction="insert:" minusButtonAction="remove:"/>
+      </vbox>
+</window>
+
+
 <window visible="NO">
-  <popUpButton width="200" id="column_idpersonnel" itemsBinding="#CPOwner.personnelController.arrangedObjects.name"/>
   <tableViewPopup width="100" height="23" id="column_idvisit" itemsController="#CPOwner.visitsController" itemsValue="arrangedObjects.id" itemsFace="arrangedObjects.name"/>
+  <tableViewPopup width="100" height="23" id="column_idprocedure" itemsController="#CPOwner.proceduresCatController" itemsValue="arrangedObjects.id" itemsFace="arrangedObjects.name"/>
 </window>
 
 </objects>

@@ -40,7 +40,6 @@ BaseURL=HostURL+"/";
 {	return [CPURLRequest requestWithURL: [self baseURL]+"/"+[someEntity name]+"?session="+ window.G_SESSION ];
 }
 
-
 @end
 
 @implementation CPNull(length)
@@ -76,6 +75,14 @@ BaseURL=HostURL+"/";
 	id	transactionsController;
 	id	personnelCostsController;
 	id	balancedController;
+	id	proceduresCatController;
+	id	proceduresVisitController;
+	id	groupPersonnelController;
+
+	id	addTXWindow;
+	id	accountsTV;
+	id	addTxTV;
+	id	accountPopover;
 
 	id mainController @accessors;
 	id	searchTerm @accessors;
@@ -98,6 +105,7 @@ BaseURL=HostURL+"/";
 	var re = new RegExp("t=([^&#]+)");
 	var m = re.exec(document.location);
 	if(m) mainFile=m[1];
+	document.title=mainFile;
 	[CPBundle loadRessourceNamed: mainFile owner: self ];
 }
 
@@ -106,22 +114,55 @@ BaseURL=HostURL+"/";
 }
 
 -(void) unsetReferenceVisit:sender
-{	[[visitsController selectedObject] setValue: [CPNull null] forKey:"idreference_visit"];
+{
+	[[visitsController selectedObject] setValue: [CPNull null] forKey:"idreference_visit"];
 }
--(void) insertTransaction: sender
-{	[transactionsController insert:sender];
-   [[transactionsController selectedObject] reload]
+
+// Konto-stuff (hat keinen eigenen controller)
+
+-(void) makeKorrekturbuchung: sender
+{
+	if( !accountPopover)
+	{	 accountPopover=[CPPopover new];
+		[accountPopover setDelegate:self];
+		[accountPopover setAnimates:YES];
+		[accountPopover setBehavior: CPPopoverBehaviorApplicationDefined ];
+		[accountPopover setAppearance: CPPopoverAppearanceMinimal];
+		var myViewController=[CPViewController new];
+		[accountPopover setContentViewController: myViewController];
+		[myViewController setView: [addTXWindow contentView]];
+	
+	}
+	var sel=[[accountsTV selectedRowIndexes] firstIndex];
+	var rect= [accountsTV _rectOfRow: sel checkRange:NO];
+	[accountPopover showRelativeToRect:rect ofView: accountsTV preferredEdge: nil];
+	[[addTxTV window] makeFirstResponder: addTxTV]	
 }
--(void) deleteTransaction: sender
-{	[transactionsController remove:sender];
+
+-(void) closeKorrekturbuchung: sender
+{	[accountPopover close];
+	[[accountsController selectedObject] willChangeValueForKey:"balanced"];
+	 [accountsController._entity._relations makeObjectsPerformSelector:@selector(_invalidateCache)];
+	[[accountsController selectedObject] didChangeValueForKey:"balanced"];
+
 }
 
 -(void) setSearchTerm: aTerm
 {
-searchTerm=aTerm
+	searchTerm=aTerm
 	if(aTerm && aTerm.length)
 	{	[trialsController setFilterPredicate: [CPPredicate predicateWithFormat:"fulltext CONTAINS %@", aTerm.toLowerCase()]];
 	} else [trialsController setFilterPredicate: nil];
+
+-(void) duplicateKoKaVisit: sender
+{	var idoldvisit=[visitsController valueForKeyPath: "selection.id"];
+	[visitsController insert: self];
+	var idnewvisit=[visitsController valueForKeyPath: "selection.id"];
+	var myreq=[CPURLRequest requestWithURL: BaseURL+"CT/copyover_koka_visit/"+idoldvisit+"/"+idnewvisit];
+	[CPURLConnection sendSynchronousRequest: myreq returningResponse: nil];
+	[[visitsController selectedObject] willChangeValueForKey:"procedures"];
+	 [visitsController._entity._relations makeObjectsPerformSelector:@selector(_invalidateCache)];
+	[[visitsController selectedObject] didChangeValueForKey:"procedures"];
 }
 
 @end

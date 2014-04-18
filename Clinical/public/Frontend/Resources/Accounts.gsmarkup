@@ -3,46 +3,68 @@
 <gsmarkup>
 
 <objects>
-
 <accountsController id="mycontroller"/>
 
-<window bridge="YES" id="accountswindow" delegate="#mycontroller">
+<window bridge="YES" id="accountswindow" delegate="#CPOwner">
    <splitView vertical="YES" autosaveName="vsplitter_accounts">
       <vbox>
 	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" autosaveName="alltrials_tv" id="accounts_tv" valueBinding="#CPOwner.accountsController" target="#mycontroller">
+	 <tableView zebra="yes" autosaveName="alltrials_tv" id="accounts_tv" valueBinding="#CPOwner.accountsController" target="#CPOwner">
 		<tableColumn identifier="account_number" title="Nummer" editable="YES"/>
 		<tableColumn identifier="name" title="Name" editable="YES"/>
-		<tableColumn identifier="idgroup" title="trial" dataView="#column_idgroup" editable="YES"/>
+		<tableColumn identifier="balance" title="balance" dataView="#rightAlignedText" editable="NO"/>
+		<tableColumn identifier="idgroup" title="group" dataView="#column_idgroup" editable="YES"/>
 	 </tableView>
 	</scrollView>
-	<ButtonBar actionsButton="YES" target="#CPOwner.accountsController" plusButtonAction="insert:" minusButtonAction="delete:">
- 		<popUpButtonItem title="Config..." target="#mycontroller" action="runConfig:"/>
+	<ButtonBar actionsButton="YES" target="#CPOwner.accountsController" plusButtonAction="insert:" minusButtonAction="remove:">
+ 		<popUpButtonItem title="Config..." target="#CPOwner" action="runConfig:"/>
 	</ButtonBar>
 	</vbox>
 	<vbox>
+        <searchField valueBinding="mycontroller.searchTerm"/>
 	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" id="transactions_tv" autosaveName="transactions_tv" valueBinding="#CPOwner.balancedController">
+	   <tableView zebra="yes" id="transactions_tv" autosaveName="transactions_tv" valueBinding="#CPOwner.balancedController">
 		<tableColumn identifier="date_transaction" title="date" editable="NO"/>
-		<tableColumn identifier="amount_change" title="amount" editable="NO"/>
+		<tableColumn identifier="type" title="type" editable="NO"/>
+		<tableColumn identifier="amount_change" title="amount" dataView="#rightAlignedText" editable="NO"/>
 		<tableColumn identifier="description" title="description" editable="NO"/>
-		<tableColumn identifier="balance" title="kontostand" editable="NO"/>
-	 </tableView>
+		<tableColumn identifier="balance" title="kontostand" dataView="#rightAlignedText" editable="NO"/>
+	   </tableView>
 	</scrollView>
-	<ButtonBar target="#CPOwner" plusButtonAction="insertTransaction:" minusButtonAction="deleteTransaction:" actionsButton="YES">
- 		<popUpButtonItem title="Korrekurbuchungen..." target="#mycontroller" action="makeKorrekturbuchung:"/>
+	<ButtonBar target="#CPOwner" actionsButton="YES">
+ 		<popUpButtonItem title="Korrekurbuchungen..." target="#CPOwner" action="makeKorrekturbuchung:"/>
 	</ButtonBar>
 	</vbox>
    </splitView>
  </window>
+
  <window visible="NO">
   <tableViewPopup width="100" height="23" id="column_idgroup" itemsController="#CPOwner.groupsController" itemsValue="arrangedObjects.id" itemsFace="arrangedObjects.name"/>
+  <RightAlignedTextField id="rightAlignedText"/>
+ </window>
+
+ <window id="addtxwindow" visible="NO" width="400" height="600">
+   <vbox>
+	<scrollView hasHorizontalScroller="NO">
+	 <tableView zebra="yes" id="addtxtv" autosaveName="addtxtv" valueBinding="#CPOwner.transactionsController" allowsMultipleSelection="YES">
+		<tableColumn identifier="date_transaction" title="date" editable="YES"/>
+		<tableColumn identifier="amount_change" title="amount" dataView="#rightAlignedText"  editable="YES"/>
+		<tableColumn identifier="description" title="description" editable="YES"/>
+	 </tableView>
+	</scrollView>
+	<hbox>
+	  <ButtonBar target="#CPOwner.transactionsController" plusButtonAction="insert:" minusButtonAction="remove:"/>
+	  <button title="OK" target="#CPOwner" action="closeKorrekturbuchung:"/>
+	</hbox>
+   </vbox>
  </window>
 
 </objects>
 
 <connectors>
-	<outlet source="mycontroller" target="accountswindow" label="accountsWindow"/>
+	<outlet source="CPOwner" target="addtxwindow" label="addTXWindow"/>
+	<outlet source="CPOwner" target="addtxtv" label="addTxTV"/>
+	<outlet source="CPOwner" target="accounts_tv" label="accountsTV"/>
 </connectors>
 
 

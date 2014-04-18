@@ -11,8 +11,8 @@
    <vbox>
 	<scrollView hasHorizontalScroller="NO">
 	 <tableView zebra="yes" autosaveName="allgroups_tv" valueBinding="#CPOwner.groupsController">
-		<tableColumn identifier="sprechstunde" title="sprechstunde" editable="YES"/>
 		<tableColumn identifier="name" title="name" editable="YES"/>
+		<tableColumn identifier="sprechstunde" title="sprechstunde" editable="YES"/>
 	 </tableView>
 	</scrollView>
 	<ButtonBar target="#CPOwner.groupsController" plusButtonAction="insert:" minusButtonAction="remove:"/>
@@ -20,16 +20,15 @@
 </window>
 
 
-<window id="personnelwindow" visible="YES"  x="425" y="5" width="500" height="800">
+<window id="personnelwindow" visible="YES"  x="425" y="5" width="500" height="300">
   <hbox>
    <vbox>
 	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" autosaveName="trialpersonnel2_tv" valueBinding="#CPOwner.personnelController">
+	 <tableView zebra="yes" autosaveName="trialpersonnel4_tv" valueBinding="#CPOwner.personnelController">
 		<tableColumn identifier="ldap" title="ldap" editable="YES"/>
 		<tableColumn identifier="name" title="name" editable="YES"/>
 		<tableColumn identifier="function" title="function" editable="YES"/>
-		<tableColumn identifier="email" title="email" editable="YES"/>
-		<tableColumn identifier="tel" title="tel" editable="YES"/>
+		<tableColumn identifier="level" title="level" editable="YES"/>
 	 </tableView>
 	</scrollView>
 	<ButtonBar target="#CPOwner.personnelController" plusButtonAction="insert:" minusButtonAction="remove:"/>
@@ -41,29 +40,35 @@
 	 </tableView>
 	</scrollView>
 	<ButtonBar target="#CPOwner.groupassignmentController" plusButtonAction="insert:" minusButtonAction="remove:"/>
- 	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" autosaveName="pers_props_tv" delegate="#myadmincontroller" valueBinding="#CPOwner.personnelPropController">
-		<tableColumn identifier="property.name" title="name"/>
-		<tableColumn identifier="value" title="val" editable="YES"/>
-	 </tableView>
-	</scrollView>
-	<ButtonBar target="#myadmincontroller" plusButtonAction="addProperty:" minusButtonAction="removeProperty:"/>
   </vbox>
   </hbox>
 </window>
 
 
-<window id="perspropwindow" delegate="#myadmincontroller" x="5" y="410" width="400" height="400">
-	<vbox>
+<window id="Personnel properties" x="5" y="410" width="400" height="400">
+   <vbox>
 	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" autosaveName="allprops_tv" valueBinding="#CPOwner.personnelPropCatController" target="#CPOwner">
+	 <tableView zebra="yes" autosaveName="allprops2_tv" valueBinding="#CPOwner.personnelPropCatController" target="#CPOwner">
 		<tableColumn identifier="name" title="name" editable="YES"/>
 		<tableColumn identifier="type" title="type" editable="YES"/>
 	 </tableView>
 	</scrollView>
 	<ButtonBar target="#CPOwner.personnelPropCatController" plusButtonAction="insert:" minusButtonAction="remove:"/>
-	</vbox>
+   </vbox>
 </window>
+
+<window id="States controller" x="425" y="410" width="400" height="400">
+   <vbox>
+	<scrollView hasHorizontalScroller="NO">
+	 <tableView zebra="yes" autosaveName="allstates_tv" valueBinding="#CPOwner.statesController" target="#CPOwner">
+		<tableColumn identifier="name" title="name" editable="YES"/>
+		<tableColumn identifier="type" title="type" editable="YES"/>
+	 </tableView>
+	</scrollView>
+	<ButtonBar target="#CPOwner.statesController" plusButtonAction="insert:" minusButtonAction="remove:"/>
+   </vbox>
+</window>
+
 
 <window visible="NO">
  <vbox>
@@ -72,28 +77,9 @@
 </window>
 
 
-<window id="addpropswindow" visible="NO" width="400" height="600">
-   <vbox>
-	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" id="addpropstv" valueBinding="#CPOwner.propertiesCatController" allowsMultipleSelection="YES">
-		<tableColumn identifier="name" title="name" editable="YES"/>
-		<tableColumn identifier="ordering" title="order" editable="YES"/>
-		<tableColumn identifier="type" title="type" editable="YES"/>
-	 </tableView>
-	</scrollView>
-	<hbox>
-	  <ButtonBar target="#myadmincontroller" plusButtonAction="addCatProperty:"/>
-	  <button title="Add selected" target="#myadmincontroller" action="performAddProperty:"/>
-	  <button title="Cancel" target="#myadmincontroller" action="cancelAddProperty:"/>
-	</hbox>
-   </vbox>
-</window>
-
-
 </objects>
 
 <connectors>
-	<outlet source="myadmincontroller" target="addpropswindow" label="addPropsWindow"/>
 	<outlet source="myadmincontroller" target="addpropstv" label="addPropsTV"/>
 </connectors>
 
