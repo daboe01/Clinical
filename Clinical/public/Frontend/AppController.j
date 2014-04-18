@@ -15,12 +15,14 @@ BaseURL=HostURL+"/";
 /////////////////////////////////////////////////////////
 
 @import <Foundation/CPObject.j>
+@import <AppKit/AppKit.j>
 @import <Renaissance/Renaissance.j>
 @import "OperationsController.j"
 @import "AdminController.j"
 @import "UploadManager.j"
 @import "TableViewControl.j"
 @import "CalendarController.j"
+
 
 
 @implementation SessionStore : FSStore 
@@ -76,6 +78,7 @@ BaseURL=HostURL+"/";
 	id	balancedController;
 
 	id mainController @accessors;
+	id	searchTerm @accessors;
 }
 
 -(CPString) uploadURL
@@ -112,5 +115,15 @@ BaseURL=HostURL+"/";
 -(void) deleteTransaction: sender
 {	[transactionsController remove:sender];
 }
+
+-(void) setSearchTerm: aTerm
+{
+searchTerm=aTerm
+	if(aTerm && aTerm.length)
+	{	[trialsController setFilterPredicate: [CPPredicate predicateWithFormat:"fulltext CONTAINS %@", aTerm.toLowerCase()]];
+	} else [trialsController setFilterPredicate: nil];
+}
+
 @end
+
 

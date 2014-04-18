@@ -337,9 +337,10 @@
 	[[CPRunLoop currentRunLoop] performSelector:@selector(reloadBillings:) target:self argument: self order:0 modes:[CPDefaultRunLoopMode]];
 	window.open('/CT/print_bill/'+idtrial+'?session='+ window.G_SESSION, 'download_window');
 }
-
 -(void) setSearchTerm: aTerm
-{	if(aTerm && aTerm.length)
+{
+searchTerm=aTerm
+	if(aTerm && aTerm.length)
 	{	[[CPApp delegate].trialsController setFilterPredicate: [CPPredicate predicateWithFormat:"fulltext CONTAINS %@", aTerm.toLowerCase()]];
 	} else [[CPApp delegate].trialsController setFilterPredicate: nil];
 }

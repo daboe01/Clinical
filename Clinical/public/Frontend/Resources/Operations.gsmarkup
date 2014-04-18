@@ -11,7 +11,7 @@
   <splitView vertical="NO" autosaveName="hsplitter_main">
    <splitView vertical="YES" autosaveName="vsplitter_main">
 	<vbox>
-	<searchField valueBinding="myadmincontroller.searchTerm"/>
+	<searchField valueBinding="#CPOwner.searchTerm"/>
 	<scrollView hasHorizontalScroller="NO">
 	 <tableView zebra="yes" autosaveName="alltrials_tv" id="trialstv" valueBinding="#CPOwner.trialsController" target="#myadmincontroller">
 		<tableColumn identifier="name" title="Name" editable="YES"/>
