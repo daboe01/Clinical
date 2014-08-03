@@ -51,9 +51,11 @@ BaseURL=HostURL+"/";
 	id	propertiesController;
 	id	processesController;
 	id	dokusController;
+	id	dokusController2;
 	id	personnelController;
 	id	trialpersonnelController;
 	id	groupsController;
+	id	groupsControllerAll;
 	id	rolesController;
 	id	statesController;
 	id	doctagsController;
@@ -104,6 +106,7 @@ BaseURL=HostURL+"/";
 	if(m) mainFile=m[1];
 	document.title=mainFile;
 	[CPBundle loadRessourceNamed: mainFile owner: self ];
+	[[[CPApp mainWindow] delegate] _performPostLoadInit];
 }
 
 -(void) delete:sender
@@ -153,6 +156,25 @@ BaseURL=HostURL+"/";
 	[[visitsController selectedObject] willChangeValueForKey:"procedures"];
 	 [visitsController._entity._relations makeObjectsPerformSelector:@selector(_invalidateCache)];
 	[[visitsController selectedObject] didChangeValueForKey:"procedures"];
+}
+
+
+// FIXME: this stuff leaks...
+-(void) runPersonnel: sender
+{   [[CPApp mainWindow] close];
+    [CPBundle loadRessourceNamed: "Personnel.gsmarkup" owner:self];
+}
+-(void) runAccounts: sender
+{   [[CPApp mainWindow] close];
+    [CPBundle loadRessourceNamed: "Accounts.gsmarkup" owner:self];
+}
+-(void) runAdmin: sender
+{   [[CPApp mainWindow] close];
+    [CPBundle loadRessourceNamed: "Admin.gsmarkup" owner:self];
+}
+-(void) runOperations: sender
+{   [[CPApp mainWindow] close];
+    [CPBundle loadRessourceNamed: "Operations.gsmarkup" owner:self];
 }
 
 @end

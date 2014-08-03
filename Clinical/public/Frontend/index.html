@@ -8,7 +8,6 @@
  based on FastStartLogin Created by Cann on February 17, 2011. Copyright 2011, Cann All rights reserved.
 -->
 	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
 		<meta http-equiv="X-UA-Compatible" content="chrome=1" />
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 
@@ -59,7 +58,12 @@
 				}
 			}
 
-			function submitForm(form) {
+			function checkReturn(e) {
+                if (e && e.keyCode == 13){
+                    submitForm();
+               }
+            }
+			function submitForm() {
 				var submit = document.getElementById("submit");
 				submit.disabled = true;
 				submit.value = "...";
@@ -72,7 +76,7 @@
 				{	submit.disabled = false;
 					submit.value = "Falsch?!";
 					submit.style.opacity = "1";
-					setTimeout(function(){submit.value = "Login"},600);
+					setTimeout(function(){submit.value = "Login"}, 600);
 				}
 			}
 
@@ -146,10 +150,10 @@
 				padding: 3px;
 				width: 300px;
 			}
-			#container form {
+			#formContainer  {
 
 			}
-			#container form .label {
+			#formContainer .label {
 				color: #777777;
 				float: left;
 				font-size: 20px;
@@ -159,7 +163,7 @@
 				margin-top: 3px;
 				width: 220px;
 			}
-			#container form input.text {
+			#formContainer input.text {
 				border: 2px solid rgb(0, 141, 204);
 				border-radius: 3px; moz-border-radius: 3px; -webkit-border-radius: 3px;
 				float: left;
@@ -168,7 +172,7 @@
 				padding: 8px;
 				width: 200px;
 			}
-			#container form input.submit {
+			#formContainer input.submit {
 				background: rgb(0, 152, 222);
 				border: 0px;
 				border-radius: 3px; moz-border-radius: 3px; -webkit-border-radius: 3px;
@@ -183,7 +187,7 @@
 				text-shadow: 1px 1px 0px rgb(0, 101, 164);
 				width: 110px;
 			}
-			#container form input.submit:active {
+			#formContainer input.submit:active {
 				box-shadow: 0px 0px 0px rgb(0, 61, 124); -webkit-box-shadow: 0px 0px 0px rgb(0, 61, 124); -moz-box-shadow: 0px 0px 0px rgb(0, 61, 124);
 				margin-left: 12px;
 				margin-right: 6px;
@@ -206,14 +210,14 @@
 						document.write( "<div id='container'>" +
 											"<div id='content'>" +
 												"<div id='interior'>" +
-													"<form id='formContainer' action='javascript:void(0);' onsubmit='submitForm(self);'>" +
+													"<div id='formContainer'>" +
 														"<div class='label'>Username</div>" +
 														"<div class='label'>Password</div>" +
 														"<br />" +
 														"<input type='text' class='text' id='username' />" +
-														"<input type='password' class='text' id='password' />" +
-														"<input type='submit' class='submit' id='submit' name='submit' value='Login' />" +
-													"</form>"+
+														"<input type='password' class='text' id='password'  onKeyUp='checkReturn(event)'/>" +
+														"<input type='submit' class='submit' id='submit' name='submit' value='Login' onclick='submitForm()'/>" +
+													"</div>"+
 													"<div id='progressContainer'>" +
 														"<div id='textcontent'>Loading... </div>" + 
 														"<div id='progressBar'><span id='progressBarPill'></span></div>" +

@@ -15,11 +15,13 @@
   <sortDescriptor id="by_account_number" key="account_number"/>
 
 
-  <arrayController id="groups_controller" entity="groups_catalogue" autoFetch="YES"/>
+  <arrayController id="groups_controller" entity="groups_catalogue" valueBinding="trials_controller.selection.group" sortDescriptor="by_name"/>
+  <arrayController id="groups_controller_all" entity="groups_catalogue" autoFetch="YES" sortDescriptor="by_name"/>
   <arrayController id="trials_controller" entity="all_trials" autoFetch="YES" sortDescriptor="by_name"/>
   <arrayController id="trial_properties_controller" entity="trial_properties" valueBinding="trials_controller.selection.props" sortDescriptor="by_proporder"/>
   <arrayController id="process_steps" entity="trial_process_step" valueBinding="trials_controller.selection.steps"/>
   <arrayController id="dokus_controller" entity="documents" valueBinding="trials_controller.selection.dokus"/>
+  <arrayController id="dokus_controller2" entity="documents_tag_unique" valueBinding="trials_controller.selection.dokus2"/>
   <arrayController id="personnel_controller" entity="personnel_catalogue" autoFetch="YES"/>
   <arrayController id="group_personnel_controller" entity="personnel_catalogue" valueBinding="groups_controller.selection.personnel"/>
   <arrayController id="personnel_costs_controller" entity="personnel_costs" valueBinding="personnel_controller.selection.costs"/>
@@ -51,6 +53,7 @@
 	<entity id="groups_catalogue" store="#CPOwner.store">
 		<column name="id" primaryKey="YES"/>
 		<column name="name"/>
+		<column name="websitename"/>
 		<column name="sprechstunde"/>
 		<relationship type="toMany" name="trials" targetColumn="idgroup" target="all_trials"/>
 		<relationship type="toMany" name="personnel" targetColumn="idgroup" target="group_assignments_name"/>
@@ -63,10 +66,13 @@
 		<column name="infotext"/>
 		<column name="global_state"/>
 		<column name="fulltext"/>
+		<column name="sponsor"/>
+		<column name="phase"/>
 		<relationship type="toOne" name="group" bindingColumn="idgroup" target="groups_catalogue"/>
 		<relationship type="toMany" name="steps" targetColumn="idtrial" target="trial_process_step"/>
 		<relationship type="toMany" name="props" targetColumn="idtrial" target="trial_properties"/>
 		<relationship type="toMany" name="dokus" targetColumn="idtrial" target="documents"/>
+		<relationship type="toMany" name="dokus2" targetColumn="idtrial" target="documents_tag_unique"/>
 		<relationship type="toMany" name="personnel" targetColumn="idtrial" target="trial_personnel"/>
 		<relationship type="toMany" name="visits" targetColumn="idtrial" target="trial_visits"/>
 		<relationship type="toMany" name="patients" targetColumn="idtrial" target="patients"/>
@@ -130,6 +136,7 @@
 		<column name="ordering"/>
 		<column name="type"/>
 		<column name="name"/>
+		<column name="default_value"/>
 	</entity>
 	<entity id="personnel_properties_catalogue" store="#CPOwner.store">
 		<column name="id" primaryKey="YES"/>
@@ -167,8 +174,14 @@
 		<column name="id" primaryKey="YES"/>
 		<column name="idtrial"/>
 		<column name="tag"/>
+		<column name="date"/>
 		<column name="name"/>
 		<relationship type="toOne" name="trial" bindingColumn="idtrial" target="all_trials"/>
+	</entity>
+	<entity id="documents_tag_unique" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="idtrial"/>
+		<column name="tag"/>
 	</entity>
 	<entity id="roles_catalogue" store="#CPOwner.store">
 		<column name="id" primaryKey="YES"/>
@@ -313,9 +326,11 @@
 	<outlet source="#CPOwner" target="trial_properties_controller" label="propertiesController"/>
 	<outlet source="#CPOwner" target="process_steps" label="processesController"/>
 	<outlet source="#CPOwner" target="dokus_controller" label="dokusController"/>
+	<outlet source="#CPOwner" target="dokus_controller2" label="dokusController2"/>
 	<outlet source="#CPOwner" target="personnel_controller" label="personnelController"/>
 	<outlet source="#CPOwner" target="trialpersonnel_controller" label="trialpersonnelController"/>
 	<outlet source="#CPOwner" target="groups_controller" label="groupsController"/>
+	<outlet source="#CPOwner" target="groups_controller_all" label="groupsControllerAll"/>
 	<outlet source="#CPOwner" target="roles_controller" label="rolesController"/>
 	<outlet source="#CPOwner" target="states_controller" label="statesController"/>
 	<outlet source="#CPOwner" target="doctags_controller" label="doctagsController"/>
