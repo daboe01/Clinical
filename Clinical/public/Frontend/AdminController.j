@@ -92,6 +92,7 @@
 @implementation AccountsController : CPObject
 {
 	id	searchTerm @accessors;
+    id accountsWindow;
 }
 
 -(void) setSearchTerm: aTerm
@@ -117,6 +118,26 @@
     [[[CPApp delegate].balancedController entity] setFormatter: self forColumnName:"amount_change"];
     return self;    
 }
+-(void) insertAccount: sender
+{   var accountsController=[CPApp delegate].accountsController;
+	[accountsController addObject:@{"name": "New account", "idgroup": [[CPApp delegate].groupsController valueForKeyPath:"selection.id"] } ];
+}
+
+-(void) removeAccount: sender
+{
+	var myalert = [CPAlert new];
+	[myalert setMessageText: "Are you sure you want to delete this account together with all transactions?"];
+	[myalert addButtonWithTitle:"Cancel"];
+	[myalert addButtonWithTitle:"Delete"];
+	[myalert beginSheetModalForWindow: accountsWindow modalDelegate:self didEndSelector:@selector(deleteAccountWarningDidEnd:code:context:) contextInfo: nil];
+}
+- (void)deleteAccountWarningDidEnd:(CPAlert)anAlert code:(id)code context:(id)context
+{   if(code)
+	{   var accountsController=[CPApp delegate].accountsController;
+        [accountsController remove:self];
+    }
+}
+
 @end
 
 

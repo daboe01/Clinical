@@ -4,13 +4,13 @@
 
 <objects>
 
-<window id="configwindow" x="5" y="5" width="1500" height="600">
+<window id="configwindow" x="5" y="35" width="1500" height="600">
   <vbox>
     <hbox>
 	<vbox>
 	  <label> Basic data</label>
-	  <textField width="200" halign="left" valueBinding="#CPOwner.trialsController.selection.name" title="name" editable="YES"/>
-	  <popUpButton width="200" halign="left" valueBinding="#CPOwner.trialsController.selection.idgroup" itemsBinding="#CPOwner.groupsController.arrangedObjects.name"/>
+	  <textField width="200" halign="left" valueBinding="#CPOwner.trialsController.selection.name" title="name" editable="NO"/>
+	  <popUpButton width="200" halign="left" valueBinding="#CPOwner.trialsController.selection.idgroup" itemsBinding="#CPOwner.groupsControllerAll.arrangedObjects.name"/>
 	  <label> Status values </label>
 	  <scrollView width="200" halign ="min" hasHorizontalScroller="NO">
 	   <tableView zebra="yes" autosaveName="allgroups_tv" valueBinding="#CPOwner.statusController">

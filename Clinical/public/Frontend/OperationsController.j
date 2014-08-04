@@ -15,6 +15,17 @@
 
 /////////////////////////////////////////////////////////
 
+@implementation CPTableView(ColumnFinder)
+-(unsigned) findColumnWithTitle:(CPString) aTitle
+{   var l=[_tableColumns count];
+    for(var i=0;i<l;i++)
+    {   if(_tableColumns[i]._identifier === aTitle)
+            return i;
+    }
+    return -1;
+}
+@end
+
 @implementation OperationsController : CPObject
 {
 	id	trialsWindow;
@@ -41,8 +52,10 @@
 
 
 -(void) newTrial: sender
-{	var newObject=[[CPApp delegate].trialsController addObject:@{"name": "New trial", "idgroup": [[CPApp delegate].groupsController valueForKeyPath:"selection.id"] } ];
-	[trialsTV editColumn:0 row:[trialsTV selectedRow] withEvent:nil  select:YES];
+{
+    [self setSearchTerm: ""];
+	[[CPApp delegate].trialsController addObject: @{"name": "New trial 1", "idgroup": [[CPApp delegate].groupsController valueForKeyPath:"selection.id"] } ];
+	[trialsTV editColumn:[trialsTV findColumnWithTitle:"name"] row:[trialsTV selectedRow] withEvent:nil  select:YES];
 }
 
 - (void)deleteTrialWarningDidEnd:(CPAlert)anAlert code:(id)code context:(id)context
@@ -51,6 +64,33 @@
 	{	[trialsController removeObjectsAtArrangedObjectIndexes: [trialsController selectionIndexes] ];
 	}
 }
+
+-(void) _performPostLoadInit
+{
+	[[CPApp delegate].dokusController2 addObserver:self forKeyPath:"selection" options: nil context: nil];
+	[[CPApp delegate].dokusController addObserver:self forKeyPath:"selection.tag" options: nil context: nil];
+
+}
+-(void) _reloadDokus
+{
+    [[CPApp delegate].dokusController reload];
+    [[CPApp delegate].dokusController2 reload];
+
+}
+
+- (void)observeValueForKeyPath: keyPath ofObject: object change: change context: context
+{	if(object == [CPApp delegate].dokusController2)
+	{
+		[[CPApp delegate].dokusController setFilterPredicate: [CPPredicate predicateWithFormat:"tag = %@", [object valueForKeyPath:"selection.tag"] ]];
+
+	} else if(object == [CPApp delegate].dokusController)
+    {   if([change objectForKey:"CPKeyValueChangeOldKey"] !== [change objectForKey:"CPKeyValueChangeNewKey"])
+        {   [[CPRunLoop currentRunLoop] performSelector:@selector(_reloadDokus) target:self argument: nil order:0 modes:[CPDefaultRunLoopMode]];
+        }
+    }
+    
+}
+
 
 -(void) removeTrial: sender
 {
@@ -85,8 +125,9 @@
 	var idtrial=[[CPApp delegate].trialsController valueForKeyPath:"selection.id"];
 	var l=[selected count];
 	for(var i=0; i< l; i++)
-	{	var pk=[[selected objectAtIndex:i] valueForKey:"id"];
-		[pController addObject:@{"idproperty": pk, "idtrial": idtrial} ];
+	{	var pk= [[selected objectAtIndex:i] valueForKey:"id"];
+        var val=[[selected objectAtIndex:i] valueForKey:"default_value"];
+		[pController addObject:@{"idproperty": pk, "idtrial": idtrial, "value": val} ];
 	}
 }
 -(void) addProperty: sender
@@ -94,7 +135,7 @@
 	if( !popover)
 	{	 popover=[CPPopover new];
 		[popover setDelegate:self];
-		[popover setAnimates:YES];
+		[popover setAnimates:NO];
 		[popover setBehavior: CPPopoverBehaviorTransient ];
 		[popover setAppearance: CPPopoverAppearanceMinimal];
 		var myViewController=[CPViewController new];
@@ -112,7 +153,7 @@
 {	if( !annotationPopover)
 	{	 annotationPopover =[CPPopover new];
 		[annotationPopover setDelegate:self];
-		[annotationPopover setAnimates:YES];
+		[annotationPopover setAnimates:NO];
 		[annotationPopover setBehavior: CPPopoverBehaviorTransient ];
 		[annotationPopover setAppearance: CPPopoverAppearanceMinimal];
 		var myViewController=[CPViewController new];
@@ -170,62 +211,53 @@
 	var idtrial=[trialsController valueForKeyPath:"selection.id"];
 	var myreq=[CPURLRequest requestWithURL: BaseURL+"CT/make_properties/"+idtrial];
 	[CPURLConnection sendSynchronousRequest: myreq returningResponse: nil];
-// fixme:  use [[CPApp delegate].SOMECONTROLLER reload];
-	[[trialsController selectedObject] willChangeValueForKey:"props"];
-	 [trialsController._entity._relations makeObjectsPerformSelector:@selector(_invalidateCache)];
-	[[trialsController selectedObject] didChangeValueForKey:"props"];
+    [[CPApp delegate].propertiesController reload];
 }
 
-
--(void) sendEmail: sender
-{	var pController=[CPApp delegate].propertiesController;
-	var myURL=[pController valueForKeyPath:"selection.value"];
-	window.location='mailto:'+myURL;
-
-}
 
 -(void) openURL: sender
 {	var pController=[CPApp delegate].propertiesController;
 	var myURL=[pController valueForKeyPath:"selection.value"];
-	window.open(myURL , 'open_urlwindow');
+    if([myURL hasPrefix:"http"]) window.open(myURL , 'open_urlwindow');
+    else if([myURL hasPrefix:"NCT"]) window.open('http://clinicaltrials.gov/ct2/show/'+myURL , 'open_urlwindow');
+    else if (myURL.indexOf("@") > 0) window.location='mailto:'+myURL;
+    else if ([pController valueForKeyPath:"selection.property.name"] == 'Drittmittelnummer') [self openKontoauszuege:self];
+    else if ([pController valueForKeyPath:"selection.property.name"] == 'Serienbrief') [self openSeriebriefe:self];
+    else alert("Cannot open "+myURL);
 }
-
+-(void) openSeriebriefe: sender
+{
+	window.open("/CT/serienbrief_patienten/"+[[CPApp delegate].propertiesController valueForKeyPath:"selection.id"] +'?session='+ window.G_SESSION, 'download_window');
+}
 
 -(void) deletePatient: sender
 {	var pController=[CPApp delegate].patientsController;
 	[pController remove: self];
 }
 -(void) addPatient: sender
-{	var trialsController=[CPApp delegate].trialsController;
-	var idtrial=[trialsController valueForKeyPath:"selection.id"];
-	var patientsController=[CPApp delegate].patientsController;
+{   var patientsController=[CPApp delegate].patientsController;
 	[patientsController insert: self];
     [patientsController rearrangeObjects];
-	var idpatient=[patientsController valueForKeyPath: "selection.id"];
-	var myreq=[CPURLRequest requestWithURL: BaseURL+"CT/new_patient/"+idpatient];
-	[[CPURLConnection sendSynchronousRequest: myreq returningResponse: nil] rawString];
-
-    [[CPApp delegate].patientVisitsController reload];
+    [patsTV editColumn:[patsTV findColumnWithTitle:"piz"] row:[patsTV selectedRow] withEvent:nil select:YES];
+    [self addDefaultVisits: self];
 }
 
 -(void) connection: someConnection didReceiveData: data
 {
 	[bookingProgress stopAnimation: self];
 	[bookingPopover close];
+
+	// reload dc-termine to remove the allocated or invalid entry
+    [[CPApp delegate].visitDatesController reload];
+
 	if(data === '0')
-	{	var pvController=[CPApp delegate].patientVisitsController;
-		[someConnection._bookingObject setValue: someConnection._bookingDate forKey:"visit_date"];
+	{
+        [someConnection._bookingObject setValue: someConnection._bookingDate forKey:"visit_date"];
 		someConnection._bookingDate=nil;
         someConnection._bookingObject=nil;
-	} else if(data === 'NOK')
-	{	alert("termin war schon vergeben. nochmal buchen");		// <!> fixme
+	} else
+	{	alert("buchung nicht erfolgreich. nochmal versuchen");		// <!> fixme
 	}
-	// reload dc-termine to remove the allocated entry
-	var pvController=[CPApp delegate].patientVisitsController;
-// fixme:  use [[CPApp delegate].SOMECONTROLLER reload];
-	[[pvController selectedObject] willChangeValueForKey:"date_proposals"];
-	 [pvController._entity._relations makeObjectsPerformSelector:@selector(_invalidateCache)];
-	[[pvController selectedObject] didChangeValueForKey:"date_proposals"];
 }
 
 -(void) doBookInDocscal: sender
@@ -257,7 +289,7 @@
 	if (!bookingPopover)
 	{	 bookingPopover=[CPPopover new];
 		[bookingPopover setDelegate:self];
-		[bookingPopover setAnimates:YES];
+		[bookingPopover setAnimates:NO];
 		[bookingPopover setBehavior: CPPopoverBehaviorTransient ];
 		[bookingPopover setAppearance: CPPopoverAppearanceMinimal];
 		 var myViewController=[CPViewController new];
@@ -276,11 +308,16 @@
 }
 
 -(void) recalcVisits: sender
-{	var pController=[CPApp delegate].patientsController;
-// fixme:  use [[CPApp delegate].SOMECONTROLLER reload];
-	[[pController selectedObject] willChangeValueForKey:"visits"];
-	 [pController._entity._relations  makeObjectsPerformSelector:@selector(_invalidateCache)];
-	[[pController selectedObject] didChangeValueForKey:"visits"];
+{
+    [[CPApp delegate].patientVisitsController reload];
+}
+
+-(void) addDefaultVisits: sender
+{   var idpatient=[[CPApp delegate].patientsController valueForKeyPath: "selection.id"];
+	var myreq=[CPURLRequest requestWithURL: BaseURL+"CT/new_patient/"+idpatient];
+	[CPURLConnection sendSynchronousRequest: myreq returningResponse: nil];
+    [[CPApp delegate].patientVisitsController reload];
+
 }
 
 -(void) insertVisit: sender
@@ -296,10 +333,18 @@
 	[CPBundle loadRessourceNamed: "AdminTrial.gsmarkup" owner: [CPApp delegate] ];
 }
 
--(void) printDocumentNamed: (CPString) aName
+-(void) printDocumentNamed: (CPString) aName withPIZ:(BOOL) withPIZFlag
 {	var idtrial=[[CPApp delegate].trialsController valueForKeyPath:"selection.id"];
-	window.open('/CT/pdfstamper/'+idtrial+'/'+aName+'?session='+ window.G_SESSION, 'download_window');
+    var myurl='/CT/pdfstamper/'+idtrial+'/'+aName+'?session='+ window.G_SESSION;
+    if(withPIZFlag){
+        var piz=[[CPApp delegate].patientsController valueForKeyPath:"selection.piz"];
+        myurl += "&piz="+piz;
+    }
+	window.open(myurl, 'download_window');
 
+}
+-(void) printDocumentNamed: (CPString) aName
+{   [self printDocumentNamed:  aName withPIZ:NO];
 }
 
 -(void) printDrittmittelanzeige: sender
@@ -326,6 +371,9 @@
 {	var idtrial=[[CPApp delegate].trialsController valueForKeyPath:"selection.id"];
 	document.location='/CT/download_koka/'+idtrial+'?session='+ window.G_SESSION;
 }
+-(void)downloadInkassoList: sender
+{   document.location='/CT/duelist/'+'?session='+ window.G_SESSION;
+}
 
 -(void)createTodoListGlobal: sender
 {	document.location='/CT/todolist?session='+ window.G_SESSION;
@@ -335,6 +383,9 @@
 {	var patController=[CPApp delegate].patientsController;
 	var dcv=[[DocsCalController alloc] initWithPIZ:[[patController selectedObject] valueForKeyPath:"piz"]];
 }
+-(void) hausarztBrief:sender
+{   [self printDocumentNamed:"hausarztbrief" withPIZ:"YES"];
+}
 
 -(void) runCalendar: sender
 {	[CalendarController new]
@@ -342,11 +393,7 @@
 
 
 -(void) reloadBillings: sender
-{	var trialsController=[CPApp delegate].trialsController;
-// fixme:  use [[CPApp delegate].SOMECONTROLLER reload];
-	[[trialsController selectedObject] willChangeValueForKey:"billings"];
-	 [trialsController._entity._relations makeObjectsPerformSelector:@selector(_invalidateCache)];
-	[[trialsController selectedObject] didChangeValueForKey:"billings"];
+{   [[CPApp delegate].billingsController reload];
 }
 
 -(void) addBill: sender
@@ -354,17 +401,50 @@
 	[billingsController insert: sender];
 	[[billingsController selectedObject] reload];
 }
+
+
+-(void) createBillWithFilter:(CPString) filter
+{	var trialsController=[CPApp delegate].trialsController;
+	var idtrial=[trialsController valueForKeyPath:"selection.id"];
+	var myreq=[CPURLRequest requestWithURL:"/CT/make_bill/"+idtrial+'?session='+ window.G_SESSION ];
+	[myreq setHTTPMethod:"POST"];
+	[myreq setHTTPBody: filter];
+	[CPURLConnection sendSynchronousRequest: myreq returningResponse: nil];
+	[[CPRunLoop currentRunLoop] performSelector:@selector(reloadBillings:) target:self argument: self order:0 modes:[CPDefaultRunLoopMode]];
+}
+-(void) createBillFiltered: sender
+{   var filter="";
+	var selected=[[CPApp delegate].patientsController selectedObjects];
+	var l=[selected count];
+	for(var i=0; i< l; i++)
+	{	var pk=[[selected objectAtIndex:i] valueForKey:"id"];
+		filter+=pk+',';
+	}
+   [self createBillWithFilter:filter];
+}
+-(void) createBill: sender
+{   [self createBillWithFilter:""];
+}
+
+- (void)deleteBillWarningDidEnd:(CPAlert)anAlert code:(id)code context:(id)context
+{   var myController= [CPApp delegate].billingsController
+    if(code)
+	{	[myController removeObjectsAtArrangedObjectIndexes: [myController selectionIndexes] ];
+	}
+}
+
 -(void) removeBill: sender
-{	var billingsController=[CPApp delegate].billingsController;
-	[billingsController remove: sender];
+{
+	var myalert = [CPAlert new];
+	[myalert setMessageText: "Are you sure you want to delete the bill?"];
+	[myalert addButtonWithTitle:"Cancel"];
+	[myalert addButtonWithTitle:"Delete"];
+	[myalert beginSheetModalForWindow: trialsWindow modalDelegate:self didEndSelector:@selector(deleteBillWarningDidEnd:code:context:) contextInfo: nil];
 }
 
 
-
--(void) createBill: sender
-{	var trialsController=[CPApp delegate].trialsController;
-	var idtrial=[trialsController valueForKeyPath:"selection.id"];
-	[[CPRunLoop currentRunLoop] performSelector:@selector(reloadBillings:) target:self argument: self order:0 modes:[CPDefaultRunLoopMode]];
+-(void) printBill: sender
+{   var idtrial=[[CPApp delegate].billingsController valueForKeyPath:"selection.id"];
 	window.open('/CT/print_bill/'+idtrial+'?session='+ window.G_SESSION, 'download_window');
 }
 -(void) setSearchTerm: aTerm

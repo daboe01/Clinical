@@ -6,59 +6,126 @@
 
 <operationsController id="myadmincontroller"/>
 
+  <menu type="main">
+	<menu title="Team">
+		<menuItem title="Calendar..." target="#myadmincontroller" action="runCalendar:"/>
+		<menuItem title="Trial list" target="#myadmincontroller" action="downloadExcel:"/>
+		<menuItem title="Todo list" target="#myadmincontroller" action="createTodoListGlobal:"/>
+		<menuItem title="Inkasso list" target="#myadmincontroller" action="downloadInkassoList:"/>
+	</menu>
+	<menu title="Edit">
+		<menuItem title="Cut" action="cut:" keyEquivalent="x"/>
+		<menuItem title="Copy" action="copy:" keyEquivalent="c"/>
+		<menuItem title="Paste" action="paste:" keyEquivalent="v"/>
+		<menuItem title="Remove" action="remove:" keyEquivalent="y"/>
+	</menu>
+	<menu title="Special">
+		<menuItem title="Operations..." action="runOperations:"/>
+		<menuItem title="Accounts..." action="runAccounts:"/>
+		<menuItem title="Personnel..." action="runPersonnel:"/>
+		<menuItem title="Admin..." action="runAdmin:"/>
+	</menu>
+   </menu>
+
 <window bridge="YES" id="trialswindow" delegate="#myadmincontroller">
 <vbox>
-  <splitView vertical="NO" autosaveName="hsplitter_main">
-   <splitView vertical="YES" autosaveName="vsplitter_main">
+   <splitView vertical="YES" autosaveName="vsplitter_main0">
 	<vbox>
 	<searchField valueBinding="#CPOwner.searchTerm"/>
 	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" autosaveName="alltrials_tv" id="trialstv" valueBinding="#CPOwner.trialsController" target="#myadmincontroller">
+	 <tableView zebra="yes" autosaveName="alltrials_tv0" id="trialstv" valueBinding="#CPOwner.trialsController" target="#myadmincontroller">
 		<tableColumn identifier="name" title="Name" editable="YES"/>
 		<tableColumn identifier="group.name" title="AG" editable="NO"/>
 		<tableColumn identifier="global_state" title="State" editable="NO"/>
+		<tableColumn identifier="sponsor" title="Sponsor" editable="NO"/>
+		<tableColumn identifier="phase" title="Phase" editable="NO"/>
 	 </tableView>
 	</scrollView>
 	<ButtonBar actionsButton="YES" target="#myadmincontroller" plusButtonAction="newTrial:" minusButtonAction="removeTrial:">
-		<popUpButtonItem title="Team calendar..." target="#myadmincontroller" action="runCalendar:"/>
- 		<popUpButtonItem title="Config trial..." target="#myadmincontroller" action="runConfig:"/>
- 		<popUpButtonItem title="Download trial cost calculation" target="#myadmincontroller" action="downloadKoKa:"/>
+ 		<popUpButtonItem title="Config..." target="#myadmincontroller" action="runConfig:"/>
+ 		<popUpButtonItem title="Cost calculation" target="#myadmincontroller" action="downloadKoKa:"/>
   		<popUpButtonItem title="Drittmittelanzeige" target="#myadmincontroller" action="printDrittmittelanzeige:"/>
  		<popUpButtonItem title="Anschreiben Vertrag" target="#myadmincontroller" action="printAnschreibenVertrag:"/>
- 		<popUpButtonItem title="Todo list for all your trials" target="#myadmincontroller" action="createTodoListGlobal:"/>
-		<popUpButtonItem title="Download trial list" target="#myadmincontroller" action="downloadExcel:"/>
-		<popUpButtonItem title="Inkassoliste" target="#myadmincontroller" action="downloadInkassoListe:"/>
+		<popUpButtonItem title="Patientenliste" target="#myadmincontroller" action="downloadPatients:"/>
 	</ButtonBar>
 	</vbox>
+  <tabView type="topBezel">
+
+
+   <tabViewItem title="Eigenschaften">
+
 	<vbox>
+	<vspace height="10" valign="min"/>
 	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" id="propstv" autosaveName="props_tv" delegate="#myadmincontroller" target="#myadmincontroller" doubleAction="openAnnotation:" valueBinding="#CPOwner.propertiesController">
+	 <tableView zebra="yes" id="propstv" autosaveName="props_tv0" delegate="#myadmincontroller" target="#myadmincontroller" doubleAction="openAnnotation:" valueBinding="#CPOwner.propertiesController">
 		<tableColumn identifier="property.name" title="name"/>
 		<tableColumn identifier="value" title="val" editable="YES"/>
 	 </tableView>
 	</scrollView>
 	<ButtonBar target="#myadmincontroller" plusButtonAction="addProperty:" minusButtonAction="removeProperty:" actionsButton="YES">
-  		<popUpButtonItem title="Add all fields" target="#myadmincontroller" action="makeAllFields:"/>
-		<popUpButtonItem title="Open URL" target="#myadmincontroller" action="openURL:"/>
- 		<popUpButtonItem title="Send email" target="#myadmincontroller" action="sendEmail:"/>
+		<popUpButtonItem title="Open ressource..." target="#myadmincontroller" action="openURL:" enabledBinding="#CPOwner.propertiesController.selection.value"/>
+		<popUpButtonItem title="Multiline editor..." target="#edittextwindow" action="makeKeyAndOrderFront:"/>
+ 		<popUpButtonItem title="Add all standard fields" target="#myadmincontroller" action="makeAllFields:"/>
 	</ButtonBar>
 	</vbox>
+   </tabViewItem>
+
+
+  <tabViewItem title="Dokumente">
+
    <vbox>
+   <vspace height="10" valign="min"/>
+   <hbox>
+     <vbox width="130" halign="min">
+	<scrollView hasHorizontalScroller="NO">
+	 <tableView zebra="yes" valueBinding="#CPOwner.dokusController2">
+		<tableColumn identifier="tag" title="folder" editable="NO" width="130"/>
+	 </tableView>
+	</scrollView>
+     </vbox>
+     <vbox>
 	<scrollView hasHorizontalScroller="NO">
 	 <tableView zebra="yes" autosaveName="dokus_tv" delegate="#myadmincontroller" valueBinding="#CPOwner.dokusController">
-		<tableColumn dataView="#popupdataviewdoctags" identifier="tag" title="folder"/>
 		<tableColumn identifier="name" title="name" editable="YES"/>
+		<tableColumn identifier="date" title="date" editable="NO"/>
+		<tableColumn dataView="#popupdataviewdoctags" identifier="tag" title="verschieben in"/>
 	 </tableView>
 	</scrollView>
 	 <ButtonBar target="#myadmincontroller" plusButtonAction="uploadDoku:" minusButtonAction="deleteDoku:" actionsButton="YES">
  		<popUpButtonItem title="Download" target="#myadmincontroller" action="doDownload:"/>
 	 </ButtonBar>
+     </vbox>
+   </hbox>
    </vbox>
-   </splitView>
-   <splitView vertical="YES" autosaveName="vsplitter_middle">
+
+  </tabViewItem>
+
+   <tabViewItem title="Rechnungen">
      <vbox>
+        <vspace height="10" valign="min"/>
 	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" autosaveName="steps_tv" delegate="#myadmincontroller" valueBinding="#CPOwner.processesController">
+	 <tableView zebra="yes" autosaveName="billings_tv0" delegate="#myadmincontroller" valueBinding="#CPOwner.billingsController">
+		<tableColumn identifier="creation_date" title="creation_date" editable="YES"/>
+		<tableColumn identifier="start_date" title="due date" editable="YES"/>
+		<tableColumn identifier="end_date" title="date payed" editable="YES"/>
+		<tableColumn identifier="amount" title="EUR" editable="YES"/>
+		<tableColumn identifier="comment" title="comment" editable="YES"/>
+		<tableColumn identifier="visit_ids" title="visit_ids" editable="NO"/>
+	 </tableView>
+	</scrollView>
+	<ButtonBar target="#myadmincontroller" plusButtonAction="addBill:" minusButtonAction="removeBill:" actionsButton="YES">
+		<popUpButtonItem title="Rechnung drucken" target="#myadmincontroller" action="printBill:" enabledBinding="#CPOwner.billingsController.hasSingleRowSelection"/>
+		<popUpButtonItem title="Ausstehende Visiten abrechnen" target="#myadmincontroller" action="createBill:"/>
+  		<popUpButtonItem title="Kontoauszuege" target="#myadmincontroller" action="openKontoauszuege:"/>
+	</ButtonBar>
+      </vbox>
+    </tabViewItem>
+
+   <tabViewItem title="Zeitereignisse">
+     <vbox>
+        <vspace height="10" valign="min"/>
+	<scrollView hasHorizontalScroller="NO">
+	 <tableView zebra="yes" autosaveName="steps_tv0" delegate="#myadmincontroller" valueBinding="#CPOwner.processesController">
 		<tableColumn dataView="#popupdataviewstates" identifier="type" title="name"/>
 		<tableColumn identifier="start_date" title="start" editable="YES"/>
 		<tableColumn identifier="end_date" title="end" editable="YES"/>
@@ -70,47 +137,36 @@
 		<popUpButtonItem title="Todo liste" target="#myadmincontroller" action="createTodoList:"/>
 	</ButtonBar>
       </vbox>
+   </tabViewItem>
+
+   <tabViewItem title="Patienten/Visiten">
+     <vbox>
+        <vspace height="20" valign="min"/>
+
+   <splitView vertical="YES" autosaveName="vsplitter_pats0">
      <vbox>
 	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" autosaveName="billings_tv" delegate="#myadmincontroller" valueBinding="#CPOwner.billingsController">
-		<tableColumn identifier="creation_date" title="creation_date" editable="YES"/>
-		<tableColumn identifier="start_date" title="due date" editable="YES"/>
-		<tableColumn identifier="end_date" title="date payed" editable="YES"/>
-		<tableColumn identifier="amount" title="EUR" editable="YES"/>
-		<tableColumn identifier="comment" title="comment" editable="YES"/>
-		<tableColumn identifier="visit_ids" title="visit_ids" editable="NO"/>
-	 </tableView>
-	</scrollView>
-	<ButtonBar target="#myadmincontroller" plusButtonAction="addBill:" minusButtonAction="removeBill:" actionsButton="YES">
-		<popUpButtonItem title="Visitenrechnung erzeugen" target="#myadmincontroller" action="createBill:"/>
-  		<popUpButtonItem title="Kontoauszuege" target="#myadmincontroller" action="openKontoauszuege:"/>
-	</ButtonBar>
-      </vbox>
-   </splitView>
-   <splitView vertical="YES" autosaveName="vsplitter_pats">
-     <vbox>
-	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" id="patstv" autosaveName="patstv"  valueBinding="#CPOwner.patientsController">
+	 <tableView zebra="yes" id="patstv" autosaveName="patstv0"  valueBinding="#CPOwner.patientsController" allowsMultipleSelection="YES">
 		<tableColumn identifier="code1" title="code1" editable="YES"/>
 		<tableColumn identifier="code2" title="code2" editable="YES"/>
 		<tableColumn identifier="piz" title="piz" editable="YES"/>
-		<tableColumn identifier="name" title="name"/>
-		<tableColumn identifier="givenname" title="givenname"/>
-		<tableColumn identifier="birthdate" title="birthdate"/>
+		<tableColumn identifier="name" title="name" editable="YES"/>
+		<tableColumn identifier="givenname" title="givenname" editable="YES"/>
+		<tableColumn identifier="birthdate" title="birthdate" editable="YES"/>
 		<tableColumn identifier="state" title="state" dataView="#column_state"/>
 		<tableColumn identifier="comment" title="comment" editable="YES"/>
 		<tableColumn identifier="insertion_date" title="created" editable="YES"/>
 	 </tableView>
 	</scrollView>
         <ButtonBar target="#myadmincontroller" plusButtonAction="addPatient:" minusButtonAction="deletePatient:" actionsButton="YES">
-		<popUpButtonItem title="Download list" target="#myadmincontroller" action="downloadPatients:"/>
+		<popUpButtonItem title="Selektierte abrechnen" target="#myadmincontroller" action="createBillFiltered:" enabledBinding="#CPOwner.patientsController.hasSelection"/>
+		<popUpButtonItem title="Brief an Hausarzt" target="#myadmincontroller" action="hausarztBrief:"/>
 		<popUpButtonItem title="Open DCV" target="#myadmincontroller" action="runDCV:"/>
-		<popUpButtonItem title="BfArM SAE" target="#myadmincontroller" action="runBFARM_SAE:"/>
 	</ButtonBar>
      </vbox>
      <vbox>
 		<scrollView hasHorizontalScroller="NO">
-			 <tableView zebra="yes" id="pats2tv" autosaveName ="pats2tv"  valueBinding="#CPOwner.patientVisitsController">
+			 <tableView zebra="yes" id="pats2tv" autosaveName ="pats2tv0"  valueBinding="#CPOwner.patientVisitsController">
 				<tableColumn identifier="idvisit" title="visit" dataView="#column_idvisit"/>
 				<tableColumn identifier="visit_date" title="date" editable="YES"/>
 				<tableColumn identifier="lower_margin" title="lower"/>
@@ -121,12 +177,13 @@
 		</scrollView>
 		<ButtonBar target="#myadmincontroller" plusButtonAction="insertVisit:" minusButtonAction="removeVisit:" actionsButton="YES">
  			<popUpButtonItem title="Recalc" target="#myadmincontroller" action="recalcVisits:"/>
+ 			<popUpButtonItem title="Add all" target="#myadmincontroller" action="addDefaultVisits:"/>
  			<popUpButtonItem title="Umbuchen" target="#myadmincontroller"  action="rebookVisit:"/>
 		</ButtonBar>
     </vbox>
      <vbox>
 		<scrollView hasHorizontalScroller="NO">
-			 <tableView zebra="yes" id="patdatestv" autosaveName="patdatestv" target="#myadmincontroller" doubleAction="bookInDocscal:" valueBinding="#CPOwner.visitDatesController">
+			 <tableView zebra="yes" id="patdatestv" autosaveName="patdatestv0" target="#myadmincontroller" doubleAction="bookInDocscal:" valueBinding="#CPOwner.visitDatesController">
 				<tableColumn identifier="startdate" title="visit proposals"/>
 				<tableColumn identifier="dcid" title="dcid"/>
 	 		</tableView>
@@ -135,25 +192,23 @@
  		<popUpButtonItem title="Buchen" target="#myadmincontroller" action="bookInDocscal:"/>
 	</ButtonBar>
      </vbox>
-     <vbox>
-		<scrollView hasHorizontalScroller="NO">
-			 <tableView zebra="yes" id="patdatesinfotv" autosaveName="patdatesinfotv"  valueBinding="#CPOwner.tagesinfosController">
-				<tableColumn identifier="summary" title="info"/>
-	 		</tableView>
-		</scrollView>
-     </vbox>
    </splitView>
- </splitView>
+  </vbox>
+ </tabViewItem>
+
+ </tabView>
+</splitView>
 </vbox>
 </window>
 
 <window id="addtagswindow" visible="NO" width="400" height="600">
    <vbox>
 	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" id="addtagstv" autosaveName="addtagstv" valueBinding="#CPOwner.propertiesCatController" allowsMultipleSelection="YES">
+	 <tableView zebra="yes" id="addtagstv" autosaveName="addtagstv0" valueBinding="#CPOwner.propertiesCatController" allowsMultipleSelection="YES">
 		<tableColumn identifier="name" title="name" editable="YES"/>
 		<tableColumn identifier="ordering" title="order" editable="YES"/>
 		<tableColumn identifier="type" title="type" editable="YES"/>
+		<tableColumn identifier="default_value" title="default" editable="YES"/>
 	 </tableView>
 	</scrollView>
 	<hbox>
@@ -167,7 +222,7 @@
 <window id="annotationswindow" visible="NO" width="280" height="200">
    <vbox>
 	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" id="annotationstv" autosaveName="annotationstv" valueBinding="#CPOwner.trialPropAnnotationsController">
+	 <tableView zebra="yes" id="annotationstv" autosaveName="annotationstv0" valueBinding="#CPOwner.trialPropAnnotationsController">
 		<tableColumn identifier="key" title="key" editable="YES"/>
 		<tableColumn identifier="value" title="value" editable="YES"/>
 	 </tableView>
@@ -189,6 +244,13 @@
   </vbox>
 </window>
 
+<window title="Edit text" id="edittextwindow" x="260" y="300" width="400" height="800" visible="NO"  resizable="YES">
+	<scrollView hasHorizontalScroller="NO" width="400" height="800">
+            <textView editable="YES" valueBinding="#CPOwner.propertiesController.selection.value" continuousBinding="YES" backgroundColor="white"/>
+	</scrollView>
+</window>
+
+
 <window visible="NO">
   <popUpButton width="200" id="popupdataview" itemsBinding="#CPOwner.personnelController.arrangedObjects.name"/>
   <popUpButton width="200" id="popupdataviewstates" itemsBinding="#CPOwner.statesController.arrangedObjects.name"/>
@@ -202,7 +264,7 @@
  <window id="accountswindow" visible="NO" width="400" height="600">
    <vbox>
 	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" id="accountswindowtv" autosaveName="accountswindowtv" valueBinding="#CPOwner.transactionsController" allowsMultipleSelection="YES">
+	 <tableView zebra="yes" id="accountswindowtv" autosaveName="accountswindowtv0" valueBinding="#CPOwner.transactionsController" allowsMultipleSelection="YES">
 		<tableColumn identifier="date_transaction" title="date"/>
 		<tableColumn identifier="amount_change" title="amount"/>
 		<tableColumn identifier="description" title="description" editable="YES"/>

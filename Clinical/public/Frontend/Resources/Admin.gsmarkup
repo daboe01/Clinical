@@ -7,11 +7,12 @@
 <adminController id="myadmincontroller"/>
 
 
-<window id="allgroupswindow" title="Groups" visible="YES"  x="5" y="5" width="300" height="300">
+<window id="allgroupswindow" title="Groups" visible="YES"  x="5" y="35" width="300" height="300">
    <vbox>
 	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" autosaveName="allgroups_tv" valueBinding="#CPOwner.groupsController">
+	 <tableView zebra="yes" autosaveName="allgroups_tv" valueBinding="#CPOwner.groupsControllerAll">
 		<tableColumn identifier="name" title="name" editable="YES"/>
+		<tableColumn identifier="websitename" title="websitename" editable="YES"/>
 		<tableColumn identifier="sprechstunde" title="sprechstunde" editable="YES"/>
 	 </tableView>
 	</scrollView>
@@ -20,7 +21,7 @@
 </window>
 
 
-<window id="personnelwindow" visible="YES"  x="425" y="5" width="500" height="300">
+<window id="personnelwindow" visible="YES"  x="425" y="35" width="500" height="300">
   <hbox>
    <vbox>
 	<scrollView hasHorizontalScroller="NO">
@@ -72,7 +73,7 @@
 
 <window visible="NO">
  <vbox>
-  <popUpButton width="200" id="popupdataviewgroup" itemsBinding="#CPOwner.groupsController.arrangedObjects.name"/>
+  <popUpButton width="200" id="popupdataviewgroup" itemsBinding="#CPOwner.groupsControllerAll.arrangedObjects.name"/>
  </vbox>
 </window>
 
