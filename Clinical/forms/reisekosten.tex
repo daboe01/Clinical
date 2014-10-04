@@ -1,0 +1,75 @@
+\documentclass{scrreprt}
+\usepackage[A4]{geometry}
+\usepackage[ngerman]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{wallpaper}
+\usepackage[absolute]{textpos}
+\usepackage{tabularx} 
+\usepackage{pst-barcode}
+
+
+\renewcommand{\familydefault}{\sfdefault} 
+\usepackage{helvet} 
+
+\pagenumbering{~}
+
+
+\begin{document}
+\baselineskip15pt
+\setlength{\headheight}{7\baselineskip}
+\setlength{\oddsidemargin}{-3mm} 
+\addtolength{\textwidth}{2cm}
+\ThisCenterWallPaper{1}{<copytex:briefkopfAdresszeile3.pdf>}
+
+\noindent Herrn\\
+\noindent Gernot Marenbach\\
+\noindent  Drittmittelabteilung (G1) \\
+\noindent Im Hause\\
+\\
+
+
+\hspace{12.5cm} <today>\\ 
+
+\noindent Fahrtkostenerstattung bei Patienten, die an der klinischen Studie {\it <Voller Titel>} teilnehmen\\
+
+\noindent  Sehr geehrter Herr Marenbach,\\
+
+\noindent wir bitten um die Erstattung der u. g. Fahrtkosten von <PAT_anrede>  <PAT_vorname> <PAT_name>, geb. am <PAT_geburtsdatum>  "uber unser Drittmittelkonto  <Drittmittelnummer>.
+\begin{center}
+{\scriptsize
+\begin{tabular}{p{2cm}p{2.8cm}p{1.5cm}p{2cm}p{2cm}p{3cm}}
+Name &  Anschrift&  Fahrtstrecke hin und zur"uck & BIC & Bank & IBAN \tabularnewline
+\hline
+<PAT_name> (<PAT_piz>)& <PAT_anschrift>  <PAT_plz>   <PAT_ort> & <travel_distance> km& <bic>& <bank>& <iban>
+\tabularnewline
+\hline
+\end{tabular}
+
+\begin{pspicture}(50mm,30mm)
+\psbarcode[scalex=0.8,scaley=0.8]{<PAT_piz>}{includetext}{code39}
+\end{pspicture}
+\begin{pspicture}(60mm,30mm)
+\psbarcode[scalex=0.8,scaley=0.8]{<iban>}{includetext}{code39}
+\end{pspicture}
+
+}
+\end{center}
+
+\noindent <PAT_anrede>  <PAT_vorname> <PAT_name> erschien zu den folgenden Studienvisiten:
+\noindent <foreach:visits sep="; ">
+<visit> (<visit_date>): Fahrtkosten <reisekosten> </foreach:visits>
+
+\noindent Wir bitten Sie daher um  "Uberweisung von <reisekosten_sum> auf das oben genannte Konto von <PAT_anrede>  <PAT_vorname> <PAT_name>.\\
+
+\noindent Mit freundlichen Gr"u"sen, \\ 
+
+\hspace*{-7mm}  \begin{tabularx}{20cm}{XX}
+<_Loginname_>\\ 
+<_Loginrole_> \\ 
+\end{tabularx}
+
+
+
+\end{document}

@@ -41,7 +41,8 @@ warn Dumper $objc;
 	my $tmpfilename=TempFileNames::tempFileName('/tmp/clinical','');
 	TempFileNames::writeFile($tmpfilename.'.tex',$str);
 	$main::ENV{PATH} = '/usr/texbin'; 								#untaint
-	system('cd /tmp; /usr/texbin/pdflatex --interaction=batchmode  '.$tmpfilename.'.tex ');
+	# system('cd /tmp; /usr/texbin/pdflatex --interaction=batchmode  '.$tmpfilename.'.tex ');
+    system('cd /tmp; export PATH="/usr/local/bin:$PATH"; /usr/texbin/xelatex --interaction=batchmode '.$tmpfilename.'.tex ');
 	return $tmpfilename.'.pdf';
 }
 

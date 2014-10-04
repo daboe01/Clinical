@@ -13,9 +13,10 @@
 	 <tableView zebra="yes" autosaveName="trialpersonnel2_tv" valueBinding="#CPOwner.personnelController">
 		<tableColumn identifier="ldap" title="ldap" editable="YES"/>
 		<tableColumn identifier="name" title="name" editable="YES"/>
-		<tableColumn identifier="function" title="function" editable="YES"/>
 		<tableColumn identifier="email" title="email" editable="YES"/>
 		<tableColumn identifier="tel" title="tel" editable="YES"/>
+		<tableColumn identifier="abrechnungsname" title="abrechnungsname" editable="YES"/>
+		<tableColumn identifier="level" title="level" editable="YES"/>
 	 </tableView>
 	</scrollView>
 	<ButtonBar target="#CPOwner.personnelController" plusButtonAction="insert:" minusButtonAction="remove:"/>
@@ -32,7 +33,7 @@
 	<scrollView hasHorizontalScroller="NO">
 	 <tableView zebra="yes" autosaveName="pers_props_tv" delegate="#mycontroller" valueBinding="#CPOwner.personnelPropController">
 		<tableColumn identifier="property.name" title="name"/>
-		<tableColumn identifier="value" title="value0" editable="YES"/>
+		<tableColumn identifier="value" title="value" editable="YES"/>
 	 </tableView>
 	</scrollView>
 	<ButtonBar target="#mycontroller" plusButtonAction="addProperty:" minusButtonAction="removeProperty:"/>

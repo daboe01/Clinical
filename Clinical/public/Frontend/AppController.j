@@ -25,7 +25,6 @@ BaseURL=HostURL+"/";
 
 @implementation SessionStore : FSStore 
 
-
 -(CPURLRequest) requestForAddressingObjectsWithKey: aKey equallingValue: (id) someval inEntity:(FSEntity) someEntity
 {	var request = [CPURLRequest requestWithURL: [self baseURL]+"/"+[someEntity name]+"/"+aKey+"/"+someval+"?session="+ window.G_SESSION];
 	return request;
@@ -38,8 +37,28 @@ BaseURL=HostURL+"/";
 {	return [CPURLRequest requestWithURL: [self baseURL]+"/"+[someEntity name]+"?session="+ window.G_SESSION ];
 }
 
-
 @end
+
+@implementation CPButtonBar(addbutton)
+- (CPButton) addButtonWithImageName:(CPString) aName target:(id) aTarget action:(SEL) aSelector
+{   var sendimage=[[CPImage alloc] initWithContentsOfFile: [CPString stringWithFormat:@"%@/%@", [[CPBundle mainBundle] resourcePath], aName]];
+    var newbutton = [[CPButton alloc] initWithFrame:CGRectMake(0, 0, 35, 25)];
+    [newbutton setBordered:NO];
+    [newbutton setImage:sendimage];
+    [newbutton setImagePosition:CPImageOnly];
+    [newbutton setTarget:aTarget];
+    [newbutton setAction:aSelector];
+    [self setButtons: [[self buttons] arrayByAddingObject:newbutton] ];
+    return newbutton;
+}
+@end
+
+@implementation FSArrayController(targetaction)
+- (void) reload:(id)sender
+{   [self reload];
+}
+@end
+
 
 @implementation CPNull(length)
 -(unsigned) length {return 0;}
@@ -52,9 +71,11 @@ BaseURL=HostURL+"/";
 	id	propertiesController;
 	id	processesController;
 	id	dokusController;
+	id	dokusController2;
 	id	personnelController;
 	id	trialpersonnelController;
 	id	groupsController;
+	id	groupsControllerAll;
 	id	rolesController;
 	id	statesController;
 	id	doctagsController;
@@ -68,12 +89,20 @@ BaseURL=HostURL+"/";
 	id	visitDatesController;
 	id	statusController;
 	id	tagesinfosController;
-	id  trialPropAnnotationsController;
+	id      trialPropAnnotationsController;
 	id	billingsController;
 	id	accountsController;
 	id	transactionsController;
 	id	personnelCostsController;
 	id	balancedController;
+	id	proceduresCatController;
+	id	proceduresVisitController;
+	id	groupPersonnelController;
+
+	id	addTXWindow;
+	id	accountsTV;
+	id	addTxTV;
+	id	accountPopover;
 
 	id mainController @accessors;
 }
@@ -95,7 +124,9 @@ BaseURL=HostURL+"/";
 	var re = new RegExp("t=([^&#]+)");
 	var m = re.exec(document.location);
 	if(m) mainFile=m[1];
+	document.title=mainFile;
 	[CPBundle loadRessourceNamed: mainFile owner: self ];
+	[[[CPApp mainWindow] delegate] _performPostLoadInit];
 }
 
 -(void) delete:sender
@@ -103,14 +134,76 @@ BaseURL=HostURL+"/";
 }
 
 -(void) unsetReferenceVisit:sender
-{	[[visitsController selectedObject] setValue: [CPNull null] forKey:"idreference_visit"];
+{
+	[[visitsController selectedObject] setValue: [CPNull null] forKey:"idreference_visit"];
 }
--(void) insertTransaction: sender
-{	[transactionsController insert:sender];
-   [[transactionsController selectedObject] reload]
+
+// Konto-stuff (hat keinen eigenen controller)
+
+-(void) makeKorrekturbuchung: sender
+{
+	if( !accountPopover)
+	{	 accountPopover=[CPPopover new];
+		[accountPopover setDelegate:self];
+		[accountPopover setAnimates:YES];
+		[accountPopover setBehavior: CPPopoverBehaviorApplicationDefined ];
+		[accountPopover setAppearance: CPPopoverAppearanceMinimal];
+		var myViewController=[CPViewController new];
+		[accountPopover setContentViewController: myViewController];
+		[myViewController setView: [addTXWindow contentView]];
+	
+	}
+	var sel=[[accountsTV selectedRowIndexes] firstIndex];
+	var rect= [accountsTV _rectOfRow: sel checkRange:NO];
+	[accountPopover showRelativeToRect:rect ofView: accountsTV preferredEdge: nil];
+	[[addTxTV window] makeFirstResponder: addTxTV]	
 }
--(void) deleteTransaction: sender
-{	[transactionsController remove:sender];
+
+-(void) closeKorrekturbuchung: sender
+{   [accountPopover close];
+    [balancedController reload];
 }
+
+-(void) duplicateKoKaVisit: sender
+{   var idoldvisit=[visitsController valueForKeyPath: "selection.id"];
+    [visitsController insert: self];
+    var idnewvisit=[visitsController valueForKeyPath: "selection.id"];
+    var myreq=[CPURLRequest requestWithURL: BaseURL+"CT/copyover_koka_visit/"+idoldvisit+"/"+idnewvisit];
+    [CPURLConnection sendSynchronousRequest: myreq returningResponse: nil];
+
+    [proceduresVisitController reload];
+}
+
+-(void) reorderVisits: sender
+{
+    var idtrial=[[CPApp delegate].trialsController valueForKeyPath:"selection.id"];
+    var myreq=[CPURLRequest requestWithURL: BaseURL+"CT/reorder_visits/"+idtrial];
+    [CPURLConnection sendSynchronousRequest: myreq returningResponse: nil];
+    [visitsController reload];
+}
+-(void) reloadVisits: sender
+{
+    [visitsController reload];
+}
+
+
+// FIXME: this stuff leaks...
+-(void) runPersonnel: sender
+{   [[CPApp mainWindow] close];
+    [CPBundle loadRessourceNamed: "Personnel.gsmarkup" owner:self];
+}
+-(void) runAccounts: sender
+{   [[CPApp mainWindow] close];
+    [CPBundle loadRessourceNamed: "Accounts.gsmarkup" owner:self];
+}
+-(void) runAdmin: sender
+{   [[CPApp mainWindow] close];
+    [CPBundle loadRessourceNamed: "Admin.gsmarkup" owner:self];
+}
+-(void) runOperations: sender
+{   [[CPApp mainWindow] close];
+    [CPBundle loadRessourceNamed: "Operations.gsmarkup" owner:self];
+}
+
 @end
 

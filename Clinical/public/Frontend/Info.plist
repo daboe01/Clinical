@@ -5,14 +5,7 @@
 	<key>CPApplicationDelegateClass</key>
 	<string>AppController</string>
 	<key>CPBundleName</key>
-	<string>Cellfinder2</string>
-	<key>ViewerClasses</key>
-	<array>
-		<string>ManualStacks</string>
-		<string>Angulation</string>
-		<string>SimpleDotting</string>
-		<string>AutoDotting</string>
-	</array>
+	<string>Clinical</string>
 	<key>CPPrincipalClass</key>
 	<string>CPApplication</string>
 </dict>

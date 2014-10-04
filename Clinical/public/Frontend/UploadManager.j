@@ -50,9 +50,8 @@ var _sharedUploadManager;
 
 - (void)cup:(Cup)aCup uploadDidCompleteForFile:(CupFile)aFile
 {
-	[[appController.trialsController selectedObject] willChangeValueForKey:"dokus"];
-	 [appController.trialsController._entity._relations makeObjectsPerformSelector:@selector(_invalidateCache)];
-	[[appController.trialsController selectedObject] didChangeValueForKey:"dokus"];
+    [[CPApp delegate].dokusController reload];
+    [[CPApp delegate].dokusController2 reload];
 
 }
 

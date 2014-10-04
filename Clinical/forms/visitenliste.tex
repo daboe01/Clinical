@@ -1,0 +1,31 @@
+\documentclass{scrreprt}
+\usepackage[A4]{geometry}
+\usepackage[ngerman]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{wallpaper}
+\usepackage[absolute]{textpos}
+\usepackage{tabularx} 
+
+
+\renewcommand{\familydefault}{\sfdefault} 
+\usepackage{helvet} 
+
+
+\begin{document}
+
+\noindent Visitenplan {\it <Voller Titel>} vom <today> f"ur <code1> <code2><PAT_piz> \\
+
+\begin{tabular}{lllllll}
+visit &  date&  lower  & center & upper & service& comment \tabularnewline
+\hline
+ <foreach:visits sep=" ">
+<visit> &<visit_date>& <lower_margin>  &<center_margin>   &<upper_margin> & <missing_service> & <comment>\\
+\tabularnewline
+</foreach:visits>
+\hline
+\end{tabular}
+
+
+\end{document}
