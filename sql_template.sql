@@ -2332,7 +2332,6 @@ SELECT pg_catalog.setval('trial_process_step_id_seq', 798, true);
 --
 
 COPY trial_properties (id, idtrial, idproperty, value) FROM stdin;
-3	\N	3	ZVS20130912a
 5262	191	18	\N
 5263	191	2	\N
 5264	191	1	\N
