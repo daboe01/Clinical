@@ -1,12 +1,13 @@
 Clinical
 ========
 
-Clinical trials administration made easy
+Clinical trials administration system
 
 Features include:
  * Clinical trials database
  * Document repository
  * Visit management
+ * Cost calculation
  * Team calendar
  * Full text search
  * Password manager
