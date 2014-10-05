@@ -735,7 +735,7 @@ get '/CT/travel_distance/:idpatient' => [idpatient =>qr/[0-9]+/] => sub
     my $patient=$self->getObjectFromTable('patients', $idpatient);
     my $address=$patient->{street}.' '.$patient->{town};
     $address=~s/[\.0-9 -]+/+/ogs;
-    my $url="http://maps.googleapis.com/maps/api/distancematrix/json?origins=".lc $address."&destinations=killianstr+freiburg";
+    my $url="http://maps.googleapis.com/maps/api/distancematrix/json?origins=".lc $address."&destinations=meinestr+meinestadt";
     my $data=$ua->get($url)->res->body;
         
     my $json_decoder= Mojo::JSON->new;
