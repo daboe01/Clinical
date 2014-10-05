@@ -2029,7 +2029,7 @@ SELECT pg_catalog.setval('group_assignments_id_seq', 91, true);
 --
 
 COPY groups_catalogue (id, name, sprechstunde, websitename) FROM stdin;
-1	AG1	HH-Studien	<a href="http://www</a>
+1	AG1	Studiensprechstunde	<a href="http://www..."</a>
 \.
 
 
