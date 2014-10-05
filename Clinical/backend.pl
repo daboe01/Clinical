@@ -504,8 +504,8 @@ post '/CT/booking/:piz/:dcid/:idvisit' => [piz=>qr/[0-9]+/o, dcid=>qr/[0-9]+/o, 
 
 helper LDAPChallenge => sub { my ($self, $name, $password)=@_;
 return 1;
-    my $ldap = Net::LDAP->new( 'ldap://ldap.ukl.uni-freiburg.de' );
-	my $msg = $ldap->bind( 'uid='.$name.', ou=people, dc=ukl, dc=uni-freiburg, dc=de', password => $password);
+    my $ldap = Net::LDAP->new( 'ldap://ldap.ukl.uni-xxxx.de' );
+	my $msg = $ldap->bind( 'uid='.$name.', ou=people, dc=ukl, dc=xxx, dc=de', password => $password);
 	return $msg->code==0;
 };
 
