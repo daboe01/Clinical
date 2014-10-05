@@ -10,7 +10,6 @@
 
 @import <Foundation/CPObject.j>
 @import <Renaissance/Renaissance.j>
-@import "DocsCalController.j"
 @import "CalendarController.j"
 
 
@@ -422,8 +421,8 @@
 }
 
 -(void) runDCV: sender
-{	var patController=[CPApp delegate].patientsController;
-	var dcv=[[DocsCalController alloc] initWithPIZ:[[patController selectedObject] valueForKeyPath:"piz"]];
+{
+	window.open("http://augimageserver/Viewer/?"+ [[[CPApp delegate].patientsController selectedObject] valueForKeyPath:"piz"], 'docscal_window');
 }
 -(void) hausarztBrief:sender
 {   [self printDocumentNamed:"hausarztbrief" withPIZ:"YES"];
