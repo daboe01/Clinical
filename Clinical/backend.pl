@@ -746,39 +746,6 @@ get '/CT/travel_distance/:idpatient' => [idpatient =>qr/[0-9]+/] => sub
     $self->render(text => $dist);
 };
 
-###################################################################
-# docscal interface
-
-get '/CT/DC/:download/dir/:piz'=> [download =>qr/[a-z]+/, piz =>qr/\d{8}/] => sub
-{	my $self=shift;
-	my $piz= $self->param("piz");
-	my $download= $self->param("download");
-	my $ua = Mojo::UserAgent->new;
-	my $data=$ua->get('http://augimageserver/'.$download.'/'.$piz.'?peek=1')->res->body;
-	$self->render( text => $data);
-};
-get '/CT/DC/:download/dir/:piz/:type' => [download =>qr/[a-z]+/, piz =>qr/\d{8}/] => sub
-{	my $self=shift;
-	my $piz= $self->param("piz");
-	my $download= $self->param("download");
-	my $type= $self->param("type");
-	my $ua = Mojo::UserAgent->new;
-	my $data=$ua->get('http://augimageserver/'.$download.'/'.$piz.'?dir='.$type)->res->body;
-	$self->render( text=> $data);
-};
-get '/CT/DC/:download/fetch/:name/:scale'=> [download =>qr/[a-z]+/, name =>qr/.+/] => sub
-{	my $self=shift;
-	my $name= $self->param("name");
-	my $download= $self->param("download");
-	my $scale= $self->param("scale");
-	my $ua = Mojo::UserAgent->new;
-	my $data=$ua->get("http://augimageserver/'.$download.'/$name?size=$scale")->res->body;
-	$self->render(data=> $data , format =>'jpg' );
-};
-
-###################################################################
-# to be factored out
-#<!> fixme: this ugly stuff should be factored out in a driver module
 
 helper requiresProperty => sub { my ($self, $id, $property)=@_;
 	my $dbh=$self->db;		
@@ -851,6 +818,10 @@ post '/CT/make_bill/:idtrial'=> [idtrial =>qr/\d+/] => sub
 	$sth->execute(@bind);
     $self->render( text=> 'OK' );
 };
+
+###################################################################
+# to be factored out
+#<!> fixme: this ugly stuff should be factored out in a driver module
 
 get '/CT/print_bill/:idbill'=> [idbill =>qr/\d+/] => sub
 {	my $self=shift;
