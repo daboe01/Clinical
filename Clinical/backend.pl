@@ -253,9 +253,11 @@ put '/DBI/:table/:pk/:key'=> [key=>qr/\d+/] => sub
     my $jsonR   = $json_decoder->decode( $self->req->body );
 
     my $types = $self->getTypeHashForTable($table);
+    warn Dumper $types;
+    warn $jsonR;
     for (keys %$jsonR)    ## support for nullifying dates and integers with empty string or special string NULL
     {
-        $jsonR->{$_}= ($jsonR->{$_} =~/(^NULL$)|(^\s*$)/o && $types->{$_} =~/integer|date|time/o )? undef : $jsonR->{$_} ;
+        $jsonR->{$_}= ($jsonR->{$_} =~/(^NULL$)|(^\s*$)/o && $types->{$_} !~/text|varchar/o )? undef : $jsonR->{$_} ;
     }
 
     my($stmt, @bind) = $sql->update($table, $jsonR, {$pk=>$key});
