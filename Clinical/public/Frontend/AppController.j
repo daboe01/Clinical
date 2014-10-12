@@ -64,6 +64,23 @@ BaseURL=HostURL+"/";
 -(unsigned) length {return 0;}
 @end
 
+@implementation CPDate(shortDescription)
+- (CPString)shortDescription
+{
+    return [CPString stringWithFormat:@"%04d-%02d-%02d", self.getFullYear(), self.getMonth() + 1, self.getDate()];
+}
+- (id)initWithShortString:(CPString)description
+{
+    var format = /(\d{4})-(\d{2})-(\d{2})/,
+        d = description.match(new RegExp(format));
+    return new Date(d[1], d[2] - 1, d[3]);
+}
+- (CPString)stringValue
+{
+    return [self shortDescription]
+}
+@end
+
 @implementation AppController : CPObject
 {	id	store @accessors;	
 
@@ -98,6 +115,7 @@ BaseURL=HostURL+"/";
 	id	proceduresCatController;
 	id	proceduresVisitController;
 	id	groupPersonnelController;
+    id  autocompletionController;
 
 	id	addTXWindow;
 	id	accountsTV;

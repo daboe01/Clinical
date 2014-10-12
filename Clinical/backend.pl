@@ -200,6 +200,8 @@ helper fetchFromTable => sub { my ($self, $table, $sessionid, $where)=@_;
         my $order_by=[];
         $order_by= $autosorting->{$table} if exists $autosorting->{$table};
         my($stmt, @bind) = $sql->select( -columns  => [-distinct => @cols], -from => $table, -where=> $where, -order_by=> $order_by);
+warn $stmt;
+warn @bind;
         my $sth = $self->db->prepare($stmt);
         $sth->execute(@bind);
         

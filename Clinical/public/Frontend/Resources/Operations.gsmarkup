@@ -57,13 +57,14 @@
 	<vbox>
 	<vspace height="10" valign="min"/>
 	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" id="propstv" autosaveName="props_tv0" delegate="#myadmincontroller" target="#myadmincontroller" doubleAction="openAnnotation:" valueBinding="#CPOwner.propertiesController">
-		<tableColumn identifier="property.name" title="name"/>
+	 <tableView zebra="yes" id="propstv" autosaveName="props_tv0" delegate="#myadmincontroller" valueBinding="#CPOwner.propertiesController">
+		<tableColumn identifier="property.name" title="name" editable="YES"/>
 		<tableColumn identifier="value" title="val" editable="YES"/>
 	 </tableView>
 	</scrollView>
 	<ButtonBar target="#myadmincontroller" plusButtonAction="addProperty:" minusButtonAction="removeProperty:" actionsButton="YES">
 		<popUpButtonItem title="Open ressource..." target="#myadmincontroller" action="openURL:" enabledBinding="#CPOwner.propertiesController.selection.value"/>
+		<popUpButtonItem title="Open anntations..." target="#myadmincontroller" action="openAnnotation:" enabledBinding="#CPOwner.propertiesController.selection.value"/>
 		<popUpButtonItem title="Multiline editor..." target="#edittextwindow" action="makeKeyAndOrderFront:"/>
  		<popUpButtonItem title="Add all standard fields" target="#myadmincontroller" action="makeAllFields:"/>
 	</ButtonBar>
@@ -125,7 +126,7 @@
      <vbox>
         <vspace height="10" valign="min"/>
 	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" autosaveName="steps_tv0" delegate="#myadmincontroller" valueBinding="#CPOwner.processesController">
+	 <tableView zebra="yes" id="timetv" autosaveName="steps_tv0" delegate="#myadmincontroller" valueBinding="#CPOwner.processesController">
 		<tableColumn dataView="#popupdataviewstates" identifier="type" title="name"/>
 		<tableColumn identifier="start_date" title="start" editable="YES"/>
 		<tableColumn identifier="end_date" title="end" editable="YES"/>
@@ -294,6 +295,15 @@
 </window>
 
 
+<window x="5" y="35" width="400" height="200" visible="NO">
+	  <scrollView width="200" halign ="min" hasHorizontalScroller="NO">
+	    <tableView zebra="yes" valueBinding="#CPOwner.autocompletionController">
+               <tableColumn identifier="value" title="value" editable="NO"/>
+            </tableView>
+	  </scrollView>
+</window>
+
+
 </objects>
 
 <connectors>
@@ -315,6 +325,7 @@
 	<outlet source="myadmincontroller" target="travelwindow" label="travelWindow"/>
 	<outlet source="myadmincontroller" target="mainbuttonbar" label="mainButtonBar"/>
 	<outlet source="myadmincontroller" target="visitsbuttonbar" label="visitsButtonBar"/>
+	<outlet source="myadmincontroller" target="timetv" label="timeTV"/>
 </connectors>
 
 

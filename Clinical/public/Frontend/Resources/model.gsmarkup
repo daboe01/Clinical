@@ -47,6 +47,7 @@
   <arrayController id="balanced_controller" entity="accounts_balanced" valueBinding="accounts_controller.selection.balanced" sortDescriptor="by_date_transaction"/>
   <arrayController id="procedures_catalogue_controller" entity="procedures_catalogue" autoFetch="YES" sortDescriptor="by_name"/>
   <arrayController id="procedures_visit_controller" entity="visit_procedures" valueBinding="visits_controller.selection.procedures"/>
+  <arrayController id="autocompletion_controller" entity="trial_properties" valueBinding="trial_properties_controller.selection.autocompletition"/>
 </objects>
 
 <entities>
@@ -154,6 +155,7 @@
 		<relationship type="toOne" name="property" bindingColumn="idproperty" target="trial_properties_catalogue"/>
 		<relationship type="toOne" name="trial" bindingColumn="idtrial" target="all_trials"/>
 		<relationship type="toMany" name="annotations" targetColumn="idfield" target="trial_property_annotations"/>
+		<relationship type="toMany" name="autocompletition" bindingColumn="idproperty" targetColumn="idproperty" target="trial_properties"/>
 	</entity>
 	<entity id="trial_property_annotations" store="#CPOwner.store">
 		<column name="id" primaryKey="YES"/>
@@ -361,7 +363,7 @@
 	<outlet source="#CPOwner" target="procedures_catalogue_controller" label="proceduresCatController"/>
 	<outlet source="#CPOwner" target="procedures_visit_controller" label="proceduresVisitController"/>
 	<outlet source="#CPOwner" target="group_personnel_controller" label="groupPersonnelController"/>
-
+	<outlet source="#CPOwner" target="autocompletion_controller" label="autocompletionController"/>
 </connectors>
 
 
