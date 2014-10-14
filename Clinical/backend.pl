@@ -64,12 +64,12 @@ get '/CT/download/:idtrial/:name' => [idtrial=>qr/[0-9]+/, name=>qr/.+/] => sub 
 };
 
 get '/DBI/documents'=> sub
-{    my $self = shift;
+{   my $self = shift;
     my $suffix=    $self->param("suffix");
     $self->render( json=> $self->getLSDocuments($suffix) );
 };
 get '/DBI/doctags_catalogue'=> sub
-{    my $self = shift;
+{   my $self = shift;
     my $suffix=    $self->param("suffix");
     my %tags=();
     $tags{$_->{tag}}='' for $self->getLSDocuments($suffix);
@@ -77,7 +77,7 @@ get '/DBI/doctags_catalogue'=> sub
     $self->render( json=> \@ret);
 };
 get '/DBI/documents/idtrial/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
-{    my $self = shift;
+{   my $self = shift;
     my $suffix=    $self->param("suffix");
     my $pk  = $self->param('pk');
     my @dir= grep {$_->{idtrial} eq $pk} $self->getLSDocuments($suffix);
@@ -86,14 +86,14 @@ get '/DBI/documents/idtrial/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
 
 # unused?!
 get '/DBI/documents/id/:pk' => [pk=>qr/[a-z0-9\s_ ]+/i] => sub
-{    my $self = shift;
+{   my $self = shift;
     my $suffix=    $self->param("suffix");
     my $pk  = $self->param('pk');
     my @dir= grep {$_->{id} eq $pk} $self->getLSDocuments($suffix);
     $self->render( json=> \@dir );
 };
 get '/DBI/documents_tag_unique/idtrial/:pk' => [pk=>qr/[a-z0-9\s]+/i] => sub
-{    my $self = shift;
+{   my $self = shift;
     my $pk  = $self->param('pk');
     my @dir= grep {$_->{idtrial} eq $pk} $self->getLSDocuments();
     my %seen;
@@ -104,7 +104,7 @@ get '/DBI/documents_tag_unique/idtrial/:pk' => [pk=>qr/[a-z0-9\s]+/i] => sub
 
 # update docs
 put '/DBI/documents/id/:key'=> [key=>qr/.+/] => sub
-{    my $self    = shift;
+{   my $self    = shift;
     my $json_decoder= Mojo::JSON->new;
     my $jsonR   = $json_decoder->decode( $self->req->body );
     my $key        = $self->param('key');
@@ -120,7 +120,7 @@ put '/DBI/documents/id/:key'=> [key=>qr/.+/] => sub
 };
 # delete doc
 del '/DBI/documents/id/:key'=> [key=>qr/.+/] => sub
-{    my $self    = shift;
+{   my $self    = shift;
     my $key        = $self->param('key');
     my $suffix=    $self->param("suffix");
 
@@ -212,7 +212,7 @@ helper fetchFromTable => sub { my ($self, $table, $sessionid, $where)=@_;
 
 # fetch all entities
 get '/DBI/:table'=> sub
-{    my $self = shift;
+{   my $self = shift;
     my $table  = $self->param('table');
     my $sessionid  = $self->param('session');
     my $res=$self->fetchFromTable($table, $sessionid, {});
@@ -221,7 +221,7 @@ get '/DBI/:table'=> sub
 
 # fetch entities by (foreign) key
 get '/DBI/:table/:col/:pk' => [col=>qr/[a-z_0-9\s]+/, pk=>qr/[a-z0-9\s\-]+/i] => sub
-{    my $self = shift;
+{   my $self = shift;
     my $table  = $self->param('table');
     my $pk  = $self->param('pk');
     my $col  = $self->param('col');
@@ -235,14 +235,14 @@ helper getTypeHashForTable => sub { my ($self, $table)=@_;
     my $info = $sth->fetchall_arrayref({});
     my $ret={};
     foreach (@$info)
-    {    $ret->{$_->{COLUMN_NAME}}=$_->{TYPE_NAME};
+    {   $ret->{$_->{COLUMN_NAME}}=$_->{TYPE_NAME};
     }
     return $ret;
 };
         
 # update
 put '/DBI/:table/:pk/:key'=> [key=>qr/\d+/] => sub
-{    my $self    = shift;
+{   my $self    = shift;
     my $table    = $self->param('table');
     my $pk        = $self->param('pk');
     my $key        = $self->param('key');
@@ -296,7 +296,7 @@ helper getObjectFromTable => sub { my ($self, $table, $id, $dbh_dc)=@_;
         
 # insert
 post '/DBI/:table/:pk'=> sub
-{    my $self    = shift;
+{   my $self    = shift;
     my $table    = $self->param('table');
     my $pk        = $self->param('pk');
     my $sql = SQL::Abstract->new;
@@ -313,7 +313,7 @@ post '/DBI/:table/:pk'=> sub
 
 # delete
 del '/DBI/:table/:pk/:key'=> [key=>qr/\d+/] => sub
-{    my $self    = shift;
+{   my $self    = shift;
     my $table    = $self->param('table');
     my $pk        = $self->param('pk');
     my $key        = $self->param('key');
@@ -339,14 +339,14 @@ helper get_XLS_for_arr => sub { my ($self, $ret, $hr)=@_;
     my ($i,$j);
     # titelzeile in bold
     foreach my $currCol (@cols)
-    {    $currCol=~s/\=//ogs;
+    {   $currCol=~s/\=//ogs;
         $worksheet->write(0, $j, $currCol, $format);
         $j++;
     } $i=1;
     foreach my $currRow   ( @{$ret} )
-    {    $j=0;
+    {   $j=0;
         foreach my $currCol (@$currRow)
-        {    $currCol=~s/\=//ogs;
+        {   $currCol=~s/\=//ogs;
             $worksheet->write($i, $j, $currCol);
             $j++;
         } $i++;
@@ -359,7 +359,7 @@ helper get_XLS_for_arr => sub { my ($self, $ret, $hr)=@_;
 ###############
 # specific apis
 get '/CT/download_list'=> sub
-{    my $self=shift;
+{   my $self=shift;
     my $excel = $self->param('excel');
     my $sessionid=$self->param('session');
     my $dbh=$self->db;
@@ -375,19 +375,19 @@ get '/CT/download_list'=> sub
     $sth = $dbh->prepare( $sql );
     $sth->execute(($session{username}));
     if(!$excel)
-    {    my $result=    "name\tidtrial\tgroup\t".join("\t", @colnames)."\n";
+    {   my $result=    "name\tidtrial\tgroup\t".join("\t", @colnames)."\n";
         while(my $curr=$sth->fetchrow_arrayref())
-        {    $result.=join("\t", (@$curr));
+        {   $result.=join("\t", (@$curr));
             $result.="\n";
         }
         $self->render(text=>$result);
     } else
-    {    my $outR=$sth->fetchall_arrayref();
+    {   my $outR=$sth->fetchall_arrayref();
         $self->render_file('data' => $self->get_XLS_for_arr($outR, $sth->{NAME}), 'format'   => 'xls', 'filename' => 'data.xls');
     }
 };
 get '/CT/download_patients/:idtrial' => [idtrial=>qr/[0-9]+/] => sub
-{    my $self=shift;
+{   my $self=shift;
     my $idtrial=$self->param('idtrial');
     my $sessionid=$self->param('session');
     my $dbh=$self->db;
@@ -402,7 +402,7 @@ get '/CT/download_patients/:idtrial' => [idtrial=>qr/[0-9]+/] => sub
 };
         
 get '/CT/todolist_trial/:idtrial' => [idtrial=>qr/[0-9]+/] => sub
-{    my $self=shift;
+{   my $self=shift;
     my $idtrial=$self->param('idtrial');
     my $sessionid=$self->param('session');
     my $dbh=$self->db;
@@ -413,7 +413,7 @@ get '/CT/todolist_trial/:idtrial' => [idtrial=>qr/[0-9]+/] => sub
     $self->render_file('data' => $self->get_XLS_for_arr($outR, $sth->{NAME}), 'format'   => 'xls', 'filename' => 'todolist_trial.xls');
 };
 get '/CT/duelist' => sub
-{    my $self=shift;
+{   my $self=shift;
     my $idtrial=$self->param('idtrial');
     my $sessionid=$self->param('session');
     my  %session;
@@ -426,7 +426,7 @@ get '/CT/duelist' => sub
     $self->render_file('data' => $self->get_XLS_for_arr($outR, $sth->{NAME}), 'format'   => 'xls', 'filename' => 'inkassoliste.xls');
 };
 get '/CT/todolist' => sub
-{    my $self=shift;
+{   my $self=shift;
     my $sessionid=$self->param('session');
     my  %session;
     tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
@@ -457,7 +457,7 @@ get '/CT/download_koka/:idtrial' => [idtrial=>qr/[0-9]+/] => sub {
     $self->render_file('data' => $self->get_XLS_for_arr($outR, $sth->{NAME}), 'format'   => 'xls', 'filename' => 'koka_trial.xls');
 };
 get '/CT/copyover_koka_visit/:idvisitold/:idvisitnew' => [idvisitold =>qr/[0-9]+/, idvisitnew =>qr/[0-9]+/] => sub
-{    my $self = shift;
+{   my $self = shift;
     my $idvisitold = $self->param('idvisitold');
     my $idvisitnew = $self->param('idvisitnew');
     my $dbh=$self->db;
@@ -470,7 +470,7 @@ get '/CT/copyover_koka_visit/:idvisitold/:idvisitnew' => [idvisitold =>qr/[0-9]+
 helper performBooking => sub { my ($self, $piz, $dcid, $text)=@_;
     my $r= system("cd /Users/Shared/bin/BookAugDateCmd; /Library/Internet\\ Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java -jar /Users/Shared/bin/BookAugDateCmd/BookAugDateCmd.jar 10.210.21.10 UUU PPP $piz $dcid");
     if(!$r)
-    {    my $dbh_dc = DBI->connect("XXX", 'UUU', 'PPP') || warn "Database connection not made: $DBI::errstr";
+    {   my $dbh_dc = DBI->connect("XXX", 'UUU', 'PPP') || warn "Database connection not made: $DBI::errstr";
         my $sql='update "AUGDATE" set "ANNOTATION"=? where "AUGDATEID"=?';
         my $sth=$dbh_dc->prepare($sql);
         $sth->execute(($text, $dcid));    
@@ -492,12 +492,12 @@ post '/CT/booking/:piz/:dcid/:idvisit' => [piz=>qr/[0-9]+/o, dcid=>qr/[0-9]+/o, 
     {
         $r= $self->performBooking($piz, $dcid, $text);
         if($visit->{additional_docscal_booking_name})
-        {    my $sql=qq|SELECT dcid, caldate FROM dblink('dbname=docscal_mirror hostaddr=XX user=postgres'::text, 'select * from bookable_docscal_dates(''|.$visit->{additional_docscal_booking_name}.qq|'')'::text) t1(source text, dcid integer, caldate timestamp without time zone) where caldate> ?  and caldate::date=?::date order by 2 limit 1|;
+        {   my $sql=qq|SELECT dcid, caldate FROM dblink('dbname=docscal_mirror hostaddr=XX user=postgres'::text, 'select * from bookable_docscal_dates(''|.$visit->{additional_docscal_booking_name}.qq|'')'::text) t1(source text, dcid integer, caldate timestamp without time zone) where caldate> ?  and caldate::date=?::date order by 2 limit 1|;
             my $sth=$self->db->prepare($sql);
             $sth->execute(($dc_obj->{startdate},$dc_obj->{startdate}));
             my $second=$sth->fetchrow_hashref();
             if($second)
-            {    $r= $self->performBooking($piz, $second->{dcid}, $text);
+            {   $r= $self->performBooking($piz, $second->{dcid}, $text);
             }
         }
     }
@@ -517,8 +517,8 @@ get '/AUTH' => sub {
     my $pass= $self->param('p');
     my $sessionid='';
     if($user)
-    {    if($self->LDAPChallenge($user,$pass))
-        {    my  %session;
+    {   if($self->LDAPChallenge($user,$pass))
+        {   my  %session;
             tie %session, 'Apache::Session::File', undef , {Transaction => 0};
             $sessionid = $session{_session_id};
             $session{username}=$user;
@@ -527,7 +527,7 @@ get '/AUTH' => sub {
 };
 
 get '/CT/CAL/:year/:month'=> [year =>qr/\d+/, month =>qr/\d+/] => sub
-{    my $self=shift;
+{   my $self=shift;
     my $year        = $self->param('year');
     my $month        = $self->param('month');
     my $sql=qq/select * from calendar_function(?,?)/;
@@ -535,12 +535,12 @@ get '/CT/CAL/:year/:month'=> [year =>qr/\d+/, month =>qr/\d+/] => sub
     $sth->execute(($month, $year));
     my @a;
     while(my $c=$sth->fetchrow_hashref())
-    {    push @a,$c;
+    {   push @a,$c;
     }
     $self-> render( json=>\@a );
 };
 get '/CT/CAL/:date'=> [date =>qr/[-\d]+/] => sub
-{    my $self=shift;
+{   my $self=shift;
     my $date        = $self->param('date');
     my $sessionid=$self->param('session');
     my  %session;
@@ -551,7 +551,7 @@ get '/CT/CAL/:date'=> [date =>qr/[-\d]+/] => sub
     $sth->execute(($date, $session{username}));
     my @a;
     while(my $c=$sth->fetchrow_hashref())
-    {    push @a,$c;
+    {   push @a,$c;
     }
     $self-> render( json=> \@a );
 };
@@ -578,7 +578,7 @@ helper getPropertiesDict => sub { my ($self, $idtrial, $ldap)=@_;
     return $keyvaldict;
 };
 any '/CT/pdfstamper/:idtrial/:formname'=> [idtrial =>qr/\d+/, formname =>qr/[a-z\d_]+/i] => sub
-{    my $self=shift;
+{   my $self=shift;
     my $idtrial = $self->param('idtrial');
     my $formname= $self->param('formname');
     my $piz= $self->param('piz');
@@ -655,7 +655,7 @@ any '/CT/pdfstamper/:idtrial/:formname'=> [idtrial =>qr/\d+/, formname =>qr/[a-z
     $self->render(data=> $data , format =>'pdf' );
 };
 get '/CT/serienbrief_patienten/:propid'=> [ propid =>qr/\d+/] => sub
-{    my $self=shift;
+{   my $self=shift;
     my $sessionid=$self->param('session');
     my $prop=$self->getObjectFromTable('trial_properties', $self->param("propid") );
     my $idtrial = $prop->{idtrial};
@@ -695,7 +695,7 @@ helper insertDictIntoTable => sub { my ($self, $table, $dict)=@_;
     return $dbh->last_insert_id(undef, undef, $table, 'id');
 };
 get '/CT/new_patient/:idpatient' => [idpatient =>qr/[0-9]+/] => sub
-{    my $self = shift;
+{   my $self = shift;
     my $idpatient = $self->param('idpatient');
     my $idtrial= $self->getObjectFromTable('patients', $idpatient)->{idtrial};
     my $dbh=$self->db;
@@ -714,7 +714,7 @@ get '/CT/new_patient/:idpatient' => [idpatient =>qr/[0-9]+/] => sub
 };
 
 get '/CT/reorder_visits/:idtrial' => [idtrial =>qr/[0-9]+/] => sub
-{    my $self = shift;
+{   my $self = shift;
     my $idtrial = $self->param('idtrial');
     my $dbh=$self->db;
     my $stmt = qq{update trial_visits set ordering=
@@ -727,7 +727,7 @@ get '/CT/reorder_visits/:idtrial' => [idtrial =>qr/[0-9]+/] => sub
 };
         
 get '/CT/travel_distance/:idpatient' => [idpatient =>qr/[0-9]+/] => sub
-{    my $self = shift;
+{   my $self = shift;
     my $idpatient = $self->param('idpatient');
 
     my $ua = Mojo::UserAgent->new;
@@ -775,7 +775,7 @@ helper hasRow => sub { my ($self, $table, $where)=@_;
 };
         
 get '/CT/trial_properties/:idtrial'=> [idtrial =>qr/\d+/] => sub
-{    my $self=shift;
+{   my $self=shift;
     my $idtrial = $self->param('idtrial');
     my $sessionid=$self->param('session');
     my  %session;
@@ -786,7 +786,7 @@ get '/CT/trial_properties/:idtrial'=> [idtrial =>qr/\d+/] => sub
 };
 
 post '/CT/make_bill/:idtrial'=> [idtrial =>qr/\d+/] => sub
-{    my $self=shift;
+{   my $self=shift;
     my $idtrial = $self->param('idtrial');
     my $sessionid=$self->param('session');
     my  %session;
@@ -807,7 +807,7 @@ post '/CT/make_bill/:idtrial'=> [idtrial =>qr/\d+/] => sub
     my $sum=0;
     my $idstr='';
     while(my $c=$sth->fetchrow_hashref())
-    {    $sum+=$c->{reimbursement};
+    {   $sum+=$c->{reimbursement};
         $idstr.=$c->{id}.', ';
     }
     my $overhead= $overhead_inclusive? 0: $sum*0.25;    # FIXME: 25% overhead should be a constant
@@ -874,7 +874,7 @@ get '/CT/print_bill/:idbill'=> [idbill =>qr/\d+/] => sub
     my $idstr='';
     my $start_i=$i;
     while(my $c=$sth->fetchrow_hashref())
-    {    $c->{visit_date}=~s/00:00:00//ogs;
+    {   $c->{visit_date}=~s/00:00:00//ogs;
         $template->AddCell( 0,$i, 0, $c->{code1}.' '.$c->{code2}.' '.$c->{visit} );
         $template->AddCell( 0,$i, 1, '');
         $template->AddCell( 0,$i, 2, '');
@@ -892,7 +892,7 @@ get '/CT/print_bill/:idbill'=> [idbill =>qr/\d+/] => sub
     $template->AddCell( 0,$i, 6, '=SUM(' . $range . ')', $formatfooter_number2);
     my $overhead= $overhead_inclusive? 0: $sum*0.25;    # FIXME: 25% overhead should be a constant
     if($overhead)
-    {    $sum+=$overhead;
+    {   $sum+=$overhead;
         $i++;
         $template->AddCell( 0,$i, 0, 'Overhead', $formatfooter_number);
         $template->AddCell( 0,$i, $_, '', $formatfooter_number) for 1..5;
@@ -902,7 +902,7 @@ get '/CT/print_bill/:idbill'=> [idbill =>qr/\d+/] => sub
     $start_i=$i;
     my $ust= $requires_ust? $sum*0.19: 0;      # FIXME: 19% UST should be a constant
     if($ust)
-    {    $i++;
+    {   $i++;
         $sum+=$ust;
         $template->AddCell( 0,$i, 0, 'Ust. 19 Prozent', $formatfooter_number);
         $template->AddCell( 0,$i, $_, '', $formatfooter_number) for 1..5;
