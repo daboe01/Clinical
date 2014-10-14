@@ -590,6 +590,8 @@ CREATE TABLE patient_visits (
     idpatient integer,
     idvisit integer,
     visit_date timestamp without time zone,
+    travel_costs numeric,
+    date_reimbursed timestamp without time zone,
     state integer
 );
 
