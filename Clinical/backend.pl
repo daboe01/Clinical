@@ -1,9 +1,5 @@
 #!/usr/local/ActivePerl-5.14/site/bin/morbo
 
-# todo: sanitize filenames upon upload
-#        support multiple files of samename (as in cellfinder)
-#        support shadowtables globally (instead of only in $table eq 'all_trials'?'trials': $table)
-
 use lib qw {/Users/Shared/bin /Users/Shared/bin/Clinical /srv/www/Clinical/ /Users/boehringer/src/daboe01_Cellfinder/Cellfinder/ /Users/daboe01/src/daboe01_Clinical/Clinical /Users/boehringer/src/privatePerl /Users/daboe01/src/privatePerl};
 use Mojolicious::Lite;
 use Mojolicious::Plugin::Database;
