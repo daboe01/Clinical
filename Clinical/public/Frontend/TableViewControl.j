@@ -23,7 +23,7 @@
 {	[_myView removeFromSuperview];
 	[self addSubview: _myView];
 	var mybounds= [self bounds];
-	mybounds.size.height+=2;
+	//mybounds.size.height+=2;
 	[_myView setFrame:mybounds];
 	[_myView setTarget: self];
 	[_myView setAction: @selector(viewChanged:)];
@@ -189,16 +189,16 @@ var _itemsControllerHash;
 -(void) setObjectValue: myVal
 {	_value= myVal;
 	if(myVal)
-	{	var img= [[CPImage alloc] initWithContentsOfFile: [CPString stringWithFormat:@"%@/%@.png", [[CPBundle mainBundle] resourcePath], myVal ]];
-		[_myView setImage: img ];
+	{	var img= [[CPImage alloc] initWithContentsOfFile: [CPString stringWithFormat:@"%@/%@.png", [[CPBundle mainBundle] resourcePath], myVal]];
+		[_myView setImage:img];
 	} else
-	{		[_myView setImage: nil ];
+	{   [_myView setImage:nil];
 	}
 }
 -(void) _installView
 {	[_myView removeFromSuperview];
 	[self addSubview: _myView];
-	[_myView setFrame:CPMakeRect(0,0,30,30)];
+	[_myView setFrame:CPMakeRect(0, 0, 22, 22)];
 }
 
 @end

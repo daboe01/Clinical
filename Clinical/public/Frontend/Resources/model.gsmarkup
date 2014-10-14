@@ -3,7 +3,7 @@
 <gsmarkup>
 
 <objects>
-  <predicate id="displayfilters_pred" format="type == '1'"/>
+  <predicate id="visitdatenotnull" format="visit_date > '1900-01-01'"/>
 
   <sortDescriptor id="by_id" key="id" ascending="YES" numeric="YES"/>
   <sortDescriptor id="by_reverse_id" key="id" ascending="NO"/>
@@ -36,6 +36,7 @@
   <arrayController id="group_assignment_controller" entity="group_assignments" valueBinding="personnel_controller.selection.groups"/>
   <arrayController id="patients_controller" entity="patients" sortDescriptor="by_id" valueBinding="trials_controller.selection.patients"/>
   <arrayController id="patient_visits_controller" entity="patient_visits"  valueBinding="patients_controller.selection.visits"/>
+  <arrayController id="patient_visits_controller2" entity="patient_visits"  valueBinding="patients_controller.selection.visits" filterPredicate="visitdatenotnull"/>
   <arrayController id="visits_controller" entity="trial_visits" valueBinding="trials_controller.selection.visits" sortDescriptor="by_ordering"/>
   <arrayController id="visit_dates_controller" entity="visit_dates" valueBinding="patient_visits_controller.selection.date_proposals" sortDescriptor="by_caldate"/>
   <arrayController id="tagesinfos_controller" entity="tagesinfos" valueBinding="visit_dates_controller.selection.tagesinfos"/>
@@ -47,7 +48,7 @@
   <arrayController id="balanced_controller" entity="accounts_balanced" valueBinding="accounts_controller.selection.balanced" sortDescriptor="by_date_transaction"/>
   <arrayController id="procedures_catalogue_controller" entity="procedures_catalogue" autoFetch="YES" sortDescriptor="by_name"/>
   <arrayController id="procedures_visit_controller" entity="visit_procedures" valueBinding="visits_controller.selection.procedures"/>
-  <arrayController id="autocompletion_controller" entity="trial_properties" valueBinding="trial_properties_controller.selection.autocompletition"/>
+  <arrayController id="autocompletion_controller" entity="trial_properties_distinct" valueBinding="trial_properties_controller.selection.autocompletition"/>
 </objects>
 
 <entities>
@@ -155,7 +156,11 @@
 		<relationship type="toOne" name="property" bindingColumn="idproperty" target="trial_properties_catalogue"/>
 		<relationship type="toOne" name="trial" bindingColumn="idtrial" target="all_trials"/>
 		<relationship type="toMany" name="annotations" targetColumn="idfield" target="trial_property_annotations"/>
-		<relationship type="toMany" name="autocompletition" bindingColumn="idproperty" targetColumn="idproperty" target="trial_properties"/>
+		<relationship type="toMany" name="autocompletition" bindingColumn="idproperty" targetColumn="idproperty" target="trial_properties_distinct"/>
+	</entity>
+	<entity id="trial_properties_distinct" store="#CPOwner.store">
+		<column name="idproperty"/>
+		<column name="value"/>
 	</entity>
 	<entity id="trial_property_annotations" store="#CPOwner.store">
 		<column name="id" primaryKey="YES"/>
@@ -244,6 +249,8 @@
 		<column name="upper_margin"/>
 		<column name="missing_service"/>
 		<column name="comment"/>
+		<column name="travel_costs"/>
+		<column name="date_reimbursed"/>
 		<relationship type="toOne" name="patient" bindingColumn="idpatient" target="patients"/>
 		<relationship type="toOne" name="visit" bindingColumn="idvisit" target="trial_visits"/>
 		<relationship type="toMany" name="date_proposals" bindingColumn="id" targetColumn="idvisit" target="visit_dates"/>
@@ -350,6 +357,7 @@
 	<outlet source="#CPOwner" target="perso_properties_controller" label="personnelPropController"/>
 	<outlet source="#CPOwner" target="patients_controller" label="patientsController"/>
 	<outlet source="#CPOwner" target="patient_visits_controller" label="patientVisitsController"/>
+	<outlet source="#CPOwner" target="patient_visits_controller2" label="patientVisitsController2"/>
 	<outlet source="#CPOwner" target="visits_controller" label="visitsController"/>
 	<outlet source="#CPOwner" target="visit_dates_controller" label="visitDatesController"/>
 	<outlet source="#CPOwner" target="status_controller" label="statusController"/>

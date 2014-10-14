@@ -9,72 +9,70 @@
     <hbox>
       <splitView vertical="YES" autosaveName="vsplitter_admin_main1">
        <hbox>
-	<vbox>
-	  <label> Basic data</label>
-	  <textField width="200" halign="left" valueBinding="#CPOwner.trialsController.selection.name" title="name" editable="NO"/>
-	  <popUpButton width="200" halign="left" valueBinding="#CPOwner.trialsController.selection.idgroup" itemsBinding="#CPOwner.groupsControllerAll.arrangedObjects.name"/>
-	  <label> Status values </label>
-	  <scrollView width="200" halign ="min" hasHorizontalScroller="NO">
-	   <tableView zebra="yes" autosaveName="allgroups_tv" valueBinding="#CPOwner.statusController">
-		<tableColumn identifier="name" title="name" editable="YES"/>
-	   </tableView>
-	  </scrollView>
-	  <ButtonBar width="200" halign ="min" target="#CPOwner.statusController" plusButtonAction="insert:" minusButtonAction="remove:"/>
-	</vbox>
-	<vbox>
-	  <label> Visits </label>
-	  <scrollView hasHorizontalScroller="NO">
-	    <tableView zebra="yes" autosaveName="allvisits_tv" valueBinding="#CPOwner.visitsController" target="#CPOwner">
-		<tableColumn identifier="ordering" title="order" editable="YES" width="50"/>
-		<tableColumn identifier="name" title="name" editable="YES"/>
-		<tableColumn identifier="visit_interval" title="interval" editable="YES"/>
-		<tableColumn identifier="lower_margin" title="untergrenze" editable="YES"/>
-		<tableColumn identifier="upper_margin" title="obergrenze" editable="YES"/>
-		<tableColumn identifier="idreference_visit" title="reference visit" dataView="#column_idvisit" editable="YES"/>
-		<tableColumn identifier="reimbursement" title="reimbursement" editable="YES"/>
-		<tableColumn identifier="additional_docscal_booking_name" title="booking" editable="YES"/>
-		<tableColumn identifier="comment" title="comment" editable="YES"/>
-	   </tableView>
-	  </scrollView>
-	  <ButtonBar target="#CPOwner.visitsController" plusButtonAction="insert:" minusButtonAction="remove:" actionsButton="YES">
- 		<popUpButtonItem title="Reload" target="#CPOwner" action="reloadVisits:"/>
- 		<popUpButtonItem title="Reorder" target="#CPOwner" action="reorderVisits:"/>
- 		<popUpButtonItem title="Duplicate" target="#CPOwner" action="duplicateKoKaVisit:"/>
- 		<popUpButtonItem title="Unset reference visit" target="#CPOwner" action="unsetReferenceVisit:"/>
-	  </ButtonBar>
-	</vbox>
+    <vbox>
+      <label> Basic data</label>
+      <textField width="200" halign="left" valueBinding="#CPOwner.trialsController.selection.name" title="name" editable="NO"/>
+      <popUpButton width="200" halign="left" valueBinding="#CPOwner.trialsController.selection.idgroup" itemsBinding="#CPOwner.groupsControllerAll.arrangedObjects.name"/>
+      <label> Status values </label>
+      <scrollView width="200" halign ="min" hasHorizontalScroller="NO">
+       <tableView zebra="yes" autosaveName="allgroups_tv" valueBinding="#CPOwner.statusController">
+        <tableColumn identifier="name" title="name" editable="YES"/>
+       </tableView>
+      </scrollView>
+      <ButtonBar width="200" halign ="min" target="#CPOwner.statusController" plusButtonAction="insert:" minusButtonAction="remove:"/>
+    </vbox>
+    <vbox>
+      <label> Visits </label>
+      <scrollView hasHorizontalScroller="NO">
+        <tableView zebra="yes" autosaveName="allvisits_tv" valueBinding="#CPOwner.visitsController" target="#CPOwner">
+        <tableColumn identifier="ordering" title="order" editable="YES" width="50"/>
+        <tableColumn identifier="name" title="name" editable="YES"/>
+        <tableColumn identifier="visit_interval" title="interval" editable="YES"/>
+        <tableColumn identifier="lower_margin" title="untergrenze" editable="YES"/>
+        <tableColumn identifier="upper_margin" title="obergrenze" editable="YES"/>
+        <tableColumn identifier="idreference_visit" title="reference visit" dataView="#column_idvisit" editable="YES"/>
+        <tableColumn identifier="reimbursement" title="reimbursement" editable="YES"/>
+        <tableColumn identifier="additional_docscal_booking_name" title="booking" editable="YES"/>
+        <tableColumn identifier="comment" title="comment" editable="YES"/>
+       </tableView>
+      </scrollView>
+      <ButtonBar target="#CPOwner.visitsController" plusButtonAction="insert:" minusButtonAction="remove:" actionsButton="YES" id="adminbuttonbar">
+         <popUpButtonItem title="Duplicate" target="#CPOwner" action="duplicateKoKaVisit:"/>
+         <popUpButtonItem title="Unset reference visit" target="#CPOwner" action="unsetReferenceVisit:"/>
+      </ButtonBar>
+    </vbox>
        </hbox>
-	<vbox>
-	  <label> Procedures </label>
-	  <scrollView hasHorizontalScroller="NO">
-	    <tableView zebra="yes" autosaveName="visitprocs_tv" valueBinding="#CPOwner.proceduresVisitController" target="#CPOwner">
-		<tableColumn identifier="idprocedure" title="procedure" dataView="#column_idprocedure" editable="YES"/>
-		<tableColumn identifier="actual_cost" title="acatual costs" editable="YES"/>
-		<tableColumn identifier="procedure.base_cost" title="base costs" editable="NO"/>
-		<tableColumn identifier="procedure.min_cost" title="min" editable="NO"/>
-		<tableColumn identifier="procedure.avg_cost" title="avg" editable="NO"/>
-		<tableColumn identifier="procedure.max_cost" title="max" editable="NO"/>
-	   </tableView>
-	  </scrollView>
-	  <ButtonBar target="#CPOwner.proceduresVisitController" plusButtonAction="insert:" minusButtonAction="remove:" actionsButton="YES">
- 		<popUpButtonItem title="Config..." target="#procedureswindow" action="makeKeyAndOrderFront:"/>
-	  </ButtonBar>
-	</vbox>
+    <vbox>
+      <label> Procedures </label>
+      <scrollView hasHorizontalScroller="NO">
+        <tableView zebra="yes" autosaveName="visitprocs_tv" valueBinding="#CPOwner.proceduresVisitController" target="#CPOwner">
+        <tableColumn identifier="idprocedure" title="procedure" dataView="#column_idprocedure" editable="YES"/>
+        <tableColumn identifier="actual_cost" title="acatual costs" editable="YES"/>
+        <tableColumn identifier="procedure.base_cost" title="base costs" editable="NO"/>
+        <tableColumn identifier="procedure.min_cost" title="min" editable="NO"/>
+        <tableColumn identifier="procedure.avg_cost" title="avg" editable="NO"/>
+        <tableColumn identifier="procedure.max_cost" title="max" editable="NO"/>
+       </tableView>
+      </scrollView>
+      <ButtonBar target="#CPOwner.proceduresVisitController" plusButtonAction="insert:" minusButtonAction="remove:" actionsButton="YES">
+         <popUpButtonItem title="Config..." target="#procedureswindow" action="makeKeyAndOrderFront:"/>
+      </ButtonBar>
+    </vbox>
       </splitView>
     </hbox>
  </vbox>
 </window>
 
 <window id="procedureswindow" delegate="#CPOwner" x="1000" y="600" width="400" height="400" visible="NO">
-      <vbox>
-	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" autosaveName="allprocedures_tv" id="allprocedures_tv" valueBinding="#CPOwner.proceduresCatController" target="#CPOwner">
-		<tableColumn identifier="name" title="name" editable="YES"/>
-		<tableColumn identifier="base_cost" title="standardforderung EUR" editable="YES"/>
-	 </tableView>
-	</scrollView>
-	<ButtonBar target="#CPOwner.proceduresCatController" plusButtonAction="insert:" minusButtonAction="remove:"/>
-      </vbox>
+  <vbox>
+    <scrollView hasHorizontalScroller="NO">
+     <tableView zebra="yes" autosaveName="allprocedures_tv" id="allprocedures_tv" valueBinding="#CPOwner.proceduresCatController" target="#CPOwner">
+        <tableColumn identifier="name" title="name" editable="YES"/>
+        <tableColumn identifier="base_cost" title="standardforderung EUR" editable="YES"/>
+     </tableView>
+    </scrollView>
+    <ButtonBar target="#CPOwner.proceduresCatController" plusButtonAction="insert:" minusButtonAction="remove:"/>
+  </vbox>
 </window>
 
 
@@ -84,5 +82,9 @@
 </window>
 
 </objects>
+
+<connectors>
+    <outlet source="#CPOwner" target="adminbuttonbar" label="adminButtonBar"/>
+</connectors>
 
 </gsmarkup>

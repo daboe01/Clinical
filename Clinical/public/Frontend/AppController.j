@@ -26,19 +26,20 @@ BaseURL=HostURL+"/";
 @implementation SessionStore : FSStore 
 
 -(CPURLRequest) requestForAddressingObjectsWithKey: aKey equallingValue: (id) someval inEntity:(FSEntity) someEntity
-{	var request = [CPURLRequest requestWithURL: [self baseURL]+"/"+[someEntity name]+"/"+aKey+"/"+someval+"?session="+ window.G_SESSION];
-	return request;
+{    var request = [CPURLRequest requestWithURL: [self baseURL]+"/"+[someEntity name]+"/"+aKey+"/"+someval+"?session="+ window.G_SESSION];
+    return request;
 }
 -(CPURLRequest) requestForFuzzilyAddressingObjectsWithKey: aKey equallingValue: (id) someval inEntity:(FSEntity) someEntity
-{	var request = [CPURLRequest requestWithURL: [self baseURL]+"/"+[someEntity name]+"/"+aKey+"/like/"+someval+"?session="+ window.G_SESSION];
-	return request;
+{    var request = [CPURLRequest requestWithURL: [self baseURL]+"/"+[someEntity name]+"/"+aKey+"/like/"+someval+"?session="+ window.G_SESSION];
+    return request;
 }
 -(CPURLRequest) requestForAddressingAllObjectsInEntity:(FSEntity) someEntity
-{	return [CPURLRequest requestWithURL: [self baseURL]+"/"+[someEntity name]+"?session="+ window.G_SESSION ];
+{    return [CPURLRequest requestWithURL: [self baseURL]+"/"+[someEntity name]+"?session="+ window.G_SESSION ];
 }
 
 @end
 
+// fixme<!> refactor to cappusance
 @implementation CPButtonBar(addbutton)
 - (CPButton) addButtonWithImageName:(CPString) aName target:(id) aTarget action:(SEL) aSelector
 {   var sendimage=[[CPImage alloc] initWithContentsOfFile: [CPString stringWithFormat:@"%@/%@", [[CPBundle mainBundle] resourcePath], aName]];
@@ -51,11 +52,38 @@ BaseURL=HostURL+"/";
     [self setButtons: [[self buttons] arrayByAddingObject:newbutton] ];
     return newbutton;
 }
+- (void) registerWithArrayController:(CPArrayController) aController
+{
+    [[self buttons][1] bind:CPEnabledBinding toObject:aController withKeyPath:"selectedObjects.@count" options: nil];
+    //<!> fixme add insert and remove actions unless already wired!
+}
+
 @end
 
+// fixme<!> refactor to cappusance
 @implementation FSArrayController(targetaction)
 - (void) reload:(id)sender
 {   [self reload];
+}
+@end
+@implementation CPDate(shortDescription)
+- (CPString)shortDescription
+{
+    return [CPString stringWithFormat:@"%04d-%02d-%02d", self.getFullYear(), self.getMonth() + 1, self.getDate()];
+}
+- (CPString)stringValue
+{
+    return [self shortDescription];
+}
+
+- (id)initWithShortString:(CPString)description
+{
+    var format = /^(\d{4})-(\d{2})-(\d{2}).*/,
+        d = description.match(new RegExp(format));
+    return new Date(parseInt(d[1], 10), d[2] - 1, parseInt(d[3], 10));
+}
++ dateWithShortString:(CPString) astr
+{   return astr? [[CPDate alloc] initWithShortString:astr]: nil //[CPDate new];
 }
 @end
 
@@ -64,117 +92,102 @@ BaseURL=HostURL+"/";
 -(unsigned) length {return 0;}
 @end
 
-@implementation CPDate(shortDescription)
-- (CPString)shortDescription
-{
-    return [CPString stringWithFormat:@"%04d-%02d-%02d", self.getFullYear(), self.getMonth() + 1, self.getDate()];
-}
-- (id)initWithShortString:(CPString)description
-{
-    var format = /(\d{4})-(\d{2})-(\d{2})/,
-        d = description.match(new RegExp(format));
-    return new Date(d[1], d[2] - 1, d[3]);
-}
-- (CPString)stringValue
-{
-    return [self shortDescription]
-}
-@end
-
 @implementation AppController : CPObject
-{	id	store @accessors;	
+{   id    store @accessors;    
 
-	id	trialsController;
-	id	propertiesController;
-	id	processesController;
-	id	dokusController;
-	id	dokusController2;
-	id	personnelController;
-	id	trialpersonnelController;
-	id	groupsController;
-	id	groupsControllerAll;
-	id	rolesController;
-	id	statesController;
-	id	doctagsController;
-	id	propertiesCatController;
-	id	groupassignmentController;
-	id	personnelPropCatController;
-	id	personnelPropController;
-	id	patientsController;
-	id	patientVisitsController;
-	id	visitsController;
-	id	visitDatesController;
-	id	statusController;
-	id	tagesinfosController;
-	id      trialPropAnnotationsController;
-	id	billingsController;
-	id	accountsController;
-	id	transactionsController;
-	id	personnelCostsController;
-	id	balancedController;
-	id	proceduresCatController;
-	id	proceduresVisitController;
-	id	groupPersonnelController;
-    id  autocompletionController;
+    id    trialsController;
+    id    propertiesController;
+    id    processesController;
+    id    dokusController;
+    id    dokusController2;
+    id    personnelController;
+    id    trialpersonnelController;
+    id    groupsController;
+    id    groupsControllerAll;
+    id    rolesController;
+    id    statesController;
+    id    doctagsController;
+    id    propertiesCatController;
+    id    groupassignmentController;
+    id    personnelPropCatController;
+    id    personnelPropController;
+    id    patientsController;
+    id    patientVisitsController;
+    id    patientVisitsController2;
+    id    visitsController;
+    id    visitDatesController;
+    id    statusController;
+    id    tagesinfosController;
+    id    trialPropAnnotationsController;
+    id    billingsController;
+    id    accountsController;
+    id    transactionsController;
+    id    personnelCostsController;
+    id    balancedController;
+    id    proceduresCatController;
+    id    proceduresVisitController;
+    id    groupPersonnelController;
+    id    autocompletionController;
+    id    adminButtonBar;
 
-	id	addTXWindow;
-	id	accountsTV;
-	id	addTxTV;
-	id	accountPopover;
+    id    addTXWindow;
+    id    accountsTV;
+    id    addTxTV;
+    id    accountPopover;
 
-	id mainController @accessors;
+    id mainController @accessors;
 }
 
 -(CPString) uploadURL
 {
-	return HostURL+"/upload/"+[trialsController valueForKeyPath: "selection.id"];
+    return HostURL+"/upload/"+[trialsController valueForKeyPath: "selection.id"];
 }
 
 // this is to make the currently GUI controller globally available (to get access to e.g. scale)
 - mainController
-{	return [[CPApp mainWindow] delegate] || mainController;
+{    return [[CPApp mainWindow] delegate] || mainController;
 }
 
 - (void) applicationDidFinishLaunching:(CPNotification)aNotification
-{	store=[[SessionStore alloc] initWithBaseURL: HostURL+"/DBI"];
-	[CPBundle loadRessourceNamed: "model.gsmarkup" owner:self];
-	var mainFile="Operations.gsmarkup";
-	var re = new RegExp("t=([^&#]+)");
-	var m = re.exec(document.location);
-	if(m) mainFile=m[1];
-	document.title=mainFile;
-	[CPBundle loadRessourceNamed: mainFile owner: self ];
-	[[[CPApp mainWindow] delegate] _performPostLoadInit];
+{    store=[[SessionStore alloc] initWithBaseURL: HostURL+"/DBI"];
+    [CPBundle loadRessourceNamed: "model.gsmarkup" owner:self];
+    var mainFile="Operations.gsmarkup";
+    var re = new RegExp("t=([^&#]+)");
+    var m = re.exec(document.location);
+    if(m) mainFile=m[1];
+    document.title=mainFile;
+    [CPBundle loadRessourceNamed: mainFile owner: self];
+    [[[CPApp mainWindow] delegate] _performPostLoadInit];
 }
 
 -(void) delete:sender
-{	[[[CPApp keyWindow] delegate] delete:sender];
+{    [[[CPApp keyWindow] delegate] delete:sender];
 }
 
 -(void) unsetReferenceVisit:sender
 {
-	[[visitsController selectedObject] setValue: [CPNull null] forKey:"idreference_visit"];
+    [[visitsController selectedObject] setValue: [CPNull null] forKey:"idreference_visit"];
 }
 
 // Konto-stuff (hat keinen eigenen controller)
 
 -(void) makeKorrekturbuchung: sender
 {
-	if( !accountPopover)
-	{	 accountPopover=[CPPopover new];
-		[accountPopover setDelegate:self];
-		[accountPopover setAnimates:YES];
-		[accountPopover setBehavior: CPPopoverBehaviorApplicationDefined ];
-		[accountPopover setAppearance: CPPopoverAppearanceMinimal];
-		var myViewController=[CPViewController new];
-		[accountPopover setContentViewController: myViewController];
-		[myViewController setView: [addTXWindow contentView]];
-	
-	}
-	var sel=[[accountsTV selectedRowIndexes] firstIndex];
-	var rect= [accountsTV _rectOfRow: sel checkRange:NO];
-	[accountPopover showRelativeToRect:rect ofView: accountsTV preferredEdge: nil];
-	[[addTxTV window] makeFirstResponder: addTxTV]	
+    if( !accountPopover)
+    {    accountPopover=[CPPopover new];
+        [accountPopover setDelegate:self];
+        [accountPopover setAnimates:YES];
+        [accountPopover setBehavior: CPPopoverBehaviorApplicationDefined ];
+        [accountPopover setAppearance: CPPopoverAppearanceMinimal];
+        var myViewController=[CPViewController new];
+        [accountPopover setContentViewController: myViewController];
+        [myViewController setView: [addTXWindow contentView]];
+    
+    }
+    var sel=[[accountsTV selectedRowIndexes] firstIndex];
+    var rect= [accountsTV _rectOfRow: sel checkRange:NO];
+    [accountPopover showRelativeToRect:rect ofView: accountsTV preferredEdge: nil];
+    [[addTxTV window] makeFirstResponder: addTxTV]    
 }
 
 -(void) closeKorrekturbuchung: sender

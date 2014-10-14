@@ -159,54 +159,56 @@ post '/upload/:idtrial' => [idtrial=>qr/[0-9]+/] => sub {
 helper fetchFromTable => sub { my ($self, $table, $sessionid, $where)=@_;
     my $sql = SQL::Abstract::More->new;
 
+    my $order_by=[];
     my @a;
     if($sessionid)        # implement session-bound serverside security
-    {    my  %session;
+    {   my  %session;
         tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
         my @cols=qw/*/;
         if($table eq 'all_trials')
-        {    $table = 'trials';
+        {   $table = 'trials';
             @cols=qw/id idgroup name codename infotext global_state fulltext sponsor phase indikation/;
             $where->{ldap}= $session{username} unless $session{username} eq 'daboe01';
         } elsif($table eq 'groups_catalogue')
-        {    $table = 'groups';
+        {   $table = 'groups';
             @cols=qw/id name sprechstunde/;
             $where->{ldap}= $session{username} unless $session{username} eq 'daboe01';
         } elsif($table eq 'trial_property_annotations')
-        {    $where->{ldap}= $session{username};
+        {   $where->{ldap}= $session{username};
         } elsif($table eq 'patient_visits')
-        {    $table = 'patient_visits_rich';
-            @cols=qw/id idpatient idvisit visit_date state lower_margin center_margin upper_margin missing_service ordering comment/;
+        {   $table = 'patient_visits_rich';
+            @cols=qw/id idpatient idvisit visit_date state lower_margin center_margin upper_margin missing_service ordering comment travel_costs date_reimbursed/;
         } elsif($table eq 'accounts_balanced')
-        {    $table = 'accounts_balanced_ldap';
+        {   $table = 'accounts_balanced_ldap';
             @cols=qw/idaccount date_transaction type description amount_change balance/;
             $where->{ldap}= $session{username};
         } elsif($table eq 'shadow_accounts')
-        {    $table = 'shadow_accounts_ldap';
+        {   $table = 'shadow_accounts_ldap';
             @cols=qw/id account_number idgroup name balance/;
             $where->{ldap}= $session{username};
         } elsif($table eq 'personnel_costs')
-        {    $table = 'personnel_costs_ldap';
+        {   $table = 'personnel_costs_ldap';
             @cols=qw/id date_active idpersonnel idaccount amount comment/;
             $where->{ldap}= $session{username} unless $session{username} eq 'daboe01';
+        } elsif($table eq 'trial_properties_distinct')
+        {   $table = 'trial_properties';
+            @cols=qw/idproperty value/;
+            $order_by=[qw/+value/];
         }
         
         $where->{$_}= $where->{$_} eq 'NULL'? undef : $where->{$_} for keys %$where;
         #    support table-specific autosorting via hash
         my $autosorting={
                 trial_visits=>              [qw/+visit_interval/],
-                patient_visits_rich=>        [qw/+ordering/]
+                patient_visits_rich=>       [qw/+ordering/]
         };
-        my $order_by=[];
         $order_by= $autosorting->{$table} if exists $autosorting->{$table};
         my($stmt, @bind) = $sql->select( -columns  => [-distinct => @cols], -from => $table, -where=> $where, -order_by=> $order_by);
-warn $stmt;
-warn @bind;
         my $sth = $self->db->prepare($stmt);
         $sth->execute(@bind);
         
         while(my $c=$sth->fetchrow_hashref())
-        {    push @a,$c;
+        {   push @a,$c;
         }
     }
     return \@a;
@@ -470,9 +472,9 @@ get '/CT/copyover_koka_visit/:idvisitold/:idvisitnew' => [idvisitold =>qr/[0-9]+
 };
         
 helper performBooking => sub { my ($self, $piz, $dcid, $text)=@_;
-    my $r= system("cd /Users/Shared/bin/BookAugDateCmd; /Library/Internet\\ Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java -jar /Users/Shared/bin/BookAugDateCmd/BookAugDateCmd.jar 10.210.21.10 augdb2 mko09ijn $piz $dcid");
+    my $r= system("cd /Users/Shared/bin/BookAugDateCmd; /Library/Internet\\ Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java -jar /Users/Shared/bin/BookAugDateCmd/BookAugDateCmd.jar 10.210.21.10 UUU PPP $piz $dcid");
     if(!$r)
-    {    my $dbh_dc = DBI->connect("dbi:JDBC:hostname=localhost:9003;url=jdbc:sapdb://10.210.21.10:7210/augdb", 'daniel', 'bhu87zgv') || warn "Database connection not made: $DBI::errstr";
+    {    my $dbh_dc = DBI->connect("XXX", 'UUU', 'PPP') || warn "Database connection not made: $DBI::errstr";
         my $sql='update "AUGDATE" set "ANNOTATION"=? where "AUGDATEID"=?';
         my $sth=$dbh_dc->prepare($sql);
         $sth->execute(($text, $dcid));    
@@ -494,7 +496,7 @@ post '/CT/booking/:piz/:dcid/:idvisit' => [piz=>qr/[0-9]+/o, dcid=>qr/[0-9]+/o, 
     {
         $r= $self->performBooking($piz, $dcid, $text);
         if($visit->{additional_docscal_booking_name})
-        {    my $sql=qq|SELECT dcid, caldate FROM dblink('dbname=docscal_mirror hostaddr=10.210.21.37 user=postgres'::text, 'select * from bookable_docscal_dates(''|.$visit->{additional_docscal_booking_name}.qq|'')'::text) t1(source text, dcid integer, caldate timestamp without time zone) where caldate> ?  and caldate::date=?::date order by 2 limit 1|;
+        {    my $sql=qq|SELECT dcid, caldate FROM dblink('dbname=docscal_mirror hostaddr=XX user=postgres'::text, 'select * from bookable_docscal_dates(''|.$visit->{additional_docscal_booking_name}.qq|'')'::text) t1(source text, dcid integer, caldate timestamp without time zone) where caldate> ?  and caldate::date=?::date order by 2 limit 1|;
             my $sth=$self->db->prepare($sql);
             $sth->execute(($dc_obj->{startdate},$dc_obj->{startdate}));
             my $second=$sth->fetchrow_hashref();
@@ -634,15 +636,15 @@ any '/CT/pdfstamper/:idtrial/:formname'=> [idtrial =>qr/\d+/, formname =>qr/[a-z
             my $sql=qq{select trial_visits.name as visit, patient_visits_rich.* from patient_visits_rich join trial_visits on trial_visits.id=idvisit where idpatient=?};
             $filter=~s/[^0-9,]//ogs;  # untaint
             $filter=~s/,$//ogs;
-            $sql.=" and patient_visits.id in( $filter )" if $filter;
-            $sql.=" order by ordering";
+            $sql.=" and patient_visits_rich.id in( $filter )" if $filter;
+            $sql.=" order by coalesce(trial_visits.ordering, trial_visits.id)";
             my $sth = $self->db->prepare( $sql );
             $sth->execute(($idpatient));
             my @visits;
             my $sum=0;
             while(my $c=$sth->fetchrow_hashref())
             {
-                my $reisekosten=$kilometerpauschale*$pat->{travel_distance};
+                my $reisekosten=$c->{travel_costs}? $c->{travel_costs}:$kilometerpauschale*$pat->{travel_distance};
                 $c->{reisekosten}=sprintf("%3.2f EUR",$reisekosten);
                 $c->{visit_date}=~s/ 00:00:00$//ogs;
                 $sum += $reisekosten;
