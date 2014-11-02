@@ -4,15 +4,19 @@ Clinical
 Clinical trials administration system
 
 Features include:
- * Clinical trials database
+ * Trials database
  * Document repository
  * Visit management
  * Cost calculation
+ * Event tracker
  * Team calendar
  * Full text search
  * Password manager
  * Document (form) generator
- * Accounting, billing
+ * Billing/reimbursements
+ * Accounting
+ * Reporting framework
+ * Archive management
 
 LICENCE:
 This program is free software: you can redistribute it and/or modify
