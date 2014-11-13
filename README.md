@@ -31,6 +31,8 @@ cat sql_template.sql | /Applications/Postgres.app/Contents/Versions/9.3/bin/psql
 sudo perl -MCPAN -e 'install ($_) for qw/Mojolicious Mojolicious::Plugin::Database Mojolicious::Plugin::RenderFile SQL::Abstract::More Apache::Session::File JSON::XS Spreadsheet::WriteExcel Spreadsheet::ParseExcel Business::IBAN DBD::Pg/'
 # now you can either call morbo backend.pl (testing server)
 # or launch hypnotoad backend.pl during system boot
+# locate your favourite web browser to http://localhost:3000/Frontend/index.html
+# (you may change the port either in backend.pl or from the command line)
 ```
 
 LICENCE:
