@@ -2414,7 +2414,7 @@ Date.parseISO8601 = function(date)
     return timestamp;
 };
 Date.prototype.isa = CPDate;
-p;17;CPDateFormatter.jt;94287;@STATIC;1.0;i;9;CPArray.ji;8;CPDate.ji;10;CPString.ji;13;CPFormatter.ji;12;CPTimeZone.ji;10;CPLocale.jt;94177;objj_executeFile("CPArray.j", YES);objj_executeFile("CPDate.j", YES);objj_executeFile("CPString.j", YES);objj_executeFile("CPFormatter.j", YES);objj_executeFile("CPTimeZone.j", YES);objj_executeFile("CPLocale.j", YES);CPDateFormatterNoStyle = 0;
+p;17;CPDateFormatter.jt;91221;@STATIC;1.0;i;9;CPArray.ji;8;CPDate.ji;10;CPString.ji;13;CPFormatter.ji;12;CPTimeZone.ji;10;CPLocale.jt;91111;objj_executeFile("CPArray.j", YES);objj_executeFile("CPDate.j", YES);objj_executeFile("CPString.j", YES);objj_executeFile("CPFormatter.j", YES);objj_executeFile("CPTimeZone.j", YES);objj_executeFile("CPLocale.j", YES);CPDateFormatterNoStyle = 0;
 CPDateFormatterShortStyle = 1;
 CPDateFormatterMediumStyle = 2;
 CPDateFormatterLongStyle = 3;
@@ -2558,191 +2558,223 @@ class_addMethods(the_class, [new objj_method(sel_getUid("allowNaturalLanguage"),
         shortQuarterSymbols = CPArray.isa.objj_msgSend(CPArray, "arrayWithObjects:", "Q1", "Q2", "Q3", "Q4"),
         standaloneQuarterSymbols = CPArray.isa.objj_msgSend(CPArray, "arrayWithObjects:", "1st quarter", "2nd quarter", "3rd quarter", "4th quarter"),
         shortStandaloneQuarterSymbols = CPArray.isa.objj_msgSend(CPArray, "arrayWithObjects:", "Q1", "Q2", "Q3", "Q4");
-    self._symbols = objj_msgSend(objj_msgSend(CPDictionary, "alloc"), "initWithObjectsAndKeys:", objj_msgSend(objj_msgSend(CPDictionary, "alloc"), "initWithObjectsAndKeys:", AMSymbol, "AMSymbol", PMSymbol, "PMSymbol", weekdaySymbols, "weekdaySymbols", shortWeekdaySymbols, "shortWeekdaySymbols", veryShortWeekdaySymbols, "veryShortWeekdaySymbols", standaloneWeekdaySymbols, "standaloneWeekdaySymbols", shortStandaloneWeekdaySymbols, "shortStandaloneWeekdaySymbols", veryShortStandaloneWeekdaySymbols, "veryShortStandaloneWeekdaySymbols", monthSymbols, "monthSymbols", shortMonthSymbols, "shortMonthSymbols", veryShortMonthSymbols, "veryShortMonthSymbols", standaloneMonthSymbols, "standaloneMonthSymbols", shortStandaloneMonthSymbols, "shortStandaloneMonthSymbols", veryShortStandaloneMonthSymbols, "veryShortStandaloneMonthSymbols", quarterSymbols, "quarterSymbols", shortQuarterSymbols, "shortQuarterSymbols", standaloneQuarterSymbols, "standaloneQuarterSymbols", shortStandaloneQuarterSymbols, "shortStandaloneQuarterSymbols"), "en", objj_msgSend(objj_msgSend(CPDictionary, "alloc"), "init"), "fr", objj_msgSend(objj_msgSend(CPDictionary, "alloc"), "init"), "es", objj_msgSend(objj_msgSend(CPDictionary, "alloc"), "init"), "de");
+    self._symbols = objj_msgSend(objj_msgSend(CPDictionary, "alloc"), "initWithObjectsAndKeys:", objj_msgSend(objj_msgSend(CPDictionary, "alloc"), "initWithObjectsAndKeys:", AMSymbol, "AMSymbol", PMSymbol, "PMSymbol", weekdaySymbols, "weekdaySymbols", shortWeekdaySymbols, "shortWeekdaySymbols", veryShortWeekdaySymbols, "veryShortWeekdaySymbols", standaloneWeekdaySymbols, "standaloneWeekdaySymbols", shortStandaloneWeekdaySymbols, "shortStandaloneWeekdaySymbols", veryShortStandaloneWeekdaySymbols, "veryShortStandaloneWeekdaySymbols", monthSymbols, "monthSymbols", shortMonthSymbols, "shortMonthSymbols", veryShortMonthSymbols, "veryShortMonthSymbols", standaloneMonthSymbols, "standaloneMonthSymbols", shortStandaloneMonthSymbols, "shortStandaloneMonthSymbols", veryShortStandaloneMonthSymbols, "veryShortStandaloneMonthSymbols", quarterSymbols, "quarterSymbols", shortQuarterSymbols, "shortQuarterSymbols", standaloneQuarterSymbols, "standaloneQuarterSymbols", shortStandaloneQuarterSymbols, "shortStandaloneQuarterSymbols"), "root");
     self._timeZone = CPTimeZone.isa.objj_msgSend0(CPTimeZone, "systemTimeZone");
     self._twoDigitStartDate = ((___r1 = CPDate.isa.objj_msgSend0(CPDate, "alloc")), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "initWithString:", "1950-01-01 00:00:00 +0000"));
     self._locale = CPLocale.isa.objj_msgSend0(CPLocale, "currentLocale");
     var ___r1;
 }
-,["void"]), new objj_method(sel_getUid("AMSymbol"), function $CPDateFormatter__AMSymbol(self, _cmd)
+,["void"]), new objj_method(sel_getUid("symbolsForLanguageCode:"), function $CPDateFormatter__symbolsForLanguageCode_(self, _cmd, languageCode)
 {
-    return ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKey:", "AMSymbol"));
-    var ___r1, ___r2, ___r3;
+    var languageSymbols = ((___r1 = self._symbols), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKey:", languageCode));
+    if (!languageSymbols)
+    {
+        languageSymbols = self.isa.objj_msgSend1(self, "symbolsForLanguageCode:", "root");
+        self.isa.objj_msgSend2(self, "setSymbols:forLanguageCode:", languageSymbols, languageCode);
+    }
+    return languageSymbols;
+    var ___r1;
+}
+,["CPDictionary","CPString"]), new objj_method(sel_getUid("setSymbols:forLanguageCode:"), function $CPDateFormatter__setSymbols_forLanguageCode_(self, _cmd, symbols, languageCode)
+{
+    ((___r1 = self._symbols), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "setValue:forKey:", symbols, languageCode));
+    var ___r1;
+}
+,["void","CPDictionary","CPString"]), new objj_method(sel_getUid("symbolForKey:languageCode:"), function $CPDateFormatter__symbolForKey_languageCode_(self, _cmd, aKey, languageCode)
+{
+    var languageSymbols = self.isa.objj_msgSend1(self, "symbolsForLanguageCode:", languageCode),
+        symbol = (languageSymbols == null ? null : languageSymbols.isa.objj_msgSend1(languageSymbols, "valueForKey:", aKey));
+    if (!symbol)
+    {
+        symbol = self.isa.objj_msgSend2(self, "symbolForKey:languageCode:", aKey, "root");
+        self.isa.objj_msgSend3(self, "setSymbol:forKey:languageCode:", symbol, aKey, languageCode);
+    }
+    return symbol;
+}
+,["id","CPString","CPString"]), new objj_method(sel_getUid("setSymbol:forKey:languageCode:"), function $CPDateFormatter__setSymbol_forKey_languageCode_(self, _cmd, aSymbol, aKey, languageCode)
+{
+    var languageSymbols = self.isa.objj_msgSend1(self, "symbolsForLanguageCode:", languageCode);
+    (languageSymbols == null ? null : languageSymbols.isa.objj_msgSend2(languageSymbols, "setValue:forKey:", aSymbol, aKey));
+}
+,["void","CPString","CPString","CPString"]), new objj_method(sel_getUid("AMSymbol"), function $CPDateFormatter__AMSymbol(self, _cmd)
+{
+    return self.isa.objj_msgSend2(self, "symbolForKey:languageCode:", "AMSymbol", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["CPString"]), new objj_method(sel_getUid("setAMSymbol:"), function $CPDateFormatter__setAMSymbol_(self, _cmd, aValue)
 {
-    ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "setValue:forKey:", aValue, "AMSymbol"));
-    var ___r1, ___r2, ___r3;
+    self.isa.objj_msgSend3(self, "setSymbol:forKey:languageCode:", aValue, "AMSymbol", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["void","CPString"]), new objj_method(sel_getUid("PMSymbol"), function $CPDateFormatter__PMSymbol(self, _cmd)
 {
-    return ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKey:", "PMSymbol"));
-    var ___r1, ___r2, ___r3;
+    return self.isa.objj_msgSend2(self, "symbolForKey:languageCode:", "PMSymbol", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["CPString"]), new objj_method(sel_getUid("setPMSymbol:"), function $CPDateFormatter__setPMSymbol_(self, _cmd, aValue)
 {
-    ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "setValue:forKey:", aValue, "PMSymbol"));
-    var ___r1, ___r2, ___r3;
+    self.isa.objj_msgSend3(self, "setSymbol:forKey:languageCode:", aValue, "PMSymbol", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["void","CPString"]), new objj_method(sel_getUid("weekdaySymbols"), function $CPDateFormatter__weekdaySymbols(self, _cmd)
 {
-    return ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKey:", "weekdaySymbols"));
-    var ___r1, ___r2, ___r3;
+    return self.isa.objj_msgSend2(self, "symbolForKey:languageCode:", "weekdaySymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["CPArray"]), new objj_method(sel_getUid("setWeekdaySymbols:"), function $CPDateFormatter__setWeekdaySymbols_(self, _cmd, aValue)
 {
-    ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "setValue:forKey:", aValue, "weekdaySymbols"));
-    var ___r1, ___r2, ___r3;
+    self.isa.objj_msgSend3(self, "setSymbol:forKey:languageCode:", aValue, "weekdaySymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["void","CPArray"]), new objj_method(sel_getUid("shortWeekdaySymbols"), function $CPDateFormatter__shortWeekdaySymbols(self, _cmd)
 {
-    return ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKey:", "shortWeekdaySymbols"));
-    var ___r1, ___r2, ___r3;
+    return self.isa.objj_msgSend2(self, "symbolForKey:languageCode:", "shortWeekdaySymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["CPArray"]), new objj_method(sel_getUid("setShortWeekdaySymbols:"), function $CPDateFormatter__setShortWeekdaySymbols_(self, _cmd, aValue)
 {
-    ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "setValue:forKey:", aValue, "shortWeekdaySymbols"));
-    var ___r1, ___r2, ___r3;
+    self.isa.objj_msgSend3(self, "setSymbol:forKey:languageCode:", aValue, "shortWeekdaySymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["void","CPArray"]), new objj_method(sel_getUid("veryShortWeekdaySymbols"), function $CPDateFormatter__veryShortWeekdaySymbols(self, _cmd)
 {
-    return ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKey:", "veryShortWeekdaySymbols"));
-    var ___r1, ___r2, ___r3;
+    return self.isa.objj_msgSend2(self, "symbolForKey:languageCode:", "veryShortWeekdaySymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["CPArray"]), new objj_method(sel_getUid("setVeryShortWeekdaySymbols:"), function $CPDateFormatter__setVeryShortWeekdaySymbols_(self, _cmd, aValue)
 {
-    ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "setValue:forKey:", aValue, "veryShortWeekdaySymbols"));
-    var ___r1, ___r2, ___r3;
+    self.isa.objj_msgSend3(self, "setSymbol:forKey:languageCode:", aValue, "veryShortWeekdaySymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["void","CPArray"]), new objj_method(sel_getUid("standaloneWeekdaySymbols"), function $CPDateFormatter__standaloneWeekdaySymbols(self, _cmd)
 {
-    return ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKey:", "standaloneWeekdaySymbols"));
-    var ___r1, ___r2, ___r3;
+    return self.isa.objj_msgSend2(self, "symbolForKey:languageCode:", "standaloneWeekdaySymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["CPArray"]), new objj_method(sel_getUid("setStandaloneWeekdaySymbols:"), function $CPDateFormatter__setStandaloneWeekdaySymbols_(self, _cmd, aValue)
 {
-    ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "setValue:forKey:", aValue, "standaloneWeekdaySymbols"));
-    var ___r1, ___r2, ___r3;
+    self.isa.objj_msgSend3(self, "setSymbol:forKey:languageCode:", aValue, "standaloneWeekdaySymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["void","CPArray"]), new objj_method(sel_getUid("shortStandaloneWeekdaySymbols"), function $CPDateFormatter__shortStandaloneWeekdaySymbols(self, _cmd)
 {
-    return ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKey:", "shortStandaloneWeekdaySymbols"));
-    var ___r1, ___r2, ___r3;
+    return self.isa.objj_msgSend2(self, "symbolForKey:languageCode:", "shortStandaloneWeekdaySymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["CPArray"]), new objj_method(sel_getUid("setShortStandaloneWeekdaySymbols:"), function $CPDateFormatter__setShortStandaloneWeekdaySymbols_(self, _cmd, aValue)
 {
-    ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "setValue:forKey:", aValue, "shortStandaloneWeekdaySymbols"));
-    var ___r1, ___r2, ___r3;
+    self.isa.objj_msgSend3(self, "setSymbol:forKey:languageCode:", aValue, "shortStandaloneWeekdaySymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["void","CPArray"]), new objj_method(sel_getUid("veryShortStandaloneWeekdaySymbols"), function $CPDateFormatter__veryShortStandaloneWeekdaySymbols(self, _cmd)
 {
-    return ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKey:", "veryShortStandaloneWeekdaySymbols"));
-    var ___r1, ___r2, ___r3;
+    return self.isa.objj_msgSend2(self, "symbolForKey:languageCode:", "veryShortStandaloneWeekdaySymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["CPArray"]), new objj_method(sel_getUid("setVeryShortStandaloneWeekdaySymbols:"), function $CPDateFormatter__setVeryShortStandaloneWeekdaySymbols_(self, _cmd, aValue)
 {
-    ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "setValue:forKey:", aValue, "veryShortStandaloneWeekdaySymbols"));
-    var ___r1, ___r2, ___r3;
+    self.isa.objj_msgSend3(self, "setSymbol:forKey:languageCode:", aValue, "veryShortStandaloneWeekdaySymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["void","CPArray"]), new objj_method(sel_getUid("monthSymbols"), function $CPDateFormatter__monthSymbols(self, _cmd)
 {
-    return ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKey:", "monthSymbols"));
-    var ___r1, ___r2, ___r3;
+    return self.isa.objj_msgSend2(self, "symbolForKey:languageCode:", "monthSymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["CPArray"]), new objj_method(sel_getUid("setMonthSymbols:"), function $CPDateFormatter__setMonthSymbols_(self, _cmd, aValue)
 {
-    ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "setValue:forKey:", aValue, "monthSymbols"));
-    var ___r1, ___r2, ___r3;
+    self.isa.objj_msgSend3(self, "setSymbol:forKey:languageCode:", aValue, "monthSymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["void","CPArray"]), new objj_method(sel_getUid("shortMonthSymbols"), function $CPDateFormatter__shortMonthSymbols(self, _cmd)
 {
-    return ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKey:", "shortMonthSymbols"));
-    var ___r1, ___r2, ___r3;
+    return self.isa.objj_msgSend2(self, "symbolForKey:languageCode:", "shortMonthSymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["CPArray"]), new objj_method(sel_getUid("setShortMonthSymbols:"), function $CPDateFormatter__setShortMonthSymbols_(self, _cmd, aValue)
 {
-    ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "setValue:forKey:", aValue, "shortMonthSymbols"));
-    var ___r1, ___r2, ___r3;
+    self.isa.objj_msgSend3(self, "setSymbol:forKey:languageCode:", aValue, "shortMonthSymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["void","CPArray"]), new objj_method(sel_getUid("veryShortMonthSymbols"), function $CPDateFormatter__veryShortMonthSymbols(self, _cmd)
 {
-    return ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKey:", "veryShortMonthSymbols"));
-    var ___r1, ___r2, ___r3;
+    return self.isa.objj_msgSend2(self, "symbolForKey:languageCode:", "veryShortMonthSymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["CPArray"]), new objj_method(sel_getUid("setVeryShortMonthSymbols:"), function $CPDateFormatter__setVeryShortMonthSymbols_(self, _cmd, aValue)
 {
-    ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "setValue:forKey:", aValue, "veryShortMonthSymbols"));
-    var ___r1, ___r2, ___r3;
+    self.isa.objj_msgSend3(self, "setSymbol:forKey:languageCode:", aValue, "veryShortMonthSymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["void","CPArray"]), new objj_method(sel_getUid("standaloneMonthSymbols"), function $CPDateFormatter__standaloneMonthSymbols(self, _cmd)
 {
-    return ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKey:", "standaloneMonthSymbols"));
-    var ___r1, ___r2, ___r3;
+    return self.isa.objj_msgSend2(self, "symbolForKey:languageCode:", "standaloneMonthSymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["CPArray"]), new objj_method(sel_getUid("setStandaloneMonthSymbols:"), function $CPDateFormatter__setStandaloneMonthSymbols_(self, _cmd, aValue)
 {
-    ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "setValue:forKey:", aValue, "standaloneMonthSymbols"));
-    var ___r1, ___r2, ___r3;
+    self.isa.objj_msgSend3(self, "setSymbol:forKey:languageCode:", aValue, "standaloneMonthSymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["void","CPArray"]), new objj_method(sel_getUid("shortStandaloneMonthSymbols"), function $CPDateFormatter__shortStandaloneMonthSymbols(self, _cmd)
 {
-    return ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKey:", "shortStandaloneMonthSymbols"));
-    var ___r1, ___r2, ___r3;
+    return self.isa.objj_msgSend2(self, "symbolForKey:languageCode:", "shortStandaloneMonthSymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["CPArray"]), new objj_method(sel_getUid("setShortStandaloneMonthSymbols:"), function $CPDateFormatter__setShortStandaloneMonthSymbols_(self, _cmd, aValue)
 {
-    ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "setValue:forKey:", aValue, "shortStandaloneMonthSymbols"));
-    var ___r1, ___r2, ___r3;
+    self.isa.objj_msgSend3(self, "setSymbol:forKey:languageCode:", aValue, "shortStandaloneMonthSymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["void","CPArray"]), new objj_method(sel_getUid("veryShortStandaloneMonthSymbols"), function $CPDateFormatter__veryShortStandaloneMonthSymbols(self, _cmd)
 {
-    return ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKey:", "veryShortStandaloneMonthSymbols"));
-    var ___r1, ___r2, ___r3;
+    return self.isa.objj_msgSend2(self, "symbolForKey:languageCode:", "veryShortStandaloneMonthSymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["CPArray"]), new objj_method(sel_getUid("setVeryShortStandaloneMonthSymbols:"), function $CPDateFormatter__setVeryShortStandaloneMonthSymbols_(self, _cmd, aValue)
 {
-    ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "setValue:forKey:", aValue, "veryShortStandaloneMonthSymbols"));
-    var ___r1, ___r2, ___r3;
+    self.isa.objj_msgSend3(self, "setSymbol:forKey:languageCode:", aValue, "veryShortStandaloneMonthSymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["void","CPArray"]), new objj_method(sel_getUid("quarterSymbols"), function $CPDateFormatter__quarterSymbols(self, _cmd)
 {
-    return ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKey:", "quarterSymbols"));
-    var ___r1, ___r2, ___r3;
+    return self.isa.objj_msgSend2(self, "symbolForKey:languageCode:", "quarterSymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["CPArray"]), new objj_method(sel_getUid("setQuarterSymbols:"), function $CPDateFormatter__setQuarterSymbols_(self, _cmd, aValue)
 {
-    ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "setValue:forKey:", aValue, "quarterSymbols"));
-    var ___r1, ___r2, ___r3;
+    self.isa.objj_msgSend3(self, "setSymbol:forKey:languageCode:", aValue, "quarterSymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["void","CPArray"]), new objj_method(sel_getUid("shortQuarterSymbols"), function $CPDateFormatter__shortQuarterSymbols(self, _cmd)
 {
-    return ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKey:", "shortQuarterSymbols"));
-    var ___r1, ___r2, ___r3;
+    return self.isa.objj_msgSend2(self, "symbolForKey:languageCode:", "shortQuarterSymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["CPArray"]), new objj_method(sel_getUid("setShortQuarterSymbols:"), function $CPDateFormatter__setShortQuarterSymbols_(self, _cmd, aValue)
 {
-    ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "setValue:forKey:", aValue, "shortQuarterSymbols"));
-    var ___r1, ___r2, ___r3;
+    self.isa.objj_msgSend3(self, "setSymbol:forKey:languageCode:", aValue, "shortQuarterSymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["void","CPArray"]), new objj_method(sel_getUid("standaloneQuarterSymbols"), function $CPDateFormatter__standaloneQuarterSymbols(self, _cmd)
 {
-    return ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKey:", "standaloneQuarterSymbols"));
-    var ___r1, ___r2, ___r3;
+    return self.isa.objj_msgSend2(self, "symbolForKey:languageCode:", "standaloneQuarterSymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["CPArray"]), new objj_method(sel_getUid("setStandaloneQuarterSymbols:"), function $CPDateFormatter__setStandaloneQuarterSymbols_(self, _cmd, aValue)
 {
-    ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "setValue:forKey:", aValue, "standaloneQuarterSymbols"));
-    var ___r1, ___r2, ___r3;
+    self.isa.objj_msgSend3(self, "setSymbol:forKey:languageCode:", aValue, "standaloneQuarterSymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["void","CPArray"]), new objj_method(sel_getUid("shortStandaloneQuarterSymbols"), function $CPDateFormatter__shortStandaloneQuarterSymbols(self, _cmd)
 {
-    return ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKey:", "shortStandaloneQuarterSymbols"));
-    var ___r1, ___r2, ___r3;
+    return self.isa.objj_msgSend2(self, "symbolForKey:languageCode:", "shortStandaloneQuarterSymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["CPArray"]), new objj_method(sel_getUid("setShortStandaloneQuarterSymbols:"), function $CPDateFormatter__setShortStandaloneQuarterSymbols_(self, _cmd, aValue)
 {
-    ((___r1 = ((___r2 = self._symbols), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", ((___r3 = self._locale), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", CPLocaleLanguageCode))))), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "setValue:forKey:", aValue, "shortStandaloneQuarterSymbols"));
-    var ___r1, ___r2, ___r3;
+    self.isa.objj_msgSend3(self, "setSymbol:forKey:languageCode:", aValue, "shortStandaloneQuarterSymbols", ((___r1 = self._locale), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPLocaleLanguageCode)));
+    var ___r1;
 }
 ,["void","CPArray"]), new objj_method(sel_getUid("stringFromDate:"), function $CPDateFormatter__stringFromDate_(self, _cmd, aDate)
 {
@@ -8256,7 +8288,7 @@ class_addMethods(the_class, [new objj_method(sel_getUid("initWithObjects:count:"
     return CPSet.isa.objj_msgSend1(CPSet, "setWithSet:", self);
 }
 ,["id"])]);
-}objj_executeFile("CPKeyValueObserving.j", YES);p;21;CPKeyValueObserving.jt;55452;@STATIC;1.0;i;9;CPArray.ji;14;CPDictionary.ji;13;CPException.ji;12;CPIndexSet.ji;8;CPNull.ji;10;CPObject.ji;7;CPSet.ji;13;CPArray+KVO.ji;11;CPSet+KVO.jt;55293;objj_executeFile("CPArray.j", YES);objj_executeFile("CPDictionary.j", YES);objj_executeFile("CPException.j", YES);objj_executeFile("CPIndexSet.j", YES);objj_executeFile("CPNull.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPSet.j", YES);{
+}objj_executeFile("CPKeyValueObserving.j", YES);p;21;CPKeyValueObserving.jt;58500;@STATIC;1.0;i;9;CPArray.ji;14;CPDictionary.ji;13;CPException.ji;12;CPIndexSet.ji;8;CPNull.ji;10;CPObject.ji;7;CPSet.ji;13;CPArray+KVO.ji;11;CPSet+KVO.jt;58341;objj_executeFile("CPArray.j", YES);objj_executeFile("CPDictionary.j", YES);objj_executeFile("CPException.j", YES);objj_executeFile("CPIndexSet.j", YES);objj_executeFile("CPNull.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPSet.j", YES);{
 var the_class = objj_getClass("CPObject")
 if(!the_class) throw new SyntaxError("*** Could not find definition for class \"CPObject\"");
 var meta_class = the_class.isa;class_addMethods(the_class, [new objj_method(sel_getUid("willChangeValueForKey:"), function $CPObject__willChangeValueForKey_(self, _cmd, aKey)
@@ -8475,7 +8507,7 @@ var kvoNewAndOld = CPKeyValueObservingOptionNew | CPKeyValueObservingOptionOld,
     DependentKeysKey = "$KVODEPENDENT",
     KVOProxyKey = "$KVOPROXY";
 {var the_class = objj_allocateClassPair(CPObject, "_CPKVOProxy"),
-meta_class = the_class.isa;class_addIvars(the_class, [new objj_ivar("_targetObject"), new objj_ivar("_nativeClass"), new objj_ivar("_changesForKey"), new objj_ivar("_nestingForKey"), new objj_ivar("_observersForKey"), new objj_ivar("_observersForKeyLength"), new objj_ivar("_replacedKeys"), new objj_ivar("_adding")]);objj_registerClassPair(the_class);
+meta_class = the_class.isa;class_addIvars(the_class, [new objj_ivar("_targetObject"), new objj_ivar("_nativeClass"), new objj_ivar("_changesForKey"), new objj_ivar("_nestingForKey"), new objj_ivar("_minOptionsForKey"), new objj_ivar("_observersForKey"), new objj_ivar("_observersForKeyLength"), new objj_ivar("_replacedKeys"), new objj_ivar("_adding")]);objj_registerClassPair(the_class);
 class_addMethods(the_class, [new objj_method(sel_getUid("adding"), function $_CPKVOProxy__adding(self, _cmd)
 {
     return self._adding;
@@ -8493,6 +8525,7 @@ class_addMethods(the_class, [new objj_method(sel_getUid("adding"), function $_CP
         self._observersForKey = {};
         self._changesForKey = {};
         self._nestingForKey = {};
+        self._minOptionsForKey = {};
         self._observersForKeyLength = 0;
         (self == null ? null : self.isa.objj_msgSend0(self, "_replaceClass"));
         aTarget[KVOProxyKey] = self;
@@ -8749,10 +8782,18 @@ class_addMethods(the_class, [new objj_method(sel_getUid("adding"), function $_CP
     (observers == null ? null : observers.isa.objj_msgSend2(observers, "setObject:forKey:", _CPKVOInfoMake(anObserver, options, aContext, forwarder), (anObserver == null ? null : anObserver.isa.objj_msgSend0(anObserver, "UID"))));
     if (options & CPKeyValueObservingOptionInitial)
     {
-        var newValue = ((___r1 = self._targetObject), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKeyPath:", aPath));
-        if (newValue === nil || newValue === undefined)
-            newValue = CPNull.isa.objj_msgSend0(CPNull, "null");
-        var changes = objj_msgSend(objj_msgSend(CPDictionary, "alloc"), "initWithObjectsAndKeys:", newValue, CPKeyValueChangeNewKey);
+        var changes;
+        if (options & CPKeyValueObservingOptionNew)
+        {
+            var newValue = ((___r1 = self._targetObject), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKeyPath:", aPath));
+            if (newValue == nil)
+                newValue = CPNull.isa.objj_msgSend0(CPNull, "null");
+            changes = objj_msgSend(objj_msgSend(CPDictionary, "alloc"), "initWithObjectsAndKeys:", CPKeyValueChangeSetting, CPKeyValueChangeKindKey, newValue, CPKeyValueChangeNewKey);
+        }
+        else
+        {
+            changes = objj_msgSend(objj_msgSend(CPDictionary, "alloc"), "initWithObjectsAndKeys:", CPKeyValueChangeSetting, CPKeyValueChangeKindKey);
+        }
         (anObserver == null ? null : anObserver.isa.objj_msgSend(anObserver, "observeValueForKeyPath:ofObject:change:context:", aPath, self._targetObject, changes, aContext));
     }
     var ___r1;
@@ -8786,7 +8827,9 @@ class_addMethods(the_class, [new objj_method(sel_getUid("adding"), function $_CP
 }
 ,["void","id","CPString"]), new objj_method(sel_getUid("_sendNotificationsForKey:changeOptions:isBefore:"), function $_CPKVOProxy___sendNotificationsForKey_changeOptions_isBefore_(self, _cmd, aKey, changeOptions, isBefore)
 {
-    var changes = self._changesForKey[aKey];
+    var changes = self._changesForKey[aKey],
+        observers = ((___r1 = self._observersForKey[aKey]), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "allValues")),
+        observersMinimumOptions = 0;
     if (isBefore)
     {
         if (changes)
@@ -8798,47 +8841,58 @@ class_addMethods(the_class, [new objj_method(sel_getUid("adding"), function $_CP
             return;
         }
         self._nestingForKey[aKey] = 1;
+        var count = observers ? observers.length : 0;
+        while (count--)
+        {
+            var observerInfo = observers[count];
+            observersMinimumOptions |= observerInfo.options & kvoNewAndOld;
+        }
+        self._minOptionsForKey[aKey] = observersMinimumOptions;
         changes = changeOptions;
-        var indexes = (changes == null ? null : changes.isa.objj_msgSend1(changes, "objectForKey:", CPKeyValueChangeIndexesKey)),
-            setMutationKind = changes[_CPKeyValueChangeSetMutationKindKey];
-        if (setMutationKind)
+        if (observersMinimumOptions & CPKeyValueObservingOptionOld)
         {
-            var setMutationObjects = ((___r1 = changes[_CPKeyValueChangeSetMutationObjectsKey]), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "copy")),
-                setExistingObjects = ((___r1 = ((___r2 = self._targetObject), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", aKey))), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "copy"));
-            if (setMutationKind == CPKeyValueMinusSetMutation)
+            var indexes = (changes == null ? null : changes.isa.objj_msgSend1(changes, "objectForKey:", CPKeyValueChangeIndexesKey)),
+                setMutationKind = changes[_CPKeyValueChangeSetMutationKindKey];
+            if (setMutationKind)
             {
-                (setExistingObjects == null ? null : setExistingObjects.isa.objj_msgSend1(setExistingObjects, "intersectSet:", setMutationObjects));
-                (changes == null ? null : changes.isa.objj_msgSend2(changes, "setValue:forKey:", setExistingObjects, CPKeyValueChangeOldKey));
+                var setMutationObjects = ((___r1 = changes[_CPKeyValueChangeSetMutationObjectsKey]), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "copy")),
+                    setExistingObjects = ((___r1 = ((___r2 = self._targetObject), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKey:", aKey))), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "copy"));
+                if (setMutationKind == CPKeyValueMinusSetMutation)
+                {
+                    (setExistingObjects == null ? null : setExistingObjects.isa.objj_msgSend1(setExistingObjects, "intersectSet:", setMutationObjects));
+                    (changes == null ? null : changes.isa.objj_msgSend2(changes, "setValue:forKey:", setExistingObjects, CPKeyValueChangeOldKey));
+                }
+                else if (setMutationKind === CPKeyValueIntersectSetMutation || setMutationKind === CPKeyValueSetSetMutation)
+                {
+                    (setExistingObjects == null ? null : setExistingObjects.isa.objj_msgSend1(setExistingObjects, "minusSet:", setMutationObjects));
+                    (changes == null ? null : changes.isa.objj_msgSend2(changes, "setValue:forKey:", setExistingObjects, CPKeyValueChangeOldKey));
+                }
+                if (setMutationKind === CPKeyValueUnionSetMutation || setMutationKind === CPKeyValueSetSetMutation)
+                {
+                    (setMutationObjects == null ? null : setMutationObjects.isa.objj_msgSend1(setMutationObjects, "minusSet:", setExistingObjects));
+                    changes[_CPKeyValueChangeSetMutationNewValueKey] = setMutationObjects;
+                }
             }
-            else if (setMutationKind === CPKeyValueIntersectSetMutation || setMutationKind === CPKeyValueSetSetMutation)
+            else if (indexes)
             {
-                (setExistingObjects == null ? null : setExistingObjects.isa.objj_msgSend1(setExistingObjects, "minusSet:", setMutationObjects));
-                (changes == null ? null : changes.isa.objj_msgSend2(changes, "setValue:forKey:", setExistingObjects, CPKeyValueChangeOldKey));
+                var type = (changes == null ? null : changes.isa.objj_msgSend1(changes, "objectForKey:", CPKeyValueChangeKindKey));
+                if (type === CPKeyValueChangeReplacement || type === CPKeyValueChangeRemoval)
+                {
+                    var newValues = ((___r1 = ((___r2 = self._targetObject), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "mutableArrayValueForKeyPath:", aKey))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectsAtIndexes:", indexes));
+                    (changes == null ? null : changes.isa.objj_msgSend2(changes, "setValue:forKey:", newValues, CPKeyValueChangeOldKey));
+                }
             }
-            if (setMutationKind === CPKeyValueUnionSetMutation || setMutationKind === CPKeyValueSetSetMutation)
+            else
             {
-                (setMutationObjects == null ? null : setMutationObjects.isa.objj_msgSend1(setMutationObjects, "minusSet:", setExistingObjects));
-                changes[_CPKeyValueChangeSetMutationNewValueKey] = setMutationObjects;
+                var oldValue = ((___r1 = self._targetObject), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKey:", aKey));
+                if (oldValue === nil || oldValue === undefined)
+                    oldValue = CPNull.isa.objj_msgSend0(CPNull, "null");
+                (changes == null ? null : changes.isa.objj_msgSend2(changes, "setObject:forKey:", oldValue, CPKeyValueChangeOldKey));
             }
-        }
-        else if (indexes)
-        {
-            var type = (changes == null ? null : changes.isa.objj_msgSend1(changes, "objectForKey:", CPKeyValueChangeKindKey));
-            if (type === CPKeyValueChangeReplacement || type === CPKeyValueChangeRemoval)
-            {
-                var newValues = ((___r1 = ((___r2 = self._targetObject), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "mutableArrayValueForKeyPath:", aKey))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectsAtIndexes:", indexes));
-                (changes == null ? null : changes.isa.objj_msgSend2(changes, "setValue:forKey:", newValues, CPKeyValueChangeOldKey));
-            }
-        }
-        else
-        {
-            var oldValue = ((___r1 = self._targetObject), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKey:", aKey));
-            if (oldValue === nil || oldValue === undefined)
-                oldValue = CPNull.isa.objj_msgSend0(CPNull, "null");
-            (changes == null ? null : changes.isa.objj_msgSend2(changes, "setObject:forKey:", oldValue, CPKeyValueChangeOldKey));
         }
         (changes == null ? null : changes.isa.objj_msgSend2(changes, "setObject:forKey:", 1, CPKeyValueChangeNotificationIsPriorKey));
         self._changesForKey[aKey] = changes;
+        observersMinimumOptions &= ~CPKeyValueObservingOptionNew;
     }
     else
     {
@@ -8862,41 +8916,75 @@ class_addMethods(the_class, [new objj_method(sel_getUid("adding"), function $_CP
         }
         delete self._nestingForKey[aKey];
         (changes == null ? null : changes.isa.objj_msgSend1(changes, "removeObjectForKey:", CPKeyValueChangeNotificationIsPriorKey));
-        var indexes = (changes == null ? null : changes.isa.objj_msgSend1(changes, "objectForKey:", CPKeyValueChangeIndexesKey)),
-            setMutationKind = changes[_CPKeyValueChangeSetMutationKindKey];
-        if (setMutationKind)
+        observersMinimumOptions = self._minOptionsForKey[aKey];
+        if (observersMinimumOptions & CPKeyValueObservingOptionNew)
         {
-            var newValue = changes[_CPKeyValueChangeSetMutationNewValueKey];
-            (changes == null ? null : changes.isa.objj_msgSend2(changes, "setValue:forKey:", newValue, CPKeyValueChangeNewKey));
-            delete changes[_CPKeyValueChangeSetMutationNewValueKey];
-            delete changes[_CPKeyValueChangeSetMutationObjectsKey];
-            delete changes[_CPKeyValueChangeSetMutationKindKey];
-        }
-        else if (indexes)
-        {
-            var type = (changes == null ? null : changes.isa.objj_msgSend1(changes, "objectForKey:", CPKeyValueChangeKindKey));
-            if (type == CPKeyValueChangeReplacement || type == CPKeyValueChangeInsertion)
+            var indexes = (changes == null ? null : changes.isa.objj_msgSend1(changes, "objectForKey:", CPKeyValueChangeIndexesKey)),
+                setMutationKind = changes[_CPKeyValueChangeSetMutationKindKey];
+            if (setMutationKind)
             {
-                var newValues = ((___r1 = ((___r2 = self._targetObject), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "mutableArrayValueForKeyPath:", aKey))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectsAtIndexes:", indexes));
-                (changes == null ? null : changes.isa.objj_msgSend2(changes, "setValue:forKey:", newValues, CPKeyValueChangeNewKey));
+                var newValue = changes[_CPKeyValueChangeSetMutationNewValueKey];
+                (changes == null ? null : changes.isa.objj_msgSend2(changes, "setValue:forKey:", newValue, CPKeyValueChangeNewKey));
+                delete changes[_CPKeyValueChangeSetMutationNewValueKey];
+                delete changes[_CPKeyValueChangeSetMutationObjectsKey];
+                delete changes[_CPKeyValueChangeSetMutationKindKey];
+            }
+            else if (indexes)
+            {
+                var type = (changes == null ? null : changes.isa.objj_msgSend1(changes, "objectForKey:", CPKeyValueChangeKindKey));
+                if (type == CPKeyValueChangeReplacement || type == CPKeyValueChangeInsertion)
+                {
+                    var newValues = ((___r1 = ((___r2 = self._targetObject), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "mutableArrayValueForKeyPath:", aKey))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectsAtIndexes:", indexes));
+                    (changes == null ? null : changes.isa.objj_msgSend2(changes, "setValue:forKey:", newValues, CPKeyValueChangeNewKey));
+                }
+            }
+            else
+            {
+                var newValue = ((___r1 = self._targetObject), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKey:", aKey));
+                if (newValue === nil || newValue === undefined)
+                    newValue = CPNull.isa.objj_msgSend0(CPNull, "null");
+                (changes == null ? null : changes.isa.objj_msgSend2(changes, "setObject:forKey:", newValue, CPKeyValueChangeNewKey));
+            }
+        }
+        delete self._minOptionsForKey[aKey];
+        delete self._changesForKey[aKey];
+    }
+    var count = observers ? observers.length : 0,
+        changesCache = {};
+    while (count--)
+    {
+        var observerInfo = observers[count],
+            options = observerInfo.options,
+            onlyNewAndOldOptions = options & kvoNewAndOld,
+            observerChanges = nil;
+        if (isBefore)
+        {
+            if (options & CPKeyValueObservingOptionPrior)
+            {
+                observerChanges = changes;
+                onlyNewAndOldOptions &= ~CPKeyValueObservingOptionNew;
             }
         }
         else
         {
-            var newValue = ((___r1 = self._targetObject), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKey:", aKey));
-            if (newValue === nil || newValue === undefined)
-                newValue = CPNull.isa.objj_msgSend0(CPNull, "null");
-            (changes == null ? null : changes.isa.objj_msgSend2(changes, "setObject:forKey:", newValue, CPKeyValueChangeNewKey));
+            observerChanges = changes;
         }
-        delete self._changesForKey[aKey];
-    }
-    var observers = ((___r1 = self._observersForKey[aKey]), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "allValues")),
-        count = observers ? observers.length : 0;
-    while (count--)
-    {
-        var observerInfo = observers[count];
-        if (!isBefore || observerInfo.options & CPKeyValueObservingOptionPrior)
-            ((___r1 = observerInfo.observer), ___r1 == null ? null : ___r1.isa.objj_msgSend(___r1, "observeValueForKeyPath:ofObject:change:context:", aKey, self._targetObject, changes, observerInfo.context));
+        if (observerChanges)
+        {
+            if (onlyNewAndOldOptions !== observersMinimumOptions)
+            {
+                observerChanges = changesCache[onlyNewAndOldOptions];
+                if (!observerChanges)
+                {
+                    changesCache[onlyNewAndOldOptions] = observerChanges = (changes == null ? null : changes.isa.objj_msgSend0(changes, "mutableCopy"));
+                    if (!(onlyNewAndOldOptions & CPKeyValueObservingOptionOld))
+                        (observerChanges == null ? null : observerChanges.isa.objj_msgSend1(observerChanges, "removeObjectForKey:", CPKeyValueChangeOldKey));
+                    if (!(onlyNewAndOldOptions & CPKeyValueObservingOptionNew))
+                        (observerChanges == null ? null : observerChanges.isa.objj_msgSend1(observerChanges, "removeObjectForKey:", CPKeyValueChangeNewKey));
+                }
+            }
+            ((___r1 = observerInfo.observer), ___r1 == null ? null : ___r1.isa.objj_msgSend(___r1, "observeValueForKeyPath:ofObject:change:context:", aKey, self._targetObject, observerChanges, observerInfo.context));
+        }
     }
     var dependentKeysMap = self._nativeClass[DependentKeysKey];
     if (!dependentKeysMap)
@@ -9080,9 +9168,17 @@ class_addMethods(the_class, [new objj_method(sel_getUid("initWithKeyPath:object:
 {
     if (aKeyPath === self._firstPart)
     {
-        var oldValue = ((___r1 = self._value), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKeyPath:", self._secondPart)),
-            newValue = ((___r1 = self._object), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKeyPath:", self._firstPart + "." + self._secondPart)),
-            pathChanges = objj_msgSend(objj_msgSend(CPDictionary, "alloc"), "initWithObjectsAndKeys:", newValue ? newValue : CPNull.isa.objj_msgSend0(CPNull, "null"), CPKeyValueChangeNewKey, oldValue ? oldValue : CPNull.isa.objj_msgSend0(CPNull, "null"), CPKeyValueChangeOldKey, CPKeyValueChangeSetting, CPKeyValueChangeKindKey);
+        var pathChanges = CPMutableDictionary.isa.objj_msgSend2(CPMutableDictionary, "dictionaryWithObject:forKey:", CPKeyValueChangeSetting, CPKeyValueChangeKindKey);
+        if (self._options & CPKeyValueObservingOptionOld)
+        {
+            var oldValue = ((___r1 = self._value), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKeyPath:", self._secondPart));
+            (pathChanges == null ? null : pathChanges.isa.objj_msgSend2(pathChanges, "setObject:forKey:", oldValue != null ? oldValue : CPNull.isa.objj_msgSend0(CPNull, "null"), CPKeyValueChangeOldKey));
+        }
+        if (self._options & CPKeyValueObservingOptionNew)
+        {
+            var newValue = ((___r1 = self._object), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKeyPath:", self._firstPart + "." + self._secondPart));
+            (pathChanges == null ? null : pathChanges.isa.objj_msgSend2(pathChanges, "setObject:forKey:", newValue != null ? newValue : CPNull.isa.objj_msgSend0(CPNull, "null"), CPKeyValueChangeNewKey));
+        }
         ((___r1 = self._observer), ___r1 == null ? null : ___r1.isa.objj_msgSend(___r1, "observeValueForKeyPath:ofObject:change:context:", self._firstPart + "." + self._secondPart, self._object, pathChanges, self._context));
         if (self._value)
             ((___r1 = self._value), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "removeObserver:forKeyPath:", self, self._secondPart));
@@ -11798,7 +11894,7 @@ var meta_class = the_class.isa;class_addMethods(the_class, [new objj_method(sel_
     (aCoder == null ? null : aCoder.isa.objj_msgSend2(aCoder, "encodeObject:forKey:", CPStringFromSelector(self._selector), CPSortDescriptorSelectorKey));
 }
 ,["void","CPCoder"])]);
-}p;10;CPString.jt;21716;@STATIC;1.0;i;13;CPException.ji;10;CPObject.ji;15;CPObjJRuntime.ji;9;CPRange.ji;18;CPSortDescriptor.ji;7;CPURL.ji;9;CPValue.ji;8;CPNull.jt;21571;objj_executeFile("CPException.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPObjJRuntime.j", YES);objj_executeFile("CPRange.j", YES);objj_executeFile("CPSortDescriptor.j", YES);objj_executeFile("CPURL.j", YES);objj_executeFile("CPValue.j", YES);objj_executeFile("CPNull.j", YES);CPCaseInsensitiveSearch = 1;
+}p;10;CPString.jt;22076;@STATIC;1.0;i;13;CPException.ji;10;CPObject.ji;15;CPObjJRuntime.ji;9;CPRange.ji;18;CPSortDescriptor.ji;7;CPURL.ji;9;CPValue.ji;8;CPNull.jt;21931;objj_executeFile("CPException.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPObjJRuntime.j", YES);objj_executeFile("CPRange.j", YES);objj_executeFile("CPSortDescriptor.j", YES);objj_executeFile("CPURL.j", YES);objj_executeFile("CPValue.j", YES);objj_executeFile("CPNull.j", YES);CPCaseInsensitiveSearch = 1;
 CPLiteralSearch = 2;
 CPBackwardsSearch = 4;
 CPAnchoredSearch = 8;
@@ -11901,6 +11997,11 @@ class_addMethods(the_class, [new objj_method(sel_getUid("initWithString:"), func
     {
         string = string.toLowerCase();
         aString = aString.toLowerCase();
+    }
+    if (aMask & CPDiacriticInsensitiveSearch)
+    {
+        string = string.stripDiacritics();
+        aString = aString.stripDiacritics();
     }
     if (aMask & CPBackwardsSearch)
     {
@@ -12056,6 +12157,10 @@ class_addMethods(the_class, [new objj_method(sel_getUid("initWithString:"), func
 ,["CPString"]), new objj_method(sel_getUid("uppercaseString"), function $CPString__uppercaseString(self, _cmd)
 {
     return self.toUpperCase();
+}
+,["CPString"]), new objj_method(sel_getUid("stripDiacritics"), function $CPString__stripDiacritics(self, _cmd)
+{
+    return self.stripDiacritics();
 }
 ,["CPString"]), new objj_method(sel_getUid("doubleValue"), function $CPString__doubleValue(self, _cmd)
 {
@@ -12239,8 +12344,8 @@ var meta_class = the_class.isa;class_addMethods(meta_class, [new objj_method(sel
     return g;
 }
 ,["CPString"])]);
-}var diacritics = [[192, 198], [224, 230], [231, 231], [232, 235], [236, 239], [242, 246], [249, 252]],
-    normalized = [65, 97, 99, 101, 105, 111, 117];
+}var diacritics = [[192, 198], [200, 203], [204, 207], [210, 214], [217, 220], [224, 230], [231, 231], [232, 235], [236, 239], [242, 246], [249, 252]],
+    normalized = [65, 69, 73, 79, 85, 97, 99, 101, 105, 111, 117];
 String.prototype.stripDiacritics = function()
 {
     var output = "";
@@ -13637,7 +13742,7 @@ class_addMethods(meta_class, [new objj_method(sel_getUid("parseHTTPHeaders:"), f
     return r;
 }
 ,["CPDictionary","CPString"])]);
-}p;16;CPUserDefaults.jt;23910;@STATIC;1.0;i;10;CPBundle.ji;8;CPData.ji;14;CPDictionary.ji;13;CPException.ji;17;CPKeyedArchiver.ji;19;CPKeyedUnarchiver.ji;22;CPNotificationCenter.ji;10;CPObject.ji;11;CPRunLoop.ji;10;CPString.ji;7;CPURL.ji;17;CPURLConnection.ji;14;CPURLRequest.jt;23655;objj_executeFile("CPBundle.j", YES);objj_executeFile("CPData.j", YES);objj_executeFile("CPDictionary.j", YES);objj_executeFile("CPException.j", YES);objj_executeFile("CPKeyedArchiver.j", YES);objj_executeFile("CPKeyedUnarchiver.j", YES);objj_executeFile("CPNotificationCenter.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPRunLoop.j", YES);objj_executeFile("CPString.j", YES);objj_executeFile("CPURL.j", YES);objj_executeFile("CPURLConnection.j", YES);objj_executeFile("CPURLRequest.j", YES);CPArgumentDomain = "CPArgumentDomain";
+}p;16;CPUserDefaults.jt;23914;@STATIC;1.0;i;10;CPBundle.ji;8;CPData.ji;14;CPDictionary.ji;13;CPException.ji;17;CPKeyedArchiver.ji;19;CPKeyedUnarchiver.ji;22;CPNotificationCenter.ji;10;CPObject.ji;11;CPRunLoop.ji;10;CPString.ji;7;CPURL.ji;17;CPURLConnection.ji;14;CPURLRequest.jt;23659;objj_executeFile("CPBundle.j", YES);objj_executeFile("CPData.j", YES);objj_executeFile("CPDictionary.j", YES);objj_executeFile("CPException.j", YES);objj_executeFile("CPKeyedArchiver.j", YES);objj_executeFile("CPKeyedUnarchiver.j", YES);objj_executeFile("CPNotificationCenter.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPRunLoop.j", YES);objj_executeFile("CPString.j", YES);objj_executeFile("CPURL.j", YES);objj_executeFile("CPURLConnection.j", YES);objj_executeFile("CPURLRequest.j", YES);CPArgumentDomain = "CPArgumentDomain";
 CPApplicationDomain = ((___r1 = ((___r2 = CPBundle.isa.objj_msgSend0(CPBundle, "mainBundle")), ___r2 == null ? null : ___r2.isa.objj_msgSend0(___r2, "infoDictionary"))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", "CPBundleIdentifier")) || "CPApplicationDomain";
 CPGlobalDomain = "CPGlobalDomain";
 CPLocaleDomain = "CPLocaleDomain";
@@ -13909,7 +14014,7 @@ class_addMethods(the_class, [new objj_method(sel_getUid("init"), function $CPUse
 }
 ,["void","BOOL","CPString"]), new objj_method(sel_getUid("setFloat:forKey:"), function $CPUserDefaults__setFloat_forKey_(self, _cmd, aValue, aKey)
 {
-    if ((aValue == null ? null : aValue.isa.objj_msgSend1(aValue, "respondsToSelector:", sel_getUid("aValue"))))
+    if ((aValue == null ? null : aValue.isa.objj_msgSend1(aValue, "respondsToSelector:", sel_getUid("floatValue"))))
         aValue = (aValue == null ? null : aValue.isa.objj_msgSend0(aValue, "floatValue"));
     self.isa.objj_msgSend2(self, "setObject:forKey:", parseFloat(aValue), aKey);
 }

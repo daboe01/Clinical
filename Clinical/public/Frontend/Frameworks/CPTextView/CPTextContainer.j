@@ -75,10 +75,11 @@ CPLineMovesUp = 4;
 */
 @implementation CPTextContainer : CPObject
 {
-    CGSize _size;
-    CPTextView _textView;
+    CGSize          _size;
+    CPTextView      _textView;
     CPLayoutManager _layoutManager;
-    float _lineFragmentPadding;
+    float           _lineFragmentPadding;
+    BOOL            _inResizing;
 }
 
 - (id)initWithContainerSize:(CGSize)aSize
@@ -109,13 +110,15 @@ CPLineMovesUp = 4;
     var oldSize = _size;
 
     _size = someSize;
-
     if (oldSize.width != _size.width)
     {
-        [_layoutManager invalidateLayoutForCharacterRange:CPMakeRange(0,[[_layoutManager textStorage] length])
+        _inResizing = YES;
+        [_layoutManager invalidateLayoutForCharacterRange:CPMakeRange(0, [[_layoutManager textStorage] length])
                         isSoft:NO
                         actualCharacterRange:NULL];
         [_layoutManager _validateLayoutAndGlyphs];
+        [_textView sizeToFit];
+         _inResizing = NO;
     }
 }
 

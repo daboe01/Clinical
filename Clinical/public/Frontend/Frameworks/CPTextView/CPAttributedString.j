@@ -748,7 +748,7 @@
     }
 
     //necessary?
-    //[self _coalesceRangeEntriesFromIndex:startingEntryIndex toIndex:startingEntryIndex+rangeEntries.length];
+    [self _coalesceRangeEntriesFromIndex:0 toIndex:[self length]];
 }
 
 /*!

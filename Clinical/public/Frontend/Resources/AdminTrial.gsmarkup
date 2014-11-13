@@ -15,8 +15,9 @@
       <popUpButton width="200" halign="left" valueBinding="#CPOwner.trialsController.selection.idgroup" itemsBinding="#CPOwner.groupsControllerAll.arrangedObjects.name"/>
       <label> Status values </label>
       <scrollView width="200" halign ="min" hasHorizontalScroller="NO">
-       <tableView zebra="yes" autosaveName="allgroups_tv" valueBinding="#CPOwner.statusController">
-        <tableColumn identifier="name" title="name" editable="YES"/>
+       <tableView zebra="yes" autosaveName="allstates0_tv" valueBinding="#CPOwner.statusController">
+         <tableColumn identifier="name" title="name" editable="YES"/>
+         <tableColumn identifier="alerting" title="alerting" editable="YES"/>
        </tableView>
       </scrollView>
       <ButtonBar width="200" halign ="min" target="#CPOwner.statusController" plusButtonAction="insert:" minusButtonAction="remove:"/>
@@ -39,6 +40,7 @@
       <ButtonBar target="#CPOwner.visitsController" plusButtonAction="insert:" minusButtonAction="remove:" actionsButton="YES" id="adminbuttonbar">
          <popUpButtonItem title="Duplicate" target="#CPOwner" action="duplicateKoKaVisit:"/>
          <popUpButtonItem title="Unset reference visit" target="#CPOwner" action="unsetReferenceVisit:"/>
+         <popUpButtonItem title="Download cost calculations" target="#CPOwner" action="downloadKoKa:"/>
       </ButtonBar>
     </vbox>
        </hbox>

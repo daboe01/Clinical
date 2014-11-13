@@ -35,7 +35,6 @@
 @import "CPLayoutManager.j"
 @import "CPFontManagerAdditions.j"
 
-
 @class CPTextStorage
 @class CPLayoutManager
 @class CPTextContainer

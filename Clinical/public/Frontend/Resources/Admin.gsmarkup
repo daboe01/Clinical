@@ -4,61 +4,74 @@
 
 <objects>
 
-<adminController id="myadmincontroller"/>
+<adminController id="mycontroller"/>
+
+<window id="personnelwindow" bridge="YES">
+  <tabView type="topBezel">
+   <tabViewItem title="Personnel">
+     <splitView vertical="YES" autosaveName="vsplitter_accounts">
+       <vbox>
+        <scrollView hasHorizontalScroller="NO">
+           <tableView zebra="yes" autosaveName="trialpersonnel2_tv" valueBinding="#CPOwner.personnelController">
+                <tableColumn identifier="ldap" title="ldap" editable="YES"/>
+                <tableColumn identifier="name" title="name" editable="YES"/>
+                <tableColumn identifier="email" title="email" editable="YES"/>
+                <tableColumn identifier="tel" title="tel" editable="YES"/>
+                <tableColumn identifier="abrechnungsname" title="abrechnungsname" editable="YES"/>
+                <tableColumn identifier="level" title="level" editable="YES"/>
+           </tableView>
+        </scrollView>
+        <ButtonBar target="#CPOwner.personnelController" plusButtonAction="insert:" minusButtonAction="remove:"/>
+       </vbox>
+       <vbox>
+
+        <scrollView hasHorizontalScroller="NO">
+           <tableView zebra="yes" autosaveName="trialpersonnel2_tv" valueBinding="#CPOwner.groupassignmentController">
+                <tableColumn identifier="idgroup" dataView="#popupdataviewgroup"  title="group"/>
+           </tableView>
+        </scrollView>
+        <ButtonBar target="#CPOwner.groupassignmentController" plusButtonAction="insert:" minusButtonAction="remove:"/>
+ 
+        <scrollView hasHorizontalScroller="NO">
+             <tableView zebra="yes" autosaveName="pers_props_tv" delegate="#mycontroller" valueBinding="#CPOwner.personnelPropController">
+                <tableColumn identifier="property.name" title="name"/>
+                <tableColumn identifier="value" title="value" editable="YES"/>
+             </tableView>
+        </scrollView>
+        <ButtonBar target="#mycontroller" plusButtonAction="addProperty:" minusButtonAction="removeProperty:"/>
+
+         <scrollView hasHorizontalScroller="NO">
+            <tableView zebra="yes" autosaveName="pers_costs_tv" delegate="#mycontroller" valueBinding="#CPOwner.personnelCostsController">
+                <tableColumn identifier="idaccount" dataView="#popupdataviewaccount"  title="account" editable="YES"/>
+                <tableColumn identifier="date_active" title="active date" editable="YES"/>
+                <tableColumn identifier="amount" title="monthly costs" editable="YES"/>
+            </tableView>
+        </scrollView>
+        <ButtonBar target="#CPOwner.personnelCostsController" plusButtonAction="insert:" minusButtonAction="remove:" actionsButton="YES">
+                 <popUpButtonItem title="Generate for the rest of this year" target="#myadmincontroller" action="runConfig:"/>
+        </ButtonBar>
+      </vbox>
+    </splitView>
+  </tabViewItem>
 
 
-<window id="allgroupswindow" title="Groups" visible="YES"  x="5" y="35" width="300" height="300">
+  <tabViewItem title="Groups">
+
    <vbox>
-	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" autosaveName="allgroups_tv" valueBinding="#CPOwner.groupsControllerAll">
-		<tableColumn identifier="name" title="name" editable="YES"/>
-		<tableColumn identifier="websitename" title="websitename" editable="YES"/>
-		<tableColumn identifier="sprechstunde" title="sprechstunde" editable="YES"/>
-	 </tableView>
-	</scrollView>
-	<ButtonBar target="#CPOwner.groupsControllerAll" plusButtonAction="insert:" minusButtonAction="remove:"/>
+        <scrollView hasHorizontalScroller="NO">
+         <tableView zebra="yes" autosaveName="allgroups_tv" valueBinding="#CPOwner.groupsControllerAll">
+                <tableColumn identifier="name" title="name" editable="YES"/>
+                <tableColumn identifier="telephone" title="telephone" editable="YES"/>
+                <tableColumn identifier="websitename" title="websitename" editable="YES"/>
+                <tableColumn identifier="sprechstunde" title="sprechstunde" editable="YES"/>
+         </tableView>
+        </scrollView>
+        <ButtonBar target="#CPOwner.groupsControllerAll" plusButtonAction="insert:" minusButtonAction="remove:"/>
    </vbox>
-</window>
+  </tabViewItem>
 
+  <tabViewItem title="States">
 
-<window id="personnelwindow" visible="YES"  x="425" y="35" width="500" height="300">
-  <hbox>
-   <vbox>
-	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" autosaveName="trialpersonnel4_tv" valueBinding="#CPOwner.personnelController">
-		<tableColumn identifier="ldap" title="ldap" editable="YES"/>
-		<tableColumn identifier="name" title="name" editable="YES"/>
-		<tableColumn identifier="function" title="function" editable="YES"/>
-		<tableColumn identifier="level" title="level" editable="YES"/>
-	 </tableView>
-	</scrollView>
-	<ButtonBar target="#CPOwner.personnelController" plusButtonAction="insert:" minusButtonAction="remove:"/>
-   </vbox>
-   <vbox>
-	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" autosaveName="trialpersonnel2_tv" valueBinding="#CPOwner.groupassignmentController">
-		<tableColumn identifier="idgroup" dataView="#popupdataviewgroup"  title="group"/>
-	 </tableView>
-	</scrollView>
-	<ButtonBar target="#CPOwner.groupassignmentController" plusButtonAction="insert:" minusButtonAction="remove:"/>
-  </vbox>
-  </hbox>
-</window>
-
-
-<window id="Personnel properties" x="5" y="410" width="400" height="400">
-   <vbox>
-	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" autosaveName="allprops2_tv" valueBinding="#CPOwner.personnelPropCatController" target="#CPOwner">
-		<tableColumn identifier="name" title="name" editable="YES"/>
-		<tableColumn identifier="type" title="type" editable="YES"/>
-	 </tableView>
-	</scrollView>
-	<ButtonBar target="#CPOwner.personnelPropCatController" plusButtonAction="insert:" minusButtonAction="remove:"/>
-   </vbox>
-</window>
-
-<window id="States controller" x="425" y="410" width="400" height="400">
    <vbox>
 	<scrollView hasHorizontalScroller="NO">
 	 <tableView zebra="yes" autosaveName="allstates_tv" valueBinding="#CPOwner.statesController" target="#CPOwner">
@@ -68,20 +81,42 @@
 	</scrollView>
 	<ButtonBar target="#CPOwner.statesController" plusButtonAction="insert:" minusButtonAction="remove:"/>
    </vbox>
-</window>
+  </tabViewItem>
+ </tabView>
 
+</window>
 
 <window visible="NO">
  <vbox>
   <popUpButton width="200" id="popupdataviewgroup" itemsBinding="#CPOwner.groupsControllerAll.arrangedObjects.name"/>
+  <popUpButton width="200" id="popupdataviewaccount" itemsBinding="#CPOwner.accountsController.arrangedObjects.name"/>
  </vbox>
+</window>
+
+
+<window id="addpropswindow" visible="NO" width="400" height="600">
+   <vbox>
+        <scrollView hasHorizontalScroller="NO">
+            <tableView zebra="yes" id="addpropstv" valueBinding="#CPOwner.personnelPropCatController" allowsMultipleSelection="YES">
+                <tableColumn identifier="name" title="name" editable="YES"/>
+                <tableColumn identifier="ordering" title="order" editable="YES"/>
+                <tableColumn identifier="type" title="type" editable="YES"/>
+            </tableView>
+        </scrollView>
+        <hbox>
+          <ButtonBar target="#mycontroller" plusButtonAction="addCatProperty:"/>
+          <button title="Add selected" target="#mycontroller" action="performAddProperty:"/>
+          <button title="Cancel" target="#mycontroller" action="cancelAddProperty:"/>
+        </hbox>
+   </vbox>
 </window>
 
 
 </objects>
 
 <connectors>
-	<outlet source="myadmincontroller" target="addpropstv" label="addPropsTV"/>
+        <outlet source="mycontroller" target="addpropswindow" label="addPropsWindow"/>
+        <outlet source="mycontroller" target="addpropstv" label="addPropsTV"/>
 </connectors>
 
 

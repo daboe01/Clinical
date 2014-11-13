@@ -279,6 +279,7 @@ var _allRelationships;
 		if([_data objectForKey: aKey] !== [tmpbj._data objectForKey: aKey])
 		{	[self willChangeValueForKey:aKey];
 			[_data setObject: [tmpbj._data objectForKey: aKey] forKey: aKey];
+			if(_changes) [_changes removeObjectForKey: aKey];
 			[self didChangeValueForKey:aKey];
 		}
     }

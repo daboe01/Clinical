@@ -100,6 +100,8 @@ BaseURL=HostURL+"/";
     id    processesController;
     id    dokusController;
     id    dokusController2;
+    id    pdokusController;
+    id    pdokusController2;
     id    personnelController;
     id    trialpersonnelController;
     id    groupsController;
@@ -107,6 +109,7 @@ BaseURL=HostURL+"/";
     id    rolesController;
     id    statesController;
     id    doctagsController;
+    id    pdoctagsController;
     id    propertiesCatController;
     id    groupassignmentController;
     id    personnelPropCatController;
@@ -129,22 +132,28 @@ BaseURL=HostURL+"/";
     id    groupPersonnelController;
     id    autocompletionController;
     id    adminButtonBar;
+    id    pdocumentsButtonBar;
 
     id    addTXWindow;
     id    accountsTV;
     id    addTxTV;
     id    accountPopover;
 
-    id mainController @accessors;
+    id    mainController @accessors;
+    id    _uploadMode;
+    id    popover;
+	id    addPropsWindow;
+	id    addPropsTV;
 }
 
 -(CPString) uploadURL
 {
-    return HostURL+"/upload/"+[trialsController valueForKeyPath: "selection.id"];
+    var url=_uploadMode? [personnelController valueForKeyPath: "selection.id"]+"?suffix=p": [trialsController valueForKeyPath: "selection.id"];
+    return HostURL+"/upload/"+ url;
 }
 
 // this is to make the currently GUI controller globally available (to get access to e.g. scale)
-- mainController
+-(id) mainController
 {    return [[CPApp mainWindow] delegate] || mainController;
 }
 
@@ -154,7 +163,7 @@ BaseURL=HostURL+"/";
     var mainFile="Operations.gsmarkup";
     var re = new RegExp("t=([^&#]+)");
     var m = re.exec(document.location);
-    if(m) mainFile=m[1];
+    if (m) mainFile=m[1];
     document.title=mainFile;
     [CPBundle loadRessourceNamed: mainFile owner: self];
     [[[CPApp mainWindow] delegate] _performPostLoadInit];
@@ -205,6 +214,11 @@ BaseURL=HostURL+"/";
     [proceduresVisitController reload];
 }
 
+-(void)downloadKoKa: sender
+{	var idtrial=[trialsController valueForKeyPath:"selection.id"];
+	document.location='/CT/download_koka/'+idtrial+'?session='+ window.G_SESSION;
+}
+
 -(void) reorderVisits: sender
 {
     var idtrial=[[CPApp delegate].trialsController valueForKeyPath:"selection.id"];
@@ -222,7 +236,96 @@ BaseURL=HostURL+"/";
 -(void) runPersonnel: sender
 {   [[CPApp mainWindow] close];
     [CPBundle loadRessourceNamed: "Personnel.gsmarkup" owner:self];
+
+// fixme: this restriction should be enforced in session and backend
+    var o=[personnelController._entity._store  fetchObjectsWithKey:"ldap" equallingValue:window.G_USERNAME inEntity:personnelController._entity options:@{"FSSynchronous": 1}];
+	[personnelController setSelectedObjects:o];
+
+	[pdokusController2 addObserver:self forKeyPath:"selection" options: nil context: nil];
+	[pdokusController addObserver:self forKeyPath:"selection.tag" options: nil context: nil];
+	var button=[pdocumentsButtonBar addButtonWithImageName:"download.png" target:self action:@selector(doDownload:)];
+    [button bind:CPEnabledBinding toObject:self withKeyPath:"pdokusController.selection.@count" options:nil];
+    [pdocumentsButtonBar registerWithArrayController:pdokusController];
 }
+
+-(void) _reloadDokus
+{
+    [pdokusController reload];
+    [pdokusController2 reload];
+
+}
+
+- (void)observeValueForKeyPath: keyPath ofObject: object change: change context: context
+{	if(object == pdokusController2)
+	{
+		[pdokusController setFilterPredicate: [CPPredicate predicateWithFormat:"tag = %@", [object valueForKeyPath:"selection.tag"] ]];
+
+	} else if(object == pdokusController)
+    {   if([change objectForKey:"CPKeyValueChangeOldKey"] !== [change objectForKey:"CPKeyValueChangeNewKey"])
+        {   [[CPRunLoop currentRunLoop] performSelector:@selector(_reloadDokus) target:self argument: nil order:0 modes:[CPDefaultRunLoopMode]];
+        }
+    }
+}
+
+
+-(void) uploadPersoDoku:sender
+{
+    _uploadMode=1;
+	[UploadManager sharedUploadManager];
+
+}
+- (void)deleteDocWarningDidEnd:(CPAlert)anAlert code:(id)code context:(id)context
+{   if(code)
+	{	[pdokusController removeObjectsAtArrangedObjectIndexes:[pdokusController selectionIndexes] ];
+	}
+}
+
+-(void) deletePersoDoku:sender
+{	var myalert = [CPAlert new];
+	[myalert setMessageText: "Are you sure you want to delete this document?"];
+	[myalert addButtonWithTitle:"Cancel"];
+	[myalert addButtonWithTitle:"Delete"];
+	[myalert beginSheetModalForWindow:[CPApp mainWindow] modalDelegate:self didEndSelector:@selector(deleteDocWarningDidEnd:code:context:) contextInfo: nil];
+}
+-(void) doDownload: sender
+{	var trialsController=[CPApp delegate].trialsController;
+	var id=[personnelController valueForKeyPath:"selection.id"];
+	var iddoku=[pdokusController valueForKeyPath:"selection.name"];
+	window.open("/CT/pdownload/"+id+"/"+iddoku, 'download_window');
+}
+
+-(void) cancelAddProperty: sender
+{	[popover close];
+}
+-(void) performAddProperty: sender
+{	[popover close];
+	var selected=[personnelPropCatController selectedObjects];
+	var idpersonnel=[[CPApp delegate].personnelController valueForKeyPath:"selection.id"];
+	var l=[selected count];
+	for(var i=0; i< l; i++)
+	{	var pk=[[selected objectAtIndex:i] valueForKey:"id"];
+		[personnelPropController addObject:@{"idproperty": pk, "idpersonnel": idpersonnel} ];
+	}
+}
+-(void) addProperty: sender
+{    popover=[CPPopover new];
+    [popover setDelegate:self];
+    [popover setAnimates:YES];
+    [popover setBehavior: CPPopoverBehaviorTransient ];
+    [popover setAppearance: CPPopoverAppearanceMinimal];
+    var myViewController=[CPViewController new];
+    [popover setContentViewController: myViewController];
+    [myViewController setView: [addPropsWindow contentView]];
+	[popover showRelativeToRect:NULL ofView: sender preferredEdge: nil];
+}
+-(void) removeProperty: sender
+{
+	[personnelPropController remove: self];
+}
+
+
+
+
 -(void) runAccounts: sender
 {   [[CPApp mainWindow] close];
     [CPBundle loadRessourceNamed: "Accounts.gsmarkup" owner:self];

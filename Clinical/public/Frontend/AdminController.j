@@ -62,7 +62,6 @@
 	[addPropsTV editColumn:0 row:[addPropsTV selectedRow] withEvent:nil  select:YES];
 }
 
-
 @end
 
 

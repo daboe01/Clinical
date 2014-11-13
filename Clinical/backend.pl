@@ -1,6 +1,10 @@
 #!/usr/local/ActivePerl-5.14/site/bin/morbo
 
-use lib qw {/Users/Shared/bin /Users/Shared/bin/Clinical /srv/www/Clinical/ /Users/boehringer/src/daboe01_Cellfinder/Cellfinder/ /Users/daboe01/src/daboe01_Clinical/Clinical /Users/boehringer/src/privatePerl /Users/daboe01/src/privatePerl};
+# todo: sanitize filenames upon upload
+#        support multiple files of samename (as in cellfinder)
+#        support shadowtables globally (instead of only in $table eq 'all_trials'?'trials': $table)
+
+use lib qw {/Users/Shared/bin/Clinical /Users/Shared/bin /srv/www/Clinical  /Users/boehringer/src/privatePerl /Users/daboe01/src/privatePerl};
 use Mojolicious::Lite;
 use Mojolicious::Plugin::Database;
 use SQL::Abstract::More;
@@ -41,8 +45,8 @@ use constant proxy_string => 'http://U:P@193.196.237.21:80/';
 ###########################################
 # "fake" tables for DBI interface
 
-helper getLSDocuments => sub { my ($self, $suffix)=@_;
-    my $_docrepo= doku_repo_path.$suffix.'/';
+helper getLSDocuments => sub { my ($self)=@_;
+    my $_docrepo= doku_repo_path.'/';
     return    grep { defined $_->{idtrial} && $_->{tag} !~ /^\./ }
     map  { my ($p,$f)=split /\//o; ($f or '')=~/^([0-9]+)_(.+)/; 
             my $date = POSIX::strftime( "%Y-%m-%d", localtime( ( stat $_docrepo.$_ )[9] ) ); 
@@ -50,46 +54,84 @@ helper getLSDocuments => sub { my ($self, $suffix)=@_;
     map  { s/^$_docrepo//ogs;$_}
     File::Find::Rule->in($_docrepo);
 };
+helper getLSPDocuments => sub { my ($self)=@_;
+    my $_docrepo= doku_repo_path.'p/';
+    return    grep { defined $_->{idpersonnel} && $_->{tag} !~ /^\./ }
+    map  { my ($p,$f)=split /\//o; ($f or '')=~/^([0-9]+)_(.+)/; 
+        my $date = POSIX::strftime( "%Y-%m-%d", localtime( ( stat $_docrepo.$_ )[9] ) ); 
+        {id=>"$1$2", idpersonnel=>$1, name=> $2, tag=>$p, date=> $date} }
+    map  { s/^$_docrepo//ogs;$_}
+    File::Find::Rule->in($_docrepo);
+};
 
 get '/CT/download/:idtrial/:name' => [idtrial=>qr/[0-9]+/, name=>qr/.+/] => sub {
     my $self=shift;
     my $idtrial=    $self->param("idtrial");
-    my $suffix=    $self->param("suffix");
     my $name= $self->param("name");
     my $id    ="$idtrial$name";
-    my @doc=grep {$_->{id} eq $id} $self->getLSDocuments($suffix);
+    my @doc=grep {$_->{id} eq $id} $self->getLSDocuments();
     my $format;
     $format=$1 if $name=~/\.([^\.]+)$/o;
-    $self->render(data => TempFileNames::readFile(doku_repo_path.$suffix.'/' . $doc[0]->{tag} .'/' . $idtrial.'_'. $name), format => $format );
+    $self->render(data => TempFileNames::readFile(doku_repo_path.'/' . $doc[0]->{tag} .'/' . $idtrial.'_'. $name), format => $format );
+};
+get '/CT/pdownload/:idperso/:name' => [idperso=>qr/[0-9]+/, name=>qr/.+/] => sub {
+    my $self=shift;
+    my $idperso=    $self->param("idperso");
+    my $name= $self->param("name");
+    my $id    ="$idperso$name";
+    my @doc=grep {$_->{id} eq $id} $self->getLSPDocuments();
+    my $format;
+    $format=$1 if $name=~/\.([^\.]+)$/o;
+    $self->render(data => TempFileNames::readFile(doku_repo_path.'p/' . $doc[0]->{tag} .'/' . $idperso.'_'. $name), format => $format );
 };
 
 get '/DBI/documents'=> sub
 {   my $self = shift;
-    my $suffix=    $self->param("suffix");
-    $self->render( json=> $self->getLSDocuments($suffix) );
+    $self->render( json=> $self->getLSDocuments() );
+};
+get '/DBI/pdocuments'=> sub
+{   my $self = shift;
+    $self->render( json=> $self->getLSPDocuments() );
 };
 get '/DBI/doctags_catalogue'=> sub
 {   my $self = shift;
-    my $suffix=    $self->param("suffix");
     my %tags=();
-    $tags{$_->{tag}}='' for $self->getLSDocuments($suffix);
+    $tags{$_->{tag}}='' for $self->getLSDocuments();
+    my @ret=  map {{name=>$_}} grep {length $_} (keys %tags);
+    $self->render( json=> \@ret);
+};
+get '/DBI/pdoctags_catalogue'=> sub
+{   my $self = shift;
+    my %tags=();
+    $tags{$_->{tag}}='' for $self->getLSPDocuments();
     my @ret=  map {{name=>$_}} grep {length $_} (keys %tags);
     $self->render( json=> \@ret);
 };
 get '/DBI/documents/idtrial/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
 {   my $self = shift;
-    my $suffix=    $self->param("suffix");
     my $pk  = $self->param('pk');
-    my @dir= grep {$_->{idtrial} eq $pk} $self->getLSDocuments($suffix);
+    my @dir= grep {$_->{idtrial} eq $pk} $self->getLSDocuments();
+    $self->render( json=> \@dir );
+};
+get '/DBI/pdocuments/idpersonnel/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
+{   my $self = shift;
+    my $pk  = $self->param('pk');
+    my @dir= grep {$_->{idpersonnel} eq $pk} $self->getLSPDocuments();
     $self->render( json=> \@dir );
 };
 
 # unused?!
 get '/DBI/documents/id/:pk' => [pk=>qr/[a-z0-9\s_ ]+/i] => sub
 {   my $self = shift;
-    my $suffix=    $self->param("suffix");
     my $pk  = $self->param('pk');
-    my @dir= grep {$_->{id} eq $pk} $self->getLSDocuments($suffix);
+    my @dir= grep {$_->{id} eq $pk} $self->getLSDocuments();
+    $self->render( json=> \@dir );
+};
+# unused?!
+get '/DBI/pdocuments/id/:pk' => [pk=>qr/[a-z0-9\s_ ]+/i] => sub
+{   my $self = shift;
+    my $pk  = $self->param('pk');
+    my @dir= grep {$_->{id} eq $pk} $self->getLSPDocuments();
     $self->render( json=> \@dir );
 };
 get '/DBI/documents_tag_unique/idtrial/:pk' => [pk=>qr/[a-z0-9\s]+/i] => sub
@@ -101,6 +143,15 @@ get '/DBI/documents_tag_unique/idtrial/:pk' => [pk=>qr/[a-z0-9\s]+/i] => sub
     my @dir2 = map { {id=>"$pk$_", idtrial=>$pk, tag=>$_} } keys %seen;
     $self->render( json=> \@dir2 );
 };
+get '/DBI/pdocuments_tag_unique/idpersonnel/:pk' => [pk=>qr/[a-z0-9\s]+/i] => sub
+{   my $self = shift;
+    my $pk  = $self->param('pk');
+    my @dir= grep {$_->{idpersonnel} eq $pk} $self->getLSPDocuments();
+    my %seen;
+    $seen{$_->{tag}}='' for @dir;
+    my @dir2 = map { {id=>"$pk$_", idpersonnel=>$pk, tag=>$_} } keys %seen;
+    $self->render( json=> \@dir2 );
+};
 
 # update docs
 put '/DBI/documents/id/:key'=> [key=>qr/.+/] => sub
@@ -108,13 +159,26 @@ put '/DBI/documents/id/:key'=> [key=>qr/.+/] => sub
     my $json_decoder= Mojo::JSON->new;
     my $jsonR   = $json_decoder->decode( $self->req->body );
     my $key        = $self->param('key');
-    my $suffix=    $self->param("suffix");
-    my @doc=grep {$_->{id} eq $key} $self->getLSDocuments($suffix);
+    my @doc=grep {$_->{id} eq $key} $self->getLSDocuments();
     my $idtrial=$doc[0]->{idtrial};
     my $name=    $doc[0]->{name};
-    my $oldname=doku_repo_path.$suffix.'/' . $doc[0]->{tag} .'/' . $idtrial.'_'. $name;
-    my $newname=$jsonR->{tag}?  doku_repo_path.$suffix.'/'  . $jsonR->{tag} .'/'  . $idtrial.'_'. $name:
-                                doku_repo_path.$suffix.'/'  . $doc[0]->{tag} .'/' . $idtrial.'_'. $jsonR->{name};
+    my $oldname=doku_repo_path.'/' . $doc[0]->{tag} .'/' . $idtrial.'_'. $name;
+    my $newname=$jsonR->{tag}?  doku_repo_path.'/'  . $jsonR->{tag} .'/'  . $idtrial.'_'. $name:
+                                doku_repo_path.'/'  . $doc[0]->{tag} .'/' . $idtrial.'_'. $jsonR->{name};
+    rename $oldname, $newname;
+    $self->render( json=> {err=> ''} );
+};
+put '/DBI/pdocuments/id/:key'=> [key=>qr/.+/] => sub
+{   my $self = shift;
+    my $json_decoder = Mojo::JSON->new;
+    my $jsonR = $json_decoder->decode( $self->req->body );
+    my $key = $self->param('key');
+    my @doc=grep {$_->{id} eq $key} $self->getLSPDocuments();
+    my $idpersonnel=$doc[0]->{idpersonnel};
+    my $name= $doc[0]->{name};
+    my $oldname=doku_repo_path.'p/' . $doc[0]->{tag} .'/' . $idpersonnel.'_'. $name;
+    my $newname=$jsonR->{tag}?  doku_repo_path.'p/'  . $jsonR->{tag} .'/'  . $idpersonnel.'_'. $name:
+    doku_repo_path.'p/'  . $doc[0]->{tag} .'/' . $idpersonnel.'_'. $jsonR->{name};
     rename $oldname, $newname;
     $self->render( json=> {err=> ''} );
 };
@@ -122,12 +186,22 @@ put '/DBI/documents/id/:key'=> [key=>qr/.+/] => sub
 del '/DBI/documents/id/:key'=> [key=>qr/.+/] => sub
 {   my $self    = shift;
     my $key        = $self->param('key');
-    my $suffix=    $self->param("suffix");
 
-    my @doc=grep {$_->{id} eq $key} $self->getLSDocuments($suffix);
+    my @doc=grep {$_->{id} eq $key} $self->getLSDocuments();
     my $idtrial=$doc[0]->{idtrial};
     my $name=    $doc[0]->{name};
-    my $oldname=doku_repo_path.$suffix.'/'  . $doc[0]->{tag} .'/' . $idtrial.'_'. $name;
+    my $oldname=doku_repo_path.'/'  . $doc[0]->{tag} .'/' . $idtrial.'_'. $name;
+    unlink $oldname;
+    $self->render( json=> {err=> ''} );
+};
+del '/DBI/pdocuments/id/:key'=> [key=>qr/.+/] => sub
+{   my $self    = shift;
+    my $key        = $self->param('key');
+    
+    my @doc=grep {$_->{id} eq $key} $self->getLSPDocuments();
+    my $idpersonnel=$doc[0]->{idpersonnel};
+    my $name=    $doc[0]->{name};
+    my $oldname=doku_repo_path.'p/'  . $doc[0]->{tag} .'/' . $idpersonnel.'_'. $name;
     unlink $oldname;
     $self->render( json=> {err=> ''} );
 };
@@ -148,9 +222,29 @@ post '/upload/:idtrial' => [idtrial=>qr/[0-9]+/] => sub {
     $self->render( json => \@uploads );
 };
 
+# POST /upload (push one or more files to app)
+post '/pupload/:idpersonnel' => [idpersonnel=>qr/[0-9]+/] => sub {
+    my $self    = shift;
+    my $idpersonnel=    $self->param("idpersonnel");
+    my $suffix= 'p';
+    my @uploads = $self->req->upload('files[]');
+    for my $curr_upload (@uploads) {
+    my $upload  = Mojo::Upload->new($curr_upload);
+    my $bytes = $upload->slurp;
+    my $filename=$upload->filename;
+    $filename=~s/[^0-9a-z\-\. ']/_/ogsi;
+    TempFileNames::writeFile(doku_repo_path.$suffix.'/' .'Unclassified/'.$idpersonnel.'_'.$filename, $bytes);
+    }
+    $self->render( json => \@uploads );
+};
+
 
 ###########################################
 # generic dbi part
+helper getUserlevel => sub { my ($self, $ldap)=@_;
+    my $o=$self->getObjectFromTable('personnel_catalogue', $ldap, undef, 'ldap');
+    return $o->{level};
+};
 
 helper fetchFromTable => sub { my ($self, $table, $sessionid, $where)=@_;
     my $sql = SQL::Abstract::More->new;
@@ -164,16 +258,12 @@ helper fetchFromTable => sub { my ($self, $table, $sessionid, $where)=@_;
         if($table eq 'all_trials')
         {   $table = 'trials';
             @cols=qw/id idgroup name codename infotext global_state fulltext sponsor phase indikation/;
-            $where->{ldap}= $session{username} unless $session{username} eq 'daboe01';
-        } elsif($table eq 'groups_catalogue')
-        {   $table = 'groups';
-            @cols=qw/id name sprechstunde/;
-            $where->{ldap}= $session{username} unless $session{username} eq 'daboe01';
+            $where->{ldap}= $session{username};
         } elsif($table eq 'trial_property_annotations')
         {   $where->{ldap}= $session{username};
         } elsif($table eq 'patient_visits')
         {   $table = 'patient_visits_rich';
-            @cols=qw/id idpatient idvisit visit_date state lower_margin center_margin upper_margin missing_service ordering comment travel_costs date_reimbursed/;
+            @cols=qw/id idpatient idvisit visit_date state lower_margin center_margin upper_margin missing_service ordering comment travel_costs date_reimbursed travel_comment travel_additional_costs/;
         } elsif($table eq 'accounts_balanced')
         {   $table = 'accounts_balanced_ldap';
             @cols=qw/idaccount date_transaction type description amount_change balance/;
@@ -182,14 +272,13 @@ helper fetchFromTable => sub { my ($self, $table, $sessionid, $where)=@_;
         {   $table = 'shadow_accounts_ldap';
             @cols=qw/id account_number idgroup name balance/;
             $where->{ldap}= $session{username};
-        } elsif($table eq 'personnel_costs')
-        {   $table = 'personnel_costs_ldap';
-            @cols=qw/id date_active idpersonnel idaccount amount comment/;
-            $where->{ldap}= $session{username} unless $session{username} eq 'daboe01';
         } elsif($table eq 'trial_properties_distinct')
         {   $table = 'trial_properties';
             @cols=qw/idproperty value/;
             $order_by=[qw/+value/];
+        } elsif($table eq 'personnel_costs')
+        {   my $level=$self->getUserlevel($session{username});
+            $where->{1}=0 if $level < 3;
         }
         
         $where->{$_}= $where->{$_} eq 'NULL'? undef : $where->{$_} for keys %$where;
@@ -243,21 +332,49 @@ helper getTypeHashForTable => sub { my ($self, $table)=@_;
 # update
 put '/DBI/:table/:pk/:key'=> [key=>qr/\d+/] => sub
 {   my $self    = shift;
-    my $table    = $self->param('table');
-    my $pk        = $self->param('pk');
-    my $key        = $self->param('key');
-    my $sql        = SQL::Abstract->new;
+    my $table   = $self->param('table');
+    my $pk      = $self->param('pk');
+    my $key     = $self->param('key');
+    my $sql     = SQL::Abstract->new;
     my $json_decoder= Mojo::JSON->new;
     my $jsonR   = $json_decoder->decode( $self->req->body );
 
     my $types = $self->getTypeHashForTable($table);
-    warn Dumper $types;
-    warn $jsonR;
     for (keys %$jsonR)    ## support for nullifying dates and integers with empty string or special string NULL
     {
         $jsonR->{$_}= ($jsonR->{$_} =~/(^NULL$)|(^\s*$)/o && $types->{$_} !~/text|varchar/o )? undef : $jsonR->{$_} ;
     }
-
+    if($table eq 'personnel_catalogue')
+    {   my  %session;
+        my $sessionid=$self->param('session');
+        tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
+        my $level=$self->getUserlevel($session{username});
+        if(exists $jsonR->{level} && $jsonR->{level} > $level)
+        {
+            $self->render( json=> {err=>'Privilege violation'});
+            return;
+        }
+    }
+    if($table eq 'group_assignments')
+    {   my  %session;
+        my $sessionid=$self->param('session');
+        tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
+        my $ldap = $session{username};
+        my $level=$self->getUserlevel($ldap);
+        if($level < 3)
+        {   if(exists $jsonR->{idgroup})
+            {
+                my $u=$self->getObjectFromTable('personnel_catalogue', $ldap, undef, 'ldap');
+                my $o=$self->getObjectFromTable('group_assignments', $u->{id}, undef, 'idpersonnel');
+                unless ($self->hasRow('group_assignments', {idpersonnel=> $u->{id}, idgroup=> $jsonR->{idgroup} } ))
+                {
+                    $self->render( json=> {err=>'Privilege violation'});
+                    return;
+                }
+            }
+        }
+    }
+    
     my($stmt, @bind) = $sql->update($table, $jsonR, {$pk=>$key});
     my $sth = $self->db->prepare($stmt);
     $sth->execute(@bind);
@@ -286,10 +403,11 @@ helper mapTableNameForWriting => sub { my ($self, $table)=@_;
     return $table;
 };
 
-helper getObjectFromTable => sub { my ($self, $table, $id, $dbh_dc)=@_;
+helper getObjectFromTable => sub { my ($self, $table, $id, $dbh_dc, $pk)=@_;
     my $dbh  = $dbh_dc? $dbh_dc: $self->db;
     return undef if $id eq 'null' ||  $id eq 'NULL' ||  $id eq '';
-    my $sth = $dbh->prepare( qq/select * from "/.$table.qq/" where id=?/);
+    $pk='id' unless $pk;
+    my $sth = $dbh->prepare( qq/select * from "/.$table.qq/" where "/.$pk.qq/"=?/);
     $sth->execute(($id));
     return $sth->fetchrow_hashref();
 };
@@ -303,6 +421,14 @@ post '/DBI/:table/:pk'=> sub
     my $json_decoder= Mojo::JSON->new;
     my $jsonR   = $json_decoder->decode( $self->req->body );
 
+    if($table eq 'personnel_catalogue')
+    {   my  %session;
+        my $sessionid=$self->param('session');
+        tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
+        my $level=$self->getUserlevel($session{username});
+        $jsonR->{level}= $level if exists $jsonR->{level} && $jsonR->{level} > $level;
+        $jsonR->{name}= 'New' unless exists $jsonR->{name};
+    }        
     my($stmt, @bind) = $sql->insert( $self->mapTableNameForWriting($table), $jsonR || {name=>'New'});
     my $sth = $self->db->prepare($stmt);
     $sth->execute(@bind);
@@ -590,6 +716,7 @@ any '/CT/pdfstamper/:idtrial/:formname'=> [idtrial =>qr/\d+/, formname =>qr/[a-z
     tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
     my $ldap=$session{username};
     my $keyvaldict=$self->getPropertiesDict($idtrial, $ldap);
+ #<!> fixme: protect piz with session!
     if($piz)
     {
         my $sql = SQL::Abstract::More->new;
@@ -627,21 +754,26 @@ any '/CT/pdfstamper/:idtrial/:formname'=> [idtrial =>qr/\d+/, formname =>qr/[a-z
             for my $ckey (keys %$pat) {
                 $keyvaldict->{$ckey}=$pat->{$ckey};
             }
+            $keyvaldict->{iban}=~s/ //ogs;
             # get the visits
-#<!> fixme: protect idpatient with session!
             my $sql=qq{select trial_visits.name as visit, patient_visits_rich.* from patient_visits_rich join trial_visits on trial_visits.id=idvisit where idpatient=?};
             $filter=~s/[^0-9,]//ogs;  # untaint
             $filter=~s/,$//ogs;
             $sql.=" and patient_visits_rich.id in( $filter )" if $filter;
-            $sql.=" order by coalesce(trial_visits.ordering, trial_visits.id)";
+            $sql.=" order by trial_visits.ordering, patient_visits_rich.visit_date";
             my $sth = $self->db->prepare( $sql );
             $sth->execute(($idpatient));
             my @visits;
             my $sum=0;
             while(my $c=$sth->fetchrow_hashref())
             {
-                my $reisekosten=$c->{travel_costs}? $c->{travel_costs}:$kilometerpauschale*$pat->{travel_distance};
+                my $reisekosten=$c->{travel_costs}? $c->{travel_costs}:($kilometerpauschale*$pat->{travel_distance}+($c->{travel_additional_costs} ||0.0));
                 $c->{reisekosten}=sprintf("%3.2f EUR",$reisekosten);
+                my $sql = SQL::Abstract->new;
+                my($stmt, @bind) = $sql->update('patient_visits', {actual_costs=>$reisekosten}, {id=>$c->{id}});
+                my $sthc = $self->db->prepare($stmt);
+                $sthc->execute(@bind);
+        
                 $c->{visit_date}=~s/ 00:00:00$//ogs;
                 $sum += $reisekosten;
                 push @visits, $c;
@@ -654,6 +786,7 @@ any '/CT/pdfstamper/:idtrial/:formname'=> [idtrial =>qr/\d+/, formname =>qr/[a-z
     my $data= pdfgen::PDFForTemplateAndRef(TempFileNames::readFile(form_repo_path.'/'. $formname.'.tex'), $keyvaldict);
     $self->render(data=> $data , format =>'pdf' );
 };
+
 get '/CT/serienbrief_patienten/:propid'=> [ propid =>qr/\d+/] => sub
 {   my $self=shift;
     my $sessionid=$self->param('session');
@@ -712,7 +845,38 @@ get '/CT/new_patient/:idpatient' => [idpatient =>qr/[0-9]+/] => sub
     $sth->execute(($idtrial, $idreference_visit));
     $self->render(text=>'OK');
 };
+get '/CT/validate_iban/:idpatient' => [idpatient =>qr/[0-9]+/] => sub
+{   my $self = shift;
+    my $idpatient = $self->param('idpatient');
+    my $dbh=$self->db;
+    my $pat= $self->getObjectFromTable('patients', $idpatient); # <!> fixme: sanitize with session
+    use Business::IBAN;
+    my $iban_engine = Business::IBAN->new();
+    my $iban=$pat->{iban};
+    if($iban !~/DE/ogsi)
+    {   $iban = $iban_engine->getIBAN(
+        {   ISO  => 'DE',
+            BIC => $pat->{bic},
+            AC  => $iban,
+        });
+        $iban=~s/^IBAN //osi;
+        my $sql = SQL::Abstract->new;
+        my($stmt, @bind) = $sql->update('patients', {iban=>$iban}, {id=>$idpatient});
+        my $sth = $self->db->prepare($stmt);
+        $sth->execute(@bind);
+    }
+    my $bic=$pat->{bic};
+    if($bic =~/^[0-9]+$/o)
+    {   my $bank= $self->getObjectFromTable('bic_catalogue', $bic, undef,'blz');
+        my $sql = SQL::Abstract->new;
+        my($stmt, @bind) = $sql->update('patients', {bic=>$bank->{bic}, bank=>$bank->{name}}, {id=>$idpatient});
+        my $sth = $self->db->prepare($stmt);
+        $sth->execute(@bind);
+    }
 
+    $self->render(text=>  $iban_engine->valid($iban)? 'OK':'NOK'  );
+};
+        
 get '/CT/reorder_visits/:idtrial' => [idtrial =>qr/[0-9]+/] => sub
 {   my $self = shift;
     my $idtrial = $self->param('idtrial');
@@ -788,20 +952,30 @@ get '/CT/trial_properties/:idtrial'=> [idtrial =>qr/\d+/] => sub
 post '/CT/make_bill/:idtrial'=> [idtrial =>qr/\d+/] => sub
 {   my $self=shift;
     my $idtrial = $self->param('idtrial');
+    my $idammendbill = $self->param('idammendbill');
+    my $travelbill = $self->param('travelbill');
     my $sessionid=$self->param('session');
     my  %session;
     tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
     my $ldap=$session{username};
     my $filter = $self->req->body;
-        $filter=~s/[, ]+$//ogs;
+       $filter=~s/[, ]+$//ogs;
     my $keyvaldict=$self->getPropertiesDict($idtrial, $ldap);
     my $requires_ust=$self-> requiresProperty($idtrial,'umsatzst');
     my $overhead_inclusive=$self-> requiresProperty($idtrial,'overhead');
 
     my $sql = SQL::Abstract::More->new;
-    my $where = "idtrial = $idtrial";    # fixme: insecure
-    $where.=" and idpatient in ($1)" if $filter =~/(^[0-9, ]+$)/;
-    my($stmt, @bind) = $sql->select( -columns  => [qw/id idtrial visit_date code1 code2 visit reimbursement/], -from => 'list_for_billing', -where => $where, -order_by=>[qw/code1 code2 visit_date/]);
+    $idtrial = $idtrial=~/^([0-9]+)$/? $1: undef;
+    $idammendbill = $idammendbill=~/^([0-9]+)$/? $1: undef;
+    my $where;
+    if($idammendbill)
+    {   $where.=" id in ($1)" if $filter =~/(^[0-9, ]+$)/;
+    } else
+    {
+        $where = "idtrial = $idtrial";
+        $where.=" and idpatient in ($1)" if $filter =~/(^[0-9, ]+$)/;
+    }
+    my($stmt, @bind) = $sql->select( -columns  => [qw/id idtrial visit_date code1 code2 visit reimbursement/], -from => $travelbill? 'list_for_travelbilling':'list_for_billing', -where => $where, -order_by=>[qw/code1 code2 visit_date/]);
     my $sth = $self->db->prepare($stmt);
     $sth->execute(@bind);
     my $sum=0;
@@ -810,21 +984,33 @@ post '/CT/make_bill/:idtrial'=> [idtrial =>qr/\d+/] => sub
     {   $sum+=$c->{reimbursement};
         $idstr.=$c->{id}.', ';
     }
-    my $overhead= $overhead_inclusive? 0: $sum*0.25;    # FIXME: 25% overhead should be a constant
-    $sum+=$overhead;
-    my $ust= $requires_ust? $sum*0.19: 0;      # FIXME: 19% UST should be a constant
-     $sum+=$ust;
-    my $insert = SQL::Abstract->new;
-    ($stmt, @bind) = $insert->insert( 'billings', {idtrial=>$idtrial, amount=> sprintf('%4.2f',$sum), comment=> sprintf('%4.2f EUR',$sum), visit_ids=>$idstr});
-    $sth = $self->db->prepare($stmt);
-    $sth->execute(@bind);
+    if(!$travelbill){
+        my $overhead= $overhead_inclusive? 0: $sum*0.25;    # FIXME: 25% overhead should be a constant
+        $sum+=$overhead;
+        my $ust= $requires_ust? $sum*0.19: 0;      # FIXME: 19% UST should be a constant
+        $sum+=$ust;
+    }
+    if($idammendbill)
+    {
+        my $bill=$self->getObjectFromTable('billings', $idammendbill);
+        my $update = SQL::Abstract->new;
+        my $newamount = sprintf('%4.2f',$sum+$bill->{amount}+0);
+        my ($stmt, @bind) = $update->update( 'billings', {amount=> $newamount, comment=> sprintf('%4.2f EUR',$newamount), visit_ids=>$bill->{visit_ids}.$idstr}, {id=> $idammendbill});
+        $sth = $self->db->prepare($stmt);
+        $sth->execute(@bind);
+    } else
+    {
+        my $insert = SQL::Abstract->new;
+        my ($stmt, @bind) = $insert->insert( 'billings', {idtrial=>$idtrial, amount=> sprintf('%4.2f',$sum), comment=> sprintf('%4.2f EUR',$sum), ($travelbill? 'visit_ids_travel_costs':'visit_ids')=>$idstr});
+        $sth = $self->db->prepare($stmt);
+        $sth->execute(@bind);
+    }
     $self->render( text=> 'OK' );
 };
 
 ###################################################################
 # to be factored out
 #<!> fixme: this ugly stuff should be factored out in a driver module
-
 get '/CT/print_bill/:idbill'=> [idbill =>qr/\d+/] => sub
 {   my $self=shift;
     my $idbilling = $self->param('idbill');
@@ -862,11 +1048,16 @@ get '/CT/print_bill/:idbill'=> [idbill =>qr/\d+/] => sub
     $template->AddCell( 0,28, 3, $keyvaldict->{Drittmittelnummer} );
     $template->AddCell( 0,29, 3, $keyvaldict->{'Voller Titel'} );
 
+    my $bill=$self->getObjectFromTable('billings', $idbilling);
+
     my $requires_ust=$self-> requiresProperty($idtrial,'umsatzst');
+    $requires_ust=0 if $bill->{visit_ids_travel_costs};
     my $overhead_inclusive=$self-> requiresProperty($idtrial,'overhead');
+    $overhead_inclusive=1 if $bill->{visit_ids_travel_costs};
+
 
     my $sql = SQL::Abstract::More->new;
-    my($stmt, @bind) = $sql->select( -columns  => [qw/id idtrial visit_date code1 code2 visit reimbursement/], -from => 'billing_print', -where => {idbilling => $idbilling}, -order_by=>[qw/code1 code2 visit_date/]);
+    my($stmt, @bind) = $sql->select( -columns  => [qw/id idtrial visit_date code1 code2 visit reimbursement/], -from => $bill->{visit_ids_travel_costs}? 'travel_billing_print': 'billing_print', -where => {idbilling => $idbilling}, -order_by=>[qw/code1 code2 visit_date/]);
     my $sth = $self->db->prepare($stmt);
     $sth->execute(@bind);
     my $i=32;

@@ -4,88 +4,84 @@
 
 <objects>
 
-<adminController id="mycontroller"/>
 
-<window id="personnelwindow" bridge="YES">
- <splitView vertical="YES" autosaveName="vsplitter_accounts">
+
+<window id="mywindow" bridge="YES">
+
+ <tabView type="topBezel">
+  <tabViewItem title="Dokumente">
+
    <vbox>
-	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" autosaveName="trialpersonnel2_tv" valueBinding="#CPOwner.personnelController">
-		<tableColumn identifier="ldap" title="ldap" editable="YES"/>
-		<tableColumn identifier="name" title="name" editable="YES"/>
-		<tableColumn identifier="email" title="email" editable="YES"/>
-		<tableColumn identifier="tel" title="tel" editable="YES"/>
-		<tableColumn identifier="abrechnungsname" title="abrechnungsname" editable="YES"/>
-		<tableColumn identifier="level" title="level" editable="YES"/>
-	 </tableView>
-	</scrollView>
-	<ButtonBar target="#CPOwner.personnelController" plusButtonAction="insert:" minusButtonAction="remove:"/>
+     <vspace height="10" valign="min"/>
+     <hbox>
+       <vbox width="130" halign="min">
+         <scrollView hasHorizontalScroller="NO">
+           <tableView zebra="yes" valueBinding="#CPOwner.pdokusController2">
+             <tableColumn identifier="tag" title="folder" editable="NO" width="130"/>
+           </tableView>
+          </scrollView>
+       </vbox>
+       <vbox>
+       <scrollView hasHorizontalScroller="NO">
+         <tableView zebra="yes" autosaveName="dokus_tv" valueBinding="#CPOwner.pdokusController">
+            <tableColumn identifier="name" title="name" editable="YES"/>
+            <tableColumn identifier="date" title="date" editable="NO"/>
+            <tableColumn dataView="#popupdataviewdoctags" identifier="tag" title="verschieben in"/>
+         </tableView>
+       </scrollView>
+       <ButtonBar target="#CPOwner" plusButtonAction="uploadPersoDoku:" minusButtonAction="deletePersoDoku:" actionsButton="NO" id="pdocumentsbuttonbar"/>
+     </vbox>
+    </hbox>
    </vbox>
+
+  </tabViewItem>
+  <tabViewItem title="Properies">
+
    <vbox>
+        <scrollView hasHorizontalScroller="NO">
+             <tableView zebra="yes" autosaveName="pers_props_tv1" valueBinding="#CPOwner.personnelPropController">
+                <tableColumn identifier="property.name" title="name"/>
+                <tableColumn identifier="value" title="value" editable="YES"/>
+             </tableView>
+        </scrollView>
+        <ButtonBar target="#CPOwner" plusButtonAction="addProperty:" minusButtonAction="removeProperty:"/>
+   </vbox>
 
-	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" autosaveName="trialpersonnel2_tv" valueBinding="#CPOwner.groupassignmentController">
-		<tableColumn identifier="idgroup" dataView="#popupdataviewgroup"  title="group"/>
-	 </tableView>
-	</scrollView>
-	<ButtonBar target="#CPOwner.groupassignmentController" plusButtonAction="insert:" minusButtonAction="remove:"/>
- 
-	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" autosaveName="pers_props_tv" delegate="#mycontroller" valueBinding="#CPOwner.personnelPropController">
-		<tableColumn identifier="property.name" title="name"/>
-		<tableColumn identifier="value" title="value" editable="YES"/>
-	 </tableView>
-	</scrollView>
-	<ButtonBar target="#mycontroller" plusButtonAction="addProperty:" minusButtonAction="removeProperty:"/>
+  </tabViewItem>
+  <tabViewItem title="Abwesenheiten">
+  </tabViewItem>
 
- 	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" autosaveName="pers_costs_tv" delegate="#mycontroller" valueBinding="#CPOwner.personnelCostsController">
-		<tableColumn identifier="idaccount" dataView="#popupdataviewaccount"  title="account" editable="YES"/>
-		<tableColumn identifier="date_active" title="active date" editable="YES"/>
-		<tableColumn identifier="amount" title="monthly costs" editable="YES"/>
-	 </tableView>
-	</scrollView>
-	<ButtonBar target="#CPOwner.personnelCostsController" plusButtonAction="insert:" minusButtonAction="remove:" actionsButton="YES">
- 		<popUpButtonItem title="Generate for the rest of this year" target="#myadmincontroller" action="runConfig:"/>
-	</ButtonBar>
-
-
-  </vbox>
- </splitView>
+ </tabView>
 </window>
 
 <window visible="NO">
  <vbox>
-  <popUpButton width="200" id="popupdataviewgroup" itemsBinding="#CPOwner.groupsController.arrangedObjects.name"/>
-  <popUpButton width="200" id="popupdataviewaccount" itemsBinding="#CPOwner.accountsController.arrangedObjects.name"/>
+   <popUpButton width="200" id="popupdataviewdoctags" itemsBinding="#CPOwner.pdoctagsController.arrangedObjects.name"/>
  </vbox>
 </window>
 
-
 <window id="addpropswindow" visible="NO" width="400" height="600">
    <vbox>
-	<scrollView hasHorizontalScroller="NO">
-	 <tableView zebra="yes" id="addpropstv" valueBinding="#CPOwner.personnelPropCatController" allowsMultipleSelection="YES">
-		<tableColumn identifier="name" title="name" editable="YES"/>
-		<tableColumn identifier="ordering" title="order" editable="YES"/>
-		<tableColumn identifier="type" title="type" editable="YES"/>
-	 </tableView>
-	</scrollView>
-	<hbox>
-	  <ButtonBar target="#mycontroller" plusButtonAction="addCatProperty:"/>
-	  <button title="Add selected" target="#mycontroller" action="performAddProperty:"/>
-	  <button title="Cancel" target="#mycontroller" action="cancelAddProperty:"/>
-	</hbox>
+      <scrollView hasHorizontalScroller="NO">
+         <tableView zebra="yes" id="addpropstv" valueBinding="#CPOwner.personnelPropCatController" allowsMultipleSelection="YES">
+                <tableColumn identifier="name" title="name" editable="YES"/>
+                <tableColumn identifier="ordering" title="order" editable="YES"/>
+                <tableColumn identifier="type" title="type" editable="YES"/>
+         </tableView>
+      </scrollView>
+      <hbox>
+        <button title="Add selected" target="#mycontroller" action="performAddProperty:"/>
+        <button title="Cancel" target="#mycontroller" action="cancelAddProperty:"/>
+      </hbox>
    </vbox>
 </window>
-
 
 </objects>
 
 <connectors>
-	<outlet source="mycontroller" target="addpropswindow" label="addPropsWindow"/>
-	<outlet source="mycontroller" target="addpropstv" label="addPropsTV"/>
+	<outlet source="#CPOwner" target="pdocumentsbuttonbar" label="pdocumentsButtonBar"/>
+        <outlet source="#CPOwner" target="addpropswindow" label="addPropsWindow"/>
+        <outlet source="#CPOwner" target="addpropstv" label="addPropsTV"/>
 </connectors>
-
 
 </gsmarkup>

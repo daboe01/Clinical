@@ -7,6 +7,7 @@
 
   <sortDescriptor id="by_id" key="id" ascending="YES" numeric="YES"/>
   <sortDescriptor id="by_reverse_id" key="id" ascending="NO"/>
+  <sortDescriptor id="by_start_date" key="start_date"/>
   <sortDescriptor id="by_name" key="name"/>
   <sortDescriptor id="by_proporder" key="property.ordering" numeric="YES"/>
   <sortDescriptor id="by_order" key="ordering" numeric="YES"/>
@@ -20,9 +21,11 @@
   <arrayController id="groups_controller_all" entity="groups_catalogue" autoFetch="YES" sortDescriptor="by_name"/>
   <arrayController id="trials_controller" entity="all_trials" autoFetch="YES" sortDescriptor="by_name"/>
   <arrayController id="trial_properties_controller" entity="trial_properties" valueBinding="trials_controller.selection.props" sortDescriptor="by_proporder"/>
-  <arrayController id="process_steps" entity="trial_process_step" valueBinding="trials_controller.selection.steps"/>
+  <arrayController id="process_steps" entity="trial_process_step" valueBinding="trials_controller.selection.steps" sortDescriptor="by_start_date"/>
   <arrayController id="dokus_controller" entity="documents" valueBinding="trials_controller.selection.dokus"/>
   <arrayController id="dokus_controller2" entity="documents_tag_unique" valueBinding="trials_controller.selection.dokus2"/>
+  <arrayController id="pdokus_controller" entity="pdocuments" valueBinding="personnel_controller.selection.dokus"/>
+  <arrayController id="pdokus_controller2" entity="pdocuments_tag_unique" valueBinding="personnel_controller.selection.dokus2"/>
   <arrayController id="personnel_controller" entity="personnel_catalogue" autoFetch="YES"/>
   <arrayController id="group_personnel_controller" entity="personnel_catalogue" valueBinding="groups_controller.selection.personnel"/>
   <arrayController id="personnel_costs_controller" entity="personnel_costs" valueBinding="personnel_controller.selection.costs"/>
@@ -30,6 +33,7 @@
   <arrayController id="roles_controller" entity="roles_catalogue" autoFetch="YES"/>
   <arrayController id="states_controller" entity="process_steps_catalogue" autoFetch="YES" sortDescriptor="by_name"/>
   <arrayController id="doctags_controller" entity="doctags_catalogue" autoFetch="YES" sortDescriptor="by_name"/>
+  <arrayController id="pdoctags_controller" entity="pdoctags_catalogue" autoFetch="YES" sortDescriptor="by_name"/>
   <arrayController id="properties_controller" entity="trial_properties_catalogue" autoFetch="YES" sortDescriptor="by_order"/>
   <arrayController id="perso_properties_cat_controller" entity="personnel_properties_catalogue" autoFetch="YES" sortDescriptor="by_order"/>
   <arrayController id="perso_properties_controller" entity="personnel_properties" valueBinding="personnel_controller.selection.props" sortDescriptor="by_proporder"/>
@@ -56,6 +60,7 @@
 		<column name="id" primaryKey="YES"/>
 		<column name="name"/>
 		<column name="websitename"/>
+		<column name="telephone"/>
 		<column name="sprechstunde"/>
 		<relationship type="toMany" name="trials" targetColumn="idgroup" target="all_trials"/>
 		<relationship type="toMany" name="personnel" targetColumn="idgroup" target="group_assignments_name"/>
@@ -95,6 +100,8 @@
 		<relationship type="toMany" name="groups" targetColumn="idpersonnel" target="group_assignments"/>
 		<relationship type="toMany" name="props" targetColumn="idpersonnel" target="personnel_properties"/>
 		<relationship type="toMany" name="costs" targetColumn="idpersonnel" target="personnel_costs"/>
+		<relationship type="toMany" name="dokus" targetColumn="idpersonnel" target="pdocuments"/>
+		<relationship type="toMany" name="dokus2" targetColumn="idpersonnel" target="pdocuments_tag_unique"/>
 	</entity>
 	<entity id="trial_personnel" store="#CPOwner.store">
 		<column name="id" primaryKey="YES"/>
@@ -191,11 +198,27 @@
 		<column name="idtrial"/>
 		<column name="tag"/>
 	</entity>
+	<entity id="pdocuments" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="idpersonnel"/>
+		<column name="tag"/>
+		<column name="date"/>
+		<column name="name"/>
+		<relationship type="toOne" name="person" bindingColumn="idpersonnel" target="personnel_catalogue"/>
+	</entity>
+	<entity id="pdocuments_tag_unique" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="idpersonnel"/>
+		<column name="tag"/>
+	</entity>
 	<entity id="roles_catalogue" store="#CPOwner.store">
 		<column name="id" primaryKey="YES"/>
 		<column name="name"/>
 	</entity>
 	<entity id="doctags_catalogue" store="#CPOwner.store">
+		<column name="name" primaryKey="YES"/>
+	</entity>
+	<entity id="pdoctags_catalogue" store="#CPOwner.store">
 		<column name="name" primaryKey="YES"/>
 	</entity>
 	<entity id="trial_visits" store="#CPOwner.store">
@@ -251,6 +274,9 @@
 		<column name="comment"/>
 		<column name="travel_costs"/>
 		<column name="date_reimbursed"/>
+		<column name="travel_comment"/>
+		<column name="travel_additional_costs"/>
+		<column name="actual_costs"/>
 		<relationship type="toOne" name="patient" bindingColumn="idpatient" target="patients"/>
 		<relationship type="toOne" name="visit" bindingColumn="idvisit" target="trial_visits"/>
 		<relationship type="toMany" name="date_proposals" bindingColumn="id" targetColumn="idvisit" target="visit_dates"/>
@@ -271,6 +297,7 @@
 		<column name="id" primaryKey="YES"/>
 		<column name="idtrial"/>
 		<column name="name"/>
+		<column name="alerting"/>
 		<relationship type="toOne" name="trial" bindingColumn="idtrial" target="all_trials"/>
 	</entity>
 	<entity id="billings" store="#CPOwner.store">
@@ -344,6 +371,8 @@
 	<outlet source="#CPOwner" target="process_steps" label="processesController"/>
 	<outlet source="#CPOwner" target="dokus_controller" label="dokusController"/>
 	<outlet source="#CPOwner" target="dokus_controller2" label="dokusController2"/>
+	<outlet source="#CPOwner" target="pdokus_controller" label="pdokusController"/>
+	<outlet source="#CPOwner" target="pdokus_controller2" label="pdokusController2"/>
 	<outlet source="#CPOwner" target="personnel_controller" label="personnelController"/>
 	<outlet source="#CPOwner" target="trialpersonnel_controller" label="trialpersonnelController"/>
 	<outlet source="#CPOwner" target="groups_controller" label="groupsController"/>
@@ -351,6 +380,7 @@
 	<outlet source="#CPOwner" target="roles_controller" label="rolesController"/>
 	<outlet source="#CPOwner" target="states_controller" label="statesController"/>
 	<outlet source="#CPOwner" target="doctags_controller" label="doctagsController"/>
+	<outlet source="#CPOwner" target="pdoctags_controller" label="pdoctagsController"/>
 	<outlet source="#CPOwner" target="properties_controller" label="propertiesCatController"/>
 	<outlet source="#CPOwner" target="group_assignment_controller" label="groupassignmentController"/>
 	<outlet source="#CPOwner" target="perso_properties_cat_controller" label="personnelPropCatController"/>
