@@ -18,6 +18,17 @@ Features include:
  * Reporting framework
  * Archive management
 
+INSTALL
+=======
+```bash
+/Applications/Postgres.app/Contents/Versions/9.3/bin/dropdb  aug_clinical
+/Applications/Postgres.app/Contents/Versions/9.3/bin/createdb  aug_clinical
+/Applications/Postgres.app/Contents/Versions/9.3/bin/createuser postgres -s
+/Applications/Postgres.app/Contents/Versions/9.3/bin/createuser root -s
+cat sql_template.sql | /Applications/Postgres.app/Contents/Versions/9.3/bin/psql aug_clinical
+sudo perl -MCPAN -e 'install ($_) for qw/Mojolicious Mojolicious::Plugin::Database Mojolicious::Plugin::RenderFile SQL::Abstract::More Apache::Session::File JSON::XS Spreadsheet::WriteExcel Spreadsheet::ParseExcel Business::IBAN DBD::Pg/'
+```
+
 LICENCE:
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
