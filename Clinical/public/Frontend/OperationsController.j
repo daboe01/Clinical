@@ -711,9 +711,10 @@
              return NO;
         }
         var frame = [tableView frameOfDataViewAtColumn:[[tableView tableColumns] indexOfObject:column] row:row];
-        frame.origin.y-=2
+        frame.origin.y-=2;
         frame.size.height=30
-        frame.size.width+=8
+        frame.size.width+=8;
+        frame=[tableView convertRect:frame toView:[[tableView superview] superview]]
         var combobox=[[CPComboBox alloc] initWithFrame:frame];
         [combobox setCompletes:YES];
 	    [combobox setAutoresizingMask: CPViewWidthSizable];
@@ -726,7 +727,7 @@
         for(i=0;i<l;i++) arr.push( [[objects objectAtIndex:i] valueForKey:"value"] );
         [combobox setContentValues:arr];
         [tableView _setObjectValueForTableColumn:column row:row forView:combobox];
-       [[tableView superview] addSubview:combobox positioned:CPWindowAbove relativeTo:tableView];
+       [[[tableView superview] superview] addSubview:combobox positioned:CPWindowAbove relativeTo:tableView];
        [[tableView window] makeFirstResponder:combobox];
         [combobox setDelegate:self];
        return NO;
