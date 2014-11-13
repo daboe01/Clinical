@@ -19,14 +19,18 @@ Features include:
  * Archive management
 
 INSTALL
-=======
+=====
 ```bash
+# the easiest way to get Postgres up and running on a mac is Postgres.app
 /Applications/Postgres.app/Contents/Versions/9.3/bin/dropdb  aug_clinical
 /Applications/Postgres.app/Contents/Versions/9.3/bin/createdb  aug_clinical
 /Applications/Postgres.app/Contents/Versions/9.3/bin/createuser postgres -s
 /Applications/Postgres.app/Contents/Versions/9.3/bin/createuser root -s
 cat sql_template.sql | /Applications/Postgres.app/Contents/Versions/9.3/bin/psql aug_clinical
+# we need serveral perl modules
 sudo perl -MCPAN -e 'install ($_) for qw/Mojolicious Mojolicious::Plugin::Database Mojolicious::Plugin::RenderFile SQL::Abstract::More Apache::Session::File JSON::XS Spreadsheet::WriteExcel Spreadsheet::ParseExcel Business::IBAN DBD::Pg/'
+# now you can either call morbo backend.pl (testing server)
+# or launch hypnotoad backend.pl during system boot
 ```
 
 LICENCE:
