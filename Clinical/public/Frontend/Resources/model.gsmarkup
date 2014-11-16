@@ -53,6 +53,7 @@
   <arrayController id="procedures_catalogue_controller" entity="procedures_catalogue" autoFetch="YES" sortDescriptor="by_name"/>
   <arrayController id="procedures_visit_controller" entity="visit_procedures" valueBinding="visits_controller.selection.procedures"/>
   <arrayController id="autocompletion_controller" entity="trial_properties_distinct" valueBinding="trial_properties_controller.selection.autocompletition"/>
+  <arrayController id="procedures_personnel_controller" entity="procedures_personnel" valueBinding="procedures_visit_controller.selection.personnel"/>
 </objects>
 
 <entities>
@@ -356,6 +357,7 @@
 		<column name="idprocedure"/>
 		<column name="actual_cost"/>
 		<relationship type="toOne" name="procedure" bindingColumn="idprocedure" target="procedure_statistics"/>
+		<relationship type="toMany" name="personnel" bindingColumn="id" targetColumn="idprocedure" target="procedures_personnel"/>
 	</entity>
 	<entity id="procedure_statistics" store="#CPOwner.store">
 		<column name="id" primaryKey="YES"/>
@@ -363,6 +365,11 @@
 		<column name="min_cost"/>
 		<column name="max_cost"/>
 		<column name="avg_cost"/>
+	</entity>
+	<entity id="procedures_personnel" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="idpersonnel"/>
+		<column name="idprocedure"/>
 	</entity>
 </entities>
 
@@ -401,8 +408,10 @@
 	<outlet source="#CPOwner" target="balanced_controller" label="balancedController"/>
 	<outlet source="#CPOwner" target="procedures_catalogue_controller" label="proceduresCatController"/>
 	<outlet source="#CPOwner" target="procedures_visit_controller" label="proceduresVisitController"/>
+	<outlet source="#CPOwner" target="procedures_personnel_controller" label="proceduresPersonnelController"/>
 	<outlet source="#CPOwner" target="group_personnel_controller" label="groupPersonnelController"/>
 	<outlet source="#CPOwner" target="autocompletion_controller" label="autocompletionController"/>
+
 </connectors>
 
 

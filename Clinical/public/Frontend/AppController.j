@@ -129,6 +129,7 @@ BaseURL=HostURL+"/";
     id    balancedController;
     id    proceduresCatController;
     id    proceduresVisitController;
+    id    proceduresPersonnelController;
     id    groupPersonnelController;
     id    autocompletionController;
     id    adminButtonBar;
