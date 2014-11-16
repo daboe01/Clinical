@@ -90,6 +90,7 @@
     id  timeTV;
     id  visitsTV;
     id  visitsBillingWindow;
+    id  billingsTV;
 
 	id	distanceCalcConnection;
     id  serviceConnection;
@@ -100,7 +101,9 @@
 -(void) newTrial: sender
 {
     [self setSearchTerm: ""];
-	[[CPApp delegate].trialsController addObject: @{"name": "New trial 1", "idgroup": [[CPApp delegate].groupsController valueForKeyPath:"selection.id"] } ];
+    var idgroup=[[[[CPApp delegate].personnelController valueForKeyPath:"selection.groups"] objectAtIndex:0] valueForKeyPath:"idgroup"];
+// FIXME: is this deterministic if you are assigned to multiple groups?
+	[[CPApp delegate].trialsController addObject:@{"name": "New trial", "idgroup":idgroup}];
 	[trialsTV editColumn:[trialsTV findColumnWithTitle:"name"] row:[trialsTV selectedRow] withEvent:nil  select:YES];
 }
 
@@ -479,6 +482,8 @@
 	[CPBundle loadRessourceNamed: "AdminTrial.gsmarkup" owner:[CPApp delegate] ];
 	[[CPApp delegate].adminButtonBar addButtonWithImageName:"sort.png" target:[CPApp delegate] action:@selector(reorderVisits:)];
 	[[CPApp delegate].adminButtonBar addButtonWithImageName:"reload.png" target:[CPApp delegate] action:@selector(reloadVisits:)];
+	[[CPApp delegate].visitpersoBB bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"proceduresVisitController.selection.@count" options:nil];
+];
 }
 
 
@@ -730,9 +735,10 @@
        [[tableView window] makeFirstResponder:combobox];
         [combobox setDelegate:self];
        return NO;
-   } else if (tableView === timeTV || tableView === visitsTV)
+   } else if (tableView === timeTV || tableView === visitsTV || tableView === billingsTV)
    {
-       if([column identifier] === 'title')
+       var identifier= [column identifier];
+       if(identifier === 'title' || identifier === 'comment' || identifier === 'amount' || identifier === 'visit_ids')
        {   return YES;
        }
 

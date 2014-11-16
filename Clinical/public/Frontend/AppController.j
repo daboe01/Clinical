@@ -135,6 +135,7 @@ BaseURL=HostURL+"/";
     id    adminButtonBar;
     id    pdocumentsButtonBar;
     id    visitProcsTV;
+    id    visitpersoBB;
 
     id    addTXWindow;
     id    accountsTV;
@@ -168,6 +169,11 @@ BaseURL=HostURL+"/";
     if (m) mainFile=m[1];
     document.title=mainFile;
     [CPBundle loadRessourceNamed: mainFile owner: self];
+
+// fixme: this restriction should be enforced in session and backend
+    var o=[personnelController._entity._store  fetchObjectsWithKey:"ldap" equallingValue:window.G_USERNAME inEntity:personnelController._entity options:@{"FSSynchronous": 1}];
+	[personnelController setSelectedObjects:o];
+
     [[[CPApp mainWindow] delegate] _performPostLoadInit];
 }
 
@@ -238,10 +244,6 @@ BaseURL=HostURL+"/";
 -(void) runPersonnel: sender
 {   [[CPApp mainWindow] close];
     [CPBundle loadRessourceNamed: "Personnel.gsmarkup" owner:self];
-
-// fixme: this restriction should be enforced in session and backend
-    var o=[personnelController._entity._store  fetchObjectsWithKey:"ldap" equallingValue:window.G_USERNAME inEntity:personnelController._entity options:@{"FSSynchronous": 1}];
-	[personnelController setSelectedObjects:o];
 
 	[pdokusController2 addObserver:self forKeyPath:"selection" options: nil context: nil];
 	[pdokusController addObserver:self forKeyPath:"selection.tag" options: nil context: nil];

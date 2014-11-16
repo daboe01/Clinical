@@ -99,13 +99,13 @@
      <vbox>
           <vspace height="10" valign="min"/>
           <scrollView hasHorizontalScroller="NO">
-           <tableView zebra="yes" autosaveName="billings_tv0" valueBinding="#CPOwner.billingsController">
+           <tableView zebra="yes" id="billings_tv" autosaveName="billings_tv0" valueBinding="#CPOwner.billingsController" delegate="#myadmincontroller">
              <tableColumn identifier="creation_date" title="creation_date" editable="YES"/>
              <tableColumn identifier="start_date" title="due date" editable="YES"/>
              <tableColumn identifier="end_date" title="date payed" editable="YES"/>
              <tableColumn identifier="amount" title="EUR" editable="YES"/>
              <tableColumn identifier="comment" title="comment" editable="YES"/>
-             <tableColumn identifier="visit_ids" title="visit_ids" editable="NO"/>
+             <tableColumn identifier="visit_ids" title="visit_ids" editable="YES"/>
           </tableView>
          </scrollView>
          <ButtonBar target="#myadmincontroller" plusButtonAction="addBill:" minusButtonAction="removeBill:" actionsButton="YES" id="billingbuttonbar">
@@ -354,6 +354,7 @@
     <outlet source="myadmincontroller" target="graphical_picker" label="graphicalPicker"/>
     <outlet source="myadmincontroller" target="pats2tv" label="visitsTV"/>
     <outlet source="myadmincontroller" target="visitsbillingwindow" label="visitsBillingWindow"/>
+    <outlet source="myadmincontroller" target="billings_tv" label="billingsTV"/>
 </connectors>
 
 </gsmarkup>

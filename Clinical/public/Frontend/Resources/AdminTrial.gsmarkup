@@ -67,7 +67,7 @@
               <tableColumn identifier="idpersonnel" dataView="#column_idpersonnel" title="responsible" editable="YES"/>
             </tableView>
           </scrollView>
-          <ButtonBar target="#CPOwner.proceduresPersonnelController" plusButtonAction="insert:" minusButtonAction="remove:" actionsButton="NO"/>
+          <ButtonBar target="#CPOwner.proceduresPersonnelController" id="visitperso_bb" plusButtonAction="insert:" minusButtonAction="remove:" actionsButton="NO"/>
         </vbox>
       </splitView>
    </hbox>
@@ -97,6 +97,7 @@
 <connectors>
     <outlet source="#CPOwner" target="adminbuttonbar" label="adminButtonBar"/>
     <outlet source="#CPOwner" target="visitprocs_tv" label="visitProcsTV"/>
+    <outlet source="#CPOwner" target="visitperso_bb" label="visitpersoBB"/>
 </connectors>
 
 </gsmarkup>
