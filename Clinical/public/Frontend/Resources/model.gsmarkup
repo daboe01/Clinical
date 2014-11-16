@@ -352,6 +352,7 @@
 	<entity id="visit_procedures" store="#CPOwner.store">
 		<column name="id" primaryKey="YES"/>
 		<column name="idvisit"/>
+		<column name="procedure_name"/>
 		<column name="idprocedure"/>
 		<column name="actual_cost"/>
 		<relationship type="toOne" name="procedure" bindingColumn="idprocedure" target="procedure_statistics"/>

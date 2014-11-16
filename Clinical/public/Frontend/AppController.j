@@ -133,6 +133,7 @@ BaseURL=HostURL+"/";
     id    autocompletionController;
     id    adminButtonBar;
     id    pdocumentsButtonBar;
+    id    visitProcsTV;
 
     id    addTXWindow;
     id    accountsTV;
@@ -326,6 +327,67 @@ BaseURL=HostURL+"/";
 
 
 
+
+// KOKA und Visit procedures
+-(void) insertVisitProcedure: sender
+{	[proceduresVisitController insert:sender];
+    [self tableView:visitProcsTV shouldEditTableColumn:[[visitProcsTV tableColumns] objectAtIndex:[visitProcsTV findColumnWithTitle:"procedure_name"]]
+                                                   row:[visitProcsTV selectedRow]];
+}
+-(void) removeVisitProcedure: sender
+{	[proceduresVisitController remove:sender];
+}
+
+- (BOOL)tableView:(CPTableView)tableView shouldEditTableColumn:(CPTableColumn)column row:(int)row {
+    if(tableView === visitProcsTV){
+        var frame = [tableView frameOfDataViewAtColumn:[[tableView tableColumns] indexOfObject:column] row:row];
+        frame.origin.y-=2;
+        frame.size.height=30;
+        frame.size.width+=8;
+        var combobox=[[CPComboBox alloc] initWithFrame:frame];
+        [combobox setCompletes:YES];
+	    [combobox setAutoresizingMask: CPViewWidthSizable];
+         combobox.tableViewEditedRowIndex = row;
+         combobox.tableViewEditedColumnObj = column;
+        [combobox setTarget:tableView];
+        [combobox setAction:@selector(_commitDataViewObjectValue:)];
+        [combobox bind:CPContentValuesBinding  toObject:proceduresCatController withKeyPath: "arrangedObjects.name" options:nil];
+        [tableView _setObjectValueForTableColumn:column row:row forView:combobox];
+        [tableView addSubview:combobox positioned:CPWindowAbove relativeTo:tableView];
+       [[tableView window] makeFirstResponder:combobox];
+        [combobox setDelegate:self];
+       return NO;
+   }
+   return NO;
+}
+
+// for combobox
+- (void)_controlTextDidEndEditing:(CPTextField) object
+{
+    [object setDelegate:nil];
+    if(object) [[object target] _commitDataViewObjectValue:object]
+    var win=[object window];
+    [win makeFirstResponder:visitProcsTV]
+    [object removeFromSuperview];
+}
+
+- (void)controlTextDidEndEditing:(CPNotification)aNotification
+{
+    [self _controlTextDidEndEditing:[aNotification object]];
+}
+- (void) controlTextDidBlur:(CPNotification)aNotification
+{
+    [self _controlTextDidEndEditing:[aNotification object]];
+}
+
+-(void)cancelOperation:sender
+{
+// fixme!
+}
+// END: KOKA und Visit procedures
+
+
+// MISC stuff
 -(void) runAccounts: sender
 {   [[CPApp mainWindow] close];
     [CPBundle loadRessourceNamed: "Accounts.gsmarkup" owner:self];

@@ -27,11 +27,13 @@ var _itemcache=[];
 	return self;
 }
 -(CPView) loadView
-{	var myview=[CPButton new];
+{	var myview=[CPTextField new];
+	[myview setFont:[CPFont systemFontOfSize: 18]];
+    [myview setTextColor: [CPColor darkGrayColor] ];
 	_view= myview;
 }
 -(void) setRepresentedObject: someObject
-{	if(someObject) [_view setTitle: _DOW_NAMES[someObject.dow]];
+{	if(someObject) [_view setStringValue: _DOW_NAMES[someObject.dow]];
 }
 
 @end

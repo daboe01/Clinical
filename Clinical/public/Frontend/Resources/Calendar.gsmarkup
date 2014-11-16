@@ -3,7 +3,7 @@
 <gsmarkup>
 
 <objects>
-  <window title="Calendar"  x="10" y="50" id="calendarwindow" minWidth="1100" width="1100" height="650">
+  <window title="Calendar"  x="10" y="50" id="calendarwindow" minWidth="1106" width="1106" height="650">
 	<vbox>
 	<hbox>
 		<popUpButton width="100" valueBinding="#CPOwner.month">
@@ -21,10 +21,10 @@
 			<popUpButtonItem title="Dezember" tag="12"/>
 		</popUpButton>
 		<textField halign="min" width="50" valueBinding="#CPOwner.year"/><stepper min="2000" max="2050" halign="left" width="5" valueBinding="#CPOwner.year"/>
-		<hspace/>
 		<button title="Heute" target="#CPOwner" action="selectToday:"/>
+		<hspace/>
 	</hbox>
-	<collectionView id="calendar_header_view" itemWidth="150" itemHeight="25" maxColumns="7" itemsClassName="CalendarHeaderItem" halign="min" valign="min" width="1100" height="26"/>
+	<collectionView id="calendar_header_view" itemWidth="150" itemHeight="25" maxColumns="7" itemsClassName="CalendarHeaderItem" halign="min" valign="min" width="1100" height="21"/>
 	<scrollView hasHorizontalScroller="NO"  hasVerticalScroller="YES">
 		<collectionView id="calendar_view" itemWidth="150" itemHeight="100" maxColumns="7" itemsClassName="CalendarDayItem" selectable="YES" halign="min" width="1100"/>
 	</scrollView>
