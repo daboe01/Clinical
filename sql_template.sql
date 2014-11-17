@@ -2534,7 +2534,7 @@ SELECT pg_catalog.setval('account_transaction_id_seq', 610, true);
 --
 
 COPY all_trials (id, idgroup, name, codename, infotext) FROM stdin;
-25	1	Allergan 11002X-001 TEARS	\N	\N
+25	1	Humptydumpty XXX1234	\N	\N
 \.
 
 
