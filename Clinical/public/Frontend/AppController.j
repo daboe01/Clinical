@@ -346,20 +346,23 @@ BaseURL=HostURL+"/";
 
 - (BOOL)tableView:(CPTableView)tableView shouldEditTableColumn:(CPTableColumn)column row:(int)row {
     if(tableView === visitProcsTV){
+        var columnIndex = [[tableView tableColumns] indexOfObject:column];
+        var scrollView=[tableView enclosingScrollView];
         var frame = [tableView frameOfDataViewAtColumn:[[tableView tableColumns] indexOfObject:column] row:row];
+        frame=[tableView convertRect:frame toView: scrollView]
         frame.origin.y-=2;
         frame.size.height=30;
         frame.size.width+=8;
         var combobox=[[CPComboBox alloc] initWithFrame:frame];
-        [combobox setCompletes:YES];
-	    [combobox setAutoresizingMask: CPViewWidthSizable];
          combobox.tableViewEditedRowIndex = row;
          combobox.tableViewEditedColumnObj = column;
+        [combobox setCompletes:YES];
+	    [combobox setAutoresizingMask: CPViewWidthSizable];
         [combobox setTarget:tableView];
         [combobox setAction:@selector(_commitDataViewObjectValue:)];
         [combobox bind:CPContentValuesBinding  toObject:proceduresCatController withKeyPath: "arrangedObjects.name" options:nil];
         [tableView _setObjectValueForTableColumn:column row:row forView:combobox];
-        [tableView addSubview:combobox positioned:CPWindowAbove relativeTo:tableView];
+        [scrollView addSubview:combobox]; // positioned:CPWindowAbove relativeTo:tableView
        [[tableView window] makeFirstResponder:combobox];
         [combobox setDelegate:self];
        return NO;

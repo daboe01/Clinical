@@ -174,12 +174,6 @@
     
 	var button=[travelButtonBar addButtonWithImageName:"print.png" target:self action:@selector(fahrtkostenForm:)];
     [button bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"patientVisitsController2.selectedObjects.@count" options:nil];
-
-    var tableView=propsTV;
-    var mysuperview=[[EnclosingView alloc] init];
-    var contentView= [[tableView enclosingScrollView] contentView]; 
-    [contentView setDocumentView:mysuperview];
-    [mysuperview setEnclosedView:tableView];
 }
 -(void) reloadTrialsList:sender
 {
@@ -754,23 +748,27 @@
              return NO;
         }
         var frame = [tableView frameOfDataViewAtColumn:[[tableView tableColumns] indexOfObject:column] row:row];
-        frame.origin.y-=2 //+ [tableView superview]._bounds.origin.y;
+        var scrollView=[tableView enclosingScrollView];
+        frame=[tableView convertRect:frame toView: scrollView]
+        frame.origin.y-=2;
         frame.size.height=30
         frame.size.width+=8;
         var combobox=[[CPComboBox alloc] initWithFrame:frame];
-        [combobox setCompletes:YES];
-	    [combobox setAutoresizingMask: CPViewWidthSizable];
          combobox.tableViewEditedRowIndex = row;
          combobox.tableViewEditedColumnObj = column;
+        [combobox setCompletes:YES];
+	    [combobox setAutoresizingMask: CPViewWidthSizable];
         [combobox setTarget:tableView];
         [combobox setAction:@selector(_commitDataViewObjectValue:)];
         var i, l=[[[CPApp delegate].autocompletionController arrangedObjects] count];
         var arr=[], objects=[[CPApp delegate].autocompletionController arrangedObjects];
-        for(i=0;i<l;i++) arr.push( [[objects objectAtIndex:i] valueForKey:"value"] );
+        for(i=0;i<l;i++)
+        {   var val= [[objects objectAtIndex:i] valueForKey:"value"];
+            if(val) arr.push( val );
+        }
         [combobox setContentValues:arr];
         [tableView _setObjectValueForTableColumn:column row:row forView:combobox];
-        [tableView addSubview:combobox positioned:CPWindowAbove relativeTo:tableView];
-       [[tableView superview] addSubview:combobox positioned:CPWindowAbove relativeTo:tableView];
+        [scrollView addSubview:combobox]; // positioned:CPWindowAbove relativeTo:tableView
        [[tableView window] makeFirstResponder:combobox];
         [combobox setDelegate:self];
        return NO;

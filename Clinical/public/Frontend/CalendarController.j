@@ -49,7 +49,7 @@ var _itemcache=[];
 	for(i=0;i<l;i++)
 	{	mybutton=[CalendarItem new];
 		[mybutton setStringValue: arr[i]["name"] ];
-		[mybutton setFont: [CPFont systemFontOfSize: 9]];
+		[mybutton setFont: [CPFont systemFontOfSize:9]];
 		[mybutton setTextColor:  arr[i]["type"]==1? [CPColor blackColor]:[CPColor darkGrayColor] ];
 		[mybutton setTarget: [[self collectionView] delegate]];
 		[mybutton setAction:@selector(open:)];
