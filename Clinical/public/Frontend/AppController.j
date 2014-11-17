@@ -357,6 +357,7 @@ BaseURL=HostURL+"/";
          combobox.tableViewEditedRowIndex = row;
          combobox.tableViewEditedColumnObj = column;
         [combobox setCompletes:YES];
+        [combobox setForceSelection:YES];
 	    [combobox setAutoresizingMask: CPViewWidthSizable];
         [combobox setTarget:tableView];
         [combobox setAction:@selector(_commitDataViewObjectValue:)];

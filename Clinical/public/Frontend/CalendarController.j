@@ -58,8 +58,13 @@ var _itemcache=[];
 		if(tt)
 		{	[mybutton setToolTip: tt];
 		}
+		[mybutton setFrame:CPMakeRect(2,i*20,125,19)];
 		[mydocview addSubview:mybutton];
-		[mybutton setFrame:CPMakeRect(2,i*20,145,19)];
+        if(i)
+        {
+            var buttonframe= [mydocview convertRect:[mybutton frame] toView: [mydocview superview]]
+            [mydocview setFrame:CGRectUnion([mydocview frame], buttonframe)]
+        }
 	}
 }
 
@@ -67,7 +72,7 @@ var _itemcache=[];
 {	var myview=[CPBox new];
 	var re = new RegExp("(....)-(..)-(..)");
 	var m = re.exec(aday);
-	if(m)  [myview setTitle :m[3]];
+	if(m)  [myview setTitle:m[3]];
 
 	[myview setTitleFont: [CPFont boldSystemFontOfSize: 18] ]
 	[myview setTitlePosition: CPBelowTop];
@@ -77,7 +82,7 @@ var _itemcache=[];
 
 	var myscroller=[[CPScrollView alloc] initWithFrame:CPMakeRect(0,0,150,100)];
 	[myscroller setAutohidesScrollers: YES];
-	 mydocview=[[CPView alloc] initWithFrame:CPMakeRect(2,20,150,100)];
+	 mydocview=[[CPView alloc] initWithFrame:CPMakeRect(2,20,130,60)];
 	[myscroller setDocumentView: mydocview];
 	[myview setContentView: myscroller];
 	if(aday)
