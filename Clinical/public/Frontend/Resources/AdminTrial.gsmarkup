@@ -56,7 +56,7 @@
                <tableColumn width="50" identifier="procedure.max_cost" title="max" editable="NO"/>
             </tableView>
           </scrollView>
-          <ButtonBar target="#CPOwner" plusButtonAction="insertVisitProcedure:" minusButtonAction="removeVisitProcedure:" actionsButton="YES">
+          <ButtonBar target="#CPOwner" plusButtonAction="insertVisitProcedure:" minusButtonAction="removeVisitProcedure:" id="visitproc_bb" actionsButton="YES">
             <popUpButtonItem title="Config..." target="#procedureswindow" action="makeKeyAndOrderFront:"/>
           </ButtonBar>
         </vbox>
@@ -98,6 +98,7 @@
     <outlet source="#CPOwner" target="adminbuttonbar" label="adminButtonBar"/>
     <outlet source="#CPOwner" target="visitprocs_tv" label="visitProcsTV"/>
     <outlet source="#CPOwner" target="visitperso_bb" label="visitpersoBB"/>
+    <outlet source="#CPOwner" target="visitproc_bb" label="visitprocBB"/>
 </connectors>
 
 </gsmarkup>

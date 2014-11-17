@@ -28,7 +28,7 @@
     </menu>
    </menu>
 
-<window bridge="YES" id="trialswindow" delegate="#myadmincontroller">
+<window bridge="YES" visible="YES" id="trialswindow" delegate="#myadmincontroller">
 <vbox>
    <splitView vertical="YES" autosaveName="vsplitter_main0">
     <vbox>

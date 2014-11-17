@@ -103,6 +103,8 @@ BaseURL=HostURL+"/";
     id    pdokusController;
     id    pdokusController2;
     id    personnelController;
+    id    personnelEventController;
+    id    personnelEventCatController;
     id    trialpersonnelController;
     id    groupsController;
     id    groupsControllerAll;
@@ -136,6 +138,7 @@ BaseURL=HostURL+"/";
     id    pdocumentsButtonBar;
     id    visitProcsTV;
     id    visitpersoBB;
+    id    visitprocBB;
 
     id    addTXWindow;
     id    accountsTV;

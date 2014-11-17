@@ -37,7 +37,7 @@
   <arrayController id="properties_controller" entity="trial_properties_catalogue" autoFetch="YES" sortDescriptor="by_order"/>
   <arrayController id="perso_properties_cat_controller" entity="personnel_properties_catalogue" autoFetch="YES" sortDescriptor="by_order"/>
   <arrayController id="perso_properties_controller" entity="personnel_properties" valueBinding="personnel_controller.selection.props" sortDescriptor="by_proporder"/>
-  <arrayController id="group_assignment_controller" entity="group_assignments" valueBinding="personnel_controller.selection.groups"/>
+  <arrayController id="group_assignment_controller" entity="group_assignments" valueBinding="personnel_controller.selection.groups" sortDescriptor="by_id"/>
   <arrayController id="patients_controller" entity="patients" sortDescriptor="by_id" valueBinding="trials_controller.selection.patients"/>
   <arrayController id="patient_visits_controller" entity="patient_visits"  valueBinding="patients_controller.selection.visits"/>
   <arrayController id="patient_visits_controller2" entity="patient_visits"  valueBinding="patients_controller.selection.visits" filterPredicate="visitdatenotnull"/>
@@ -54,6 +54,9 @@
   <arrayController id="procedures_visit_controller" entity="visit_procedures" valueBinding="visits_controller.selection.procedures"/>
   <arrayController id="autocompletion_controller" entity="trial_properties_distinct" valueBinding="trial_properties_controller.selection.autocompletition"/>
   <arrayController id="procedures_personnel_controller" entity="procedures_personnel" valueBinding="procedures_visit_controller.selection.personnel"/>
+  <arrayController id="personnel_event_controller" entity="personnel_event" valueBinding="personnel_controller.selection.events"/>
+  <arrayController id="personnel_event_catalogue_controller" entity="personnel_event_catalogue" autoFetch="YES"/>
+
 </objects>
 
 <entities>
@@ -103,6 +106,7 @@
 		<relationship type="toMany" name="costs" targetColumn="idpersonnel" target="personnel_costs"/>
 		<relationship type="toMany" name="dokus" targetColumn="idpersonnel" target="pdocuments"/>
 		<relationship type="toMany" name="dokus2" targetColumn="idpersonnel" target="pdocuments_tag_unique"/>
+		<relationship type="toMany" name="events" targetColumn="idpersonnel" target="personnel_event"/>
 	</entity>
 	<entity id="trial_personnel" store="#CPOwner.store">
 		<column name="id" primaryKey="YES"/>
@@ -371,6 +375,19 @@
 		<column name="idpersonnel"/>
 		<column name="idprocedure"/>
 	</entity>
+	<entity id="personnel_event_catalogue" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="description"/>
+	</entity>
+	<entity id="personnel_event" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="idpersonnel"/>
+		<column name="type"/>
+		<column name="start_time"/>
+		<column name="end_time"/>
+		<column name="comment"/>
+		<relationship type="toOne" name="event_type" bindingColumn="type" target="personnel_event_catalogue"/>
+	</entity>
 </entities>
 
 <connectors>
@@ -411,6 +428,8 @@
 	<outlet source="#CPOwner" target="procedures_personnel_controller" label="proceduresPersonnelController"/>
 	<outlet source="#CPOwner" target="group_personnel_controller" label="groupPersonnelController"/>
 	<outlet source="#CPOwner" target="autocompletion_controller" label="autocompletionController"/>
+	<outlet source="#CPOwner" target="personnel_event_controller" label="personnelEventController"/>
+	<outlet source="#CPOwner" target="personnel_event_catalogue_controller" label="personnelEventCatController"/>
 
 </connectors>
 

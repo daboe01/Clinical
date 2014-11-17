@@ -52,7 +52,31 @@
 
 @end
 
+@implementation EnclosingView:CPView
+{
+    id _enclosedView;
+}
+- initWithFrame:(CGRect) aFrame
+{
+    return [super initWithFrame:aFrame]
+}
+- (void) viewFrameChanged:(CPNotification)aNotification
+{
+ 	_autoresizesSubviews=NO;
+   [self setFrame: [_enclosedView frame]];
+}
 
+-(void) setEnclosedView:aView
+{
+    _enclosedView=aView;
+    [self addSubview:_enclosedView]
+    [[CPNotificationCenter defaultCenter] addObserver:self
+                selector:@selector(viewFrameChanged:)
+                    name:CPViewFrameDidChangeNotification
+                  object:aView];
+
+}
+@end
 
 @implementation OperationsController : CPObject
 {
@@ -151,6 +175,11 @@
 	var button=[travelButtonBar addButtonWithImageName:"print.png" target:self action:@selector(fahrtkostenForm:)];
     [button bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"patientVisitsController2.selectedObjects.@count" options:nil];
 
+    var tableView=propsTV;
+    var mysuperview=[[EnclosingView alloc] init];
+    var contentView= [[tableView enclosingScrollView] contentView]; 
+    [contentView setDocumentView:mysuperview];
+    [mysuperview setEnclosedView:tableView];
 }
 -(void) reloadTrialsList:sender
 {
@@ -482,8 +511,17 @@
 	[CPBundle loadRessourceNamed: "AdminTrial.gsmarkup" owner:[CPApp delegate] ];
 	[[CPApp delegate].adminButtonBar addButtonWithImageName:"sort.png" target:[CPApp delegate] action:@selector(reorderVisits:)];
 	[[CPApp delegate].adminButtonBar addButtonWithImageName:"reload.png" target:[CPApp delegate] action:@selector(reloadVisits:)];
-	[[CPApp delegate].visitpersoBB bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"proceduresVisitController.selection.@count" options:nil];
-];
+
+    var plusbutton= [[CPApp delegate].visitprocBB buttons][0],
+        minusbutton=[[CPApp delegate].visitprocBB buttons][1];
+	[plusbutton bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"visitsController.selection.@count" options:nil];
+	[minusbutton bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"proceduresVisitController.selection.@count" options:nil];
+
+    var plusbutton= [[CPApp delegate].visitpersoBB buttons][0],
+        minusbutton=[[CPApp delegate].visitpersoBB buttons][1];
+	[plusbutton bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"proceduresVisitController.selection.@count" options:nil];
+	[minusbutton bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"proceduresPersonnelController.selection.@count" options:nil];
+
 }
 
 
@@ -716,7 +754,7 @@
              return NO;
         }
         var frame = [tableView frameOfDataViewAtColumn:[[tableView tableColumns] indexOfObject:column] row:row];
-        frame.origin.y-=2;
+        frame.origin.y-=2 //+ [tableView superview]._bounds.origin.y;
         frame.size.height=30
         frame.size.width+=8;
         var combobox=[[CPComboBox alloc] initWithFrame:frame];
@@ -732,6 +770,7 @@
         [combobox setContentValues:arr];
         [tableView _setObjectValueForTableColumn:column row:row forView:combobox];
         [tableView addSubview:combobox positioned:CPWindowAbove relativeTo:tableView];
+       [[tableView superview] addSubview:combobox positioned:CPWindowAbove relativeTo:tableView];
        [[tableView window] makeFirstResponder:combobox];
         [combobox setDelegate:self];
        return NO;
