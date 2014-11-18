@@ -1759,54 +1759,47 @@ ALTER SEQUENCE patient_visits_id_seq OWNED BY patient_visits.id;
 
 
 --
--- Name: visit_conflicts; Type: VIEW; Schema: public; Owner: postgres
---
-
-CREATE VIEW visit_conflicts AS
- SELECT a.id
-   FROM (( SELECT a_1.id,
-            count(*) AS count
-           FROM ( SELECT DISTINCT patient_visits.id,
-                    personnel_catalogue_1.ldap
-                   FROM (((((((patient_visits
-                     JOIN patients ON ((patient_visits.idpatient = patients.id)))
-                     JOIN all_trials all_trials_1 ON ((patients.idtrial = all_trials_1.id)))
-                     JOIN trial_visits ON ((patient_visits.idvisit = trial_visits.id)))
-                     LEFT JOIN visit_procedures ON ((visit_procedures.idvisit = trial_visits.id)))
-                     LEFT JOIN procedures_personnel ON ((procedures_personnel.idprocedure = visit_procedures.id)))
-                     LEFT JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = procedures_personnel.idpersonnel)))
-                     JOIN ( SELECT a_1_1.day,
-                            personnel_catalogue_1_1.ldap,
-                            personnel_event.comment
-                           FROM ((personnel_event
-                             JOIN ( SELECT day.day
-                                   FROM generate_series(((now())::date - '1 year'::interval), ((now())::date + '1 year'::interval), '1 day'::interval) day(day)) a_1_1 ON (((a_1_1.day >= (personnel_event.start_time)::date) AND (a_1_1.day <= (personnel_event.end_time)::date))))
-                             JOIN personnel_catalogue personnel_catalogue_1_1 ON ((personnel_catalogue_1_1.id = personnel_event.idpersonnel)))
-                          WHERE (personnel_event.type = 1)) a_2 ON (((a_2.ldap = personnel_catalogue_1.ldap) AND ((a_2.day)::date = (patient_visits.visit_date)::date))))) a_1
-          GROUP BY a_1.id) a
-     JOIN ( SELECT b_1.id,
-            count(*) AS count
-           FROM ( SELECT DISTINCT patient_visits.id,
-                    patient_visits.idvisit,
-                    personnel_catalogue_1.ldap
-                   FROM ((((((patient_visits
-                     JOIN patients ON ((patient_visits.idpatient = patients.id)))
-                     JOIN all_trials all_trials_1 ON ((patients.idtrial = all_trials_1.id)))
-                     JOIN trial_visits ON ((patient_visits.idvisit = trial_visits.id)))
-                     LEFT JOIN visit_procedures ON ((visit_procedures.idvisit = trial_visits.id)))
-                     LEFT JOIN procedures_personnel ON ((procedures_personnel.idprocedure = visit_procedures.id)))
-                     LEFT JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = procedures_personnel.idpersonnel)))
-                  WHERE (personnel_catalogue_1.ldap IS NOT NULL)) b_1
-          GROUP BY b_1.id, b_1.idvisit) b ON (((a.id = b.id) AND (a.count >= b.count))));
-
-
-ALTER TABLE public.visit_conflicts OWNER TO postgres;
-
---
 -- Name: patient_visits_rich; Type: VIEW; Schema: public; Owner: root
 --
 
 CREATE VIEW patient_visits_rich AS
+ WITH visit_conflicts AS (
+         SELECT a.id
+           FROM (( SELECT a_1.id,
+                    count(*) AS count
+                   FROM ( SELECT DISTINCT patient_visits_1.id,
+                            personnel_catalogue_1.ldap
+                           FROM (((((((patient_visits patient_visits_1
+                             JOIN patients ON ((patient_visits_1.idpatient = patients.id)))
+                             JOIN all_trials all_trials_1 ON ((patients.idtrial = all_trials_1.id)))
+                             JOIN trial_visits trial_visits_1 ON ((patient_visits_1.idvisit = trial_visits_1.id)))
+                             LEFT JOIN visit_procedures ON ((visit_procedures.idvisit = trial_visits_1.id)))
+                             LEFT JOIN procedures_personnel ON ((procedures_personnel.idprocedure = visit_procedures.id)))
+                             LEFT JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = procedures_personnel.idpersonnel)))
+                             JOIN ( SELECT a_1_1.day,
+                                    personnel_catalogue_1_1.ldap,
+                                    personnel_event.comment
+                                   FROM ((personnel_event
+                                     JOIN ( SELECT day.day
+   FROM generate_series(((now())::date - '1 year'::interval), ((now())::date + '1 year'::interval), '1 day'::interval) day(day)) a_1_1 ON (((a_1_1.day >= (personnel_event.start_time)::date) AND (a_1_1.day <= (personnel_event.end_time)::date))))
+                                     JOIN personnel_catalogue personnel_catalogue_1_1 ON ((personnel_catalogue_1_1.id = personnel_event.idpersonnel)))
+                                  WHERE (personnel_event.type = 1)) a_2 ON (((a_2.ldap = personnel_catalogue_1.ldap) AND ((a_2.day)::date = (patient_visits_1.visit_date)::date))))) a_1
+                  GROUP BY a_1.id) a
+             JOIN ( SELECT b_1.id,
+                    count(*) AS count
+                   FROM ( SELECT DISTINCT patient_visits_1.id,
+                            patient_visits_1.idvisit,
+                            personnel_catalogue_1.ldap
+                           FROM ((((((patient_visits patient_visits_1
+                             JOIN patients ON ((patient_visits_1.idpatient = patients.id)))
+                             JOIN all_trials all_trials_1 ON ((patients.idtrial = all_trials_1.id)))
+                             JOIN trial_visits trial_visits_1 ON ((patient_visits_1.idvisit = trial_visits_1.id)))
+                             LEFT JOIN visit_procedures ON ((visit_procedures.idvisit = trial_visits_1.id)))
+                             LEFT JOIN procedures_personnel ON ((procedures_personnel.idprocedure = visit_procedures.id)))
+                             LEFT JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = procedures_personnel.idpersonnel)))
+                          WHERE (personnel_catalogue_1.ldap IS NOT NULL)) b_1
+                  GROUP BY b_1.id, b_1.idvisit) b ON (((a.id = b.id) AND (a.count >= b.count))))
+        )
  SELECT DISTINCT patient_visits.id,
     patient_visits.idpatient,
     patient_visits.idvisit,
@@ -2133,6 +2126,27 @@ ALTER TABLE public.procedures_personnel_id_seq OWNER TO postgres;
 
 ALTER SEQUENCE procedures_personnel_id_seq OWNED BY procedures_personnel.id;
 
+
+--
+-- Name: procedures_personnel_responsible; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW procedures_personnel_responsible AS
+ WITH summary AS (
+         SELECT p.id,
+            p.idpersonnel,
+            p.idprocedure,
+            row_number() OVER (PARTITION BY p.idprocedure ORDER BY p.id DESC) AS rk
+           FROM procedures_personnel p
+        )
+ SELECT s.id,
+    s.idpersonnel,
+    s.idprocedure
+   FROM summary s
+  WHERE (s.rk = 1);
+
+
+ALTER TABLE public.procedures_personnel_responsible OWNER TO postgres;
 
 --
 -- Name: process_steps_catalogue_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -2492,58 +2506,56 @@ ALTER SEQUENCE trial_visits_id_seq OWNED BY trial_visits.id;
 
 CREATE VIEW visit_dates AS
  WITH absent_intervals AS (
-         SELECT a.idvisit,
-            a.count,
-            a.start_time,
-            a.end_time
-           FROM ( SELECT a_1.idvisit,
-                    count(*) AS count,
-                    max(a_1.start_time) AS start_time,
-                    min(a_1.end_time) AS end_time
-                   FROM ( SELECT a_2.idvisit,
-                            a_2.ldap,
-                            a_2.start_time,
-                            a_2.end_time
-                           FROM ( SELECT DISTINCT visit_calculator.idvisit,
-                                    personnel_catalogue_1.ldap,
-                                    a_3.start_time,
-                                    (a_3.end_time)::date AS end_time
-                                   FROM (((((((visit_calculator
-                                     JOIN patients ON ((visit_calculator.idpatient = patients.id)))
-                                     JOIN all_trials all_trials_1 ON ((patients.idtrial = all_trials_1.id)))
-                                     JOIN trial_visits ON ((visit_calculator._idvisit = trial_visits.id)))
-                                     LEFT JOIN visit_procedures ON ((visit_procedures.idvisit = trial_visits.id)))
-                                     LEFT JOIN procedures_personnel ON ((procedures_personnel.idprocedure = visit_procedures.id)))
-                                     LEFT JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = procedures_personnel.idpersonnel)))
-                                     JOIN ( SELECT personnel_event.idpersonnel,
-    (personnel_event.start_time)::date AS start_time,
-    personnel_event.end_time,
-    personnel_event.comment
-   FROM personnel_event
-  WHERE (personnel_event.type = 1)) a_3 ON ((personnel_catalogue_1.id = a_3.idpersonnel)))
-                                  WHERE (((a_3.start_time >= visit_calculator.lower_margin) AND (a_3.start_time <= visit_calculator.upper_margin)) OR ((a_3.end_time >= visit_calculator.lower_margin) AND (a_3.end_time <= visit_calculator.upper_margin)))) a_2) a_1
-                  GROUP BY a_1.idvisit) a
-          WHERE (a.start_time <= a.end_time)
+         SELECT a_1.idvisit,
+            a_1.start_time,
+            a_1.end_time
+           FROM ( SELECT DISTINCT visit_calculator.idvisit,
+                    a_2.start_time,
+                    (a_2.end_time)::date AS end_time
+                   FROM (((((((visit_calculator
+                     JOIN patients ON ((visit_calculator.idpatient = patients.id)))
+                     JOIN all_trials all_trials_1 ON ((patients.idtrial = all_trials_1.id)))
+                     JOIN trial_visits ON ((visit_calculator._idvisit = trial_visits.id)))
+                     LEFT JOIN visit_procedures ON ((visit_procedures.idvisit = trial_visits.id)))
+                     LEFT JOIN procedures_personnel_responsible procedures_personnel ON ((procedures_personnel.idprocedure = visit_procedures.id)))
+                     LEFT JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = procedures_personnel.idpersonnel)))
+                     JOIN ( SELECT personnel_event.idpersonnel,
+                            (personnel_event.start_time)::date AS start_time,
+                            personnel_event.end_time,
+                            personnel_event.comment
+                           FROM personnel_event
+                          WHERE (personnel_event.type = 1)) a_2 ON ((personnel_catalogue_1.id = a_2.idpersonnel)))
+                  WHERE (((a_2.start_time >= visit_calculator.lower_margin) AND (a_2.start_time <= visit_calculator.upper_margin)) OR ((a_2.end_time >= visit_calculator.lower_margin) AND (a_2.end_time <= visit_calculator.upper_margin)))) a_1
         )
- SELECT visit_intervals.idvisit,
-    calendar.caldate,
-    calendar.startdate,
-    calendar.dcid,
-        CASE
-            WHEN (absent_intervals.idvisit IS NOT NULL) THEN 'alert'::text
-            ELSE NULL::text
-        END AS missing_service
-   FROM ((( SELECT visit_calculator.idvisit,
-            visit_calculator.upper_margin,
-            visit_calculator.lower_margin,
-            groups_catalogue.sprechstunde
-           FROM (((visit_calculator
-             JOIN patients ON ((visit_calculator.idpatient = patients.id)))
-             JOIN all_trials ON ((all_trials.id = patients.idtrial)))
-             JOIN groups_catalogue ON ((groups_catalogue.id = all_trials.idgroup)))) visit_intervals
-     JOIN calendar ON ((((calendar.caldate >= visit_intervals.lower_margin) AND (calendar.caldate <= visit_intervals.upper_margin)) AND (calendar.source = visit_intervals.sprechstunde))))
-     LEFT JOIN absent_intervals ON (((visit_intervals.idvisit = absent_intervals.idvisit) AND ((calendar.caldate >= absent_intervals.start_time) AND (calendar.caldate <= absent_intervals.end_time)))))
-  ORDER BY calendar.caldate;
+ SELECT a.dcid,
+    min(a.idvisit) AS idvisit,
+    min(a.caldate) AS caldate,
+    min(a.startdate) AS startdate,
+    max(a.missing_service) AS missing_service
+   FROM ( SELECT a_1.idvisit,
+            a_1.caldate,
+            a_1.startdate,
+            a_1.dcid,
+                CASE
+                    WHEN (a_1.idvisit IS NOT NULL) THEN 'alert'::text
+                    ELSE ''::text
+                END AS missing_service
+           FROM ( SELECT visit_intervals.idvisit,
+                    calendar.caldate,
+                    calendar.startdate,
+                    calendar.dcid
+                   FROM ((( SELECT visit_calculator.idvisit,
+                            visit_calculator.upper_margin,
+                            visit_calculator.lower_margin,
+                            groups_catalogue.sprechstunde
+                           FROM (((visit_calculator
+                             JOIN patients ON ((visit_calculator.idpatient = patients.id)))
+                             JOIN all_trials ON ((all_trials.id = patients.idtrial)))
+                             JOIN groups_catalogue ON ((groups_catalogue.id = all_trials.idgroup)))) visit_intervals
+                     JOIN calendar ON ((((calendar.caldate >= visit_intervals.lower_margin) AND (calendar.caldate <= visit_intervals.upper_margin)) AND (calendar.source = visit_intervals.sprechstunde))))
+                     LEFT JOIN absent_intervals ON (((visit_intervals.idvisit = absent_intervals.idvisit) AND ((calendar.caldate >= absent_intervals.start_time) AND (calendar.caldate <= absent_intervals.end_time)))))
+                  ORDER BY calendar.caldate) a_1) a
+  GROUP BY a.dcid;
 
 
 ALTER TABLE public.visit_dates OWNER TO postgres;
@@ -11464,7 +11476,7 @@ SELECT pg_catalog.setval('personnel_costs_id_seq', 20, true);
 
 COPY personnel_event (id, idpersonnel, type, start_time, end_time, comment) FROM stdin;
 2	37	1	2014-11-18 16:22:23.27589	2014-11-19 00:00:00	test
-1	1	1	2014-11-16 14:39:58.984701	2014-11-19 14:39:58.984701	coimbra
+1	1	1	2014-11-16 14:39:58.984701	2014-11-17 14:39:58.984701	coimbra
 \.
 
 
