@@ -32,6 +32,8 @@ sudo perl -MCPAN -e 'install ($_) for qw/Mojolicious Mojolicious::Plugin::Databa
 # or launch hypnotoad backend.pl during system boot
 # locate your favourite web browser to http://localhost:3000/Frontend/index.html
 # (you may change the port either in backend.pl or from the command line)
+# the username is pi with no password
+# (passwords are not enforced until you provide an ldap server in backend.pl)
 ```
 
 LICENCE

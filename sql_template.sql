@@ -11398,7 +11398,7 @@ SELECT pg_catalog.setval('patients_id_seq', 614, true);
 COPY personnel_catalogue (id, name, ldap, email, function, tel, level, abrechnungsname) FROM stdin;
 36	Mickey Mouse	mm	\N	\N	\N	\N	\N
 37	Icaljoe	ics	\N	\N	\N	\N	\N
-1	I am the PI	daboe01	my.email@xx.com	Pruefarzt	\N	3	\N
+1	I am the PI	pi	my.email@xx.com	Pruefarzt	\N	3	\N
 \.
 
 
