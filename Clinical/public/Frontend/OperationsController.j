@@ -52,32 +52,6 @@
 
 @end
 
-@implementation EnclosingView:CPView
-{
-    id _enclosedView;
-}
-- initWithFrame:(CGRect) aFrame
-{
-    return [super initWithFrame:aFrame]
-}
-- (void) viewFrameChanged:(CPNotification)aNotification
-{
- 	_autoresizesSubviews=NO;
-   [self setFrame: [_enclosedView frame]];
-}
-
--(void) setEnclosedView:aView
-{
-    _enclosedView=aView;
-    [self addSubview:_enclosedView]
-    [[CPNotificationCenter defaultCenter] addObserver:self
-                selector:@selector(viewFrameChanged:)
-                    name:CPViewFrameDidChangeNotification
-                  object:aView];
-
-}
-@end
-
 @implementation OperationsController : CPObject
 {
 	id	trialsWindow;
