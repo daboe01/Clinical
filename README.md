@@ -4,11 +4,13 @@ Clinical
 Clinical trials administration system
 
 Features include:
+ * Completely browser based
  * Trials database
  * Document repository
  * Visit management
  * Cost calculation
  * Event tracker
+ * Personal ressources
  * Team calendar
  * Full text search
  * Password manager
