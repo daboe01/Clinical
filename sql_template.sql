@@ -2491,12 +2491,46 @@ ALTER SEQUENCE trial_visits_id_seq OWNED BY trial_visits.id;
 --
 
 CREATE VIEW visit_dates AS
+ WITH absent_intervals AS (
+         SELECT a.idvisit,
+            a.count,
+            a.start_time,
+            a.end_time
+           FROM ( SELECT a_1.idvisit,
+                    count(*) AS count,
+                    max(a_1.start_time) AS start_time,
+                    min(a_1.end_time) AS end_time
+                   FROM ( SELECT a_2.idvisit,
+                            a_2.ldap,
+                            a_2.start_time,
+                            a_2.end_time
+                           FROM ( SELECT DISTINCT visit_calculator.idvisit,
+                                    personnel_catalogue_1.ldap,
+                                    a_3.start_time,
+                                    (a_3.end_time)::date AS end_time
+                                   FROM (((((((visit_calculator
+                                     JOIN patients ON ((visit_calculator.idpatient = patients.id)))
+                                     JOIN all_trials all_trials_1 ON ((patients.idtrial = all_trials_1.id)))
+                                     JOIN trial_visits ON ((visit_calculator._idvisit = trial_visits.id)))
+                                     LEFT JOIN visit_procedures ON ((visit_procedures.idvisit = trial_visits.id)))
+                                     LEFT JOIN procedures_personnel ON ((procedures_personnel.idprocedure = visit_procedures.id)))
+                                     LEFT JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = procedures_personnel.idpersonnel)))
+                                     JOIN ( SELECT personnel_event.idpersonnel,
+    (personnel_event.start_time)::date AS start_time,
+    personnel_event.end_time,
+    personnel_event.comment
+   FROM personnel_event
+  WHERE (personnel_event.type = 1)) a_3 ON ((personnel_catalogue_1.id = a_3.idpersonnel)))
+                                  WHERE (((a_3.start_time >= visit_calculator.lower_margin) AND (a_3.start_time <= visit_calculator.upper_margin)) OR ((a_3.end_time >= visit_calculator.lower_margin) AND (a_3.end_time <= visit_calculator.upper_margin)))) a_2) a_1
+                  GROUP BY a_1.idvisit) a
+          WHERE (a.start_time <= a.end_time)
+        )
  SELECT visit_intervals.idvisit,
     calendar.caldate,
     calendar.startdate,
     calendar.dcid,
         CASE
-            WHEN (visit_conflicts.id IS NOT NULL) THEN 'alert'::text
+            WHEN (absent_intervals.idvisit IS NOT NULL) THEN 'alert'::text
             ELSE NULL::text
         END AS missing_service
    FROM ((( SELECT visit_calculator.idvisit,
@@ -2508,7 +2542,7 @@ CREATE VIEW visit_dates AS
              JOIN all_trials ON ((all_trials.id = patients.idtrial)))
              JOIN groups_catalogue ON ((groups_catalogue.id = all_trials.idgroup)))) visit_intervals
      JOIN calendar ON ((((calendar.caldate >= visit_intervals.lower_margin) AND (calendar.caldate <= visit_intervals.upper_margin)) AND (calendar.source = visit_intervals.sprechstunde))))
-     LEFT JOIN visit_conflicts ON ((visit_intervals.idvisit = visit_conflicts.id)))
+     LEFT JOIN absent_intervals ON (((visit_intervals.idvisit = absent_intervals.idvisit) AND ((calendar.caldate >= absent_intervals.start_time) AND (calendar.caldate <= absent_intervals.end_time)))))
   ORDER BY calendar.caldate;
 
 
@@ -11328,12 +11362,10 @@ SELECT pg_catalog.setval('groups_catalogue_id_seq', 19, true);
 --
 
 COPY patient_visits (id, idpatient, idvisit, visit_date, state, travel_costs, date_reimbursed, travel_comment, travel_additional_costs, actual_costs) FROM stdin;
-3782	608	7	2014-11-13 00:00:00	\N	\N	\N	\N	\N	\N
 3784	608	6	\N	\N	\N	\N	\N	\N	\N
 3785	608	9	\N	\N	\N	\N	\N	\N	\N
 3786	608	10	\N	\N	\N	\N	\N	\N	\N
 3787	609	\N	2014-11-05 00:00:00	\N	\N	\N	\N	\N	\N
-3783	608	5	2014-11-28 00:00:00	\N	\N	\N	\N	\N	\N
 3788	610	7	2014-11-17 00:00:00	\N	\N	\N	\N	\N	\N
 3789	610	5	\N	\N	\N	\N	\N	\N	\N
 3790	610	6	\N	\N	\N	\N	\N	\N	\N
@@ -11359,6 +11391,8 @@ COPY patient_visits (id, idpatient, idvisit, visit_date, state, travel_costs, da
 3811	614	9	\N	\N	\N	\N	\N	\N	\N
 3812	614	10	\N	\N	\N	\N	\N	\N	\N
 3799	612	5	2014-11-18 00:00:00	\N	\N	\N	\N	\N	\N
+3782	608	7	2014-11-13 00:00:00	\N	\N	\N	\N	\N	0
+3783	608	5	2014-11-28 00:00:00	\N	\N	\N	\N	\N	0
 \.
 
 
@@ -11375,12 +11409,12 @@ SELECT pg_catalog.setval('patient_visits_id_seq', 3812, true);
 
 COPY patients (id, idtrial, piz, code1, code2, comment, state, name, givenname, birthdate, street, zip, town, telephone, insertion_date, female, iban, bic, bank, travel_distance) FROM stdin;
 609	197	\N	\N	\N	\N	\N	xxx	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
-608	25	1	\N	\N	\N	\N	Test	\N	\N	\N	\N	\N	\N	2014-11-13	\N	\N	\N	\N	\N
 610	25	2	\N	\N	\N	\N	test2	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
 611	25	3	\N	\N	\N	\N	test3	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
 612	25	4	\N	\N	\N	\N	test43	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
 613	25	5	\N	\N	\N	\N	test5	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
 614	25	6	\N	\N	\N	\N	test6	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
+608	25	1	\N	\N	\N	\N	Test	\N	\N	\N	\N	\N	\N	2014-11-13	\N	\N	\N	\N	10
 \.
 
 
@@ -11429,8 +11463,8 @@ SELECT pg_catalog.setval('personnel_costs_id_seq', 20, true);
 --
 
 COPY personnel_event (id, idpersonnel, type, start_time, end_time, comment) FROM stdin;
-1	1	1	2014-11-16 14:39:58.984701	2014-11-18 14:39:58.984701	coimbra
 2	37	1	2014-11-18 16:22:23.27589	2014-11-19 00:00:00	test
+1	1	1	2014-11-16 14:39:58.984701	2014-11-19 14:39:58.984701	coimbra
 \.
 
 
@@ -11766,6 +11800,7 @@ COPY trial_properties (id, idtrial, idproperty, value) FROM stdin;
 227	25	12	Prof. XX
 228	25	1	2012-XXX
 219	25	3	ZVSXX
+233	25	18	12501d s ds dfdfff fffdsfdsfds ds dsdf sf ds dfs dsffs dfsfs d dfsds fdsf dsf 
 232	25	16	https://www.xxx.com
 778	25	27	NCT0XXX
 230	25	14	2408,00 (overhead included!)
@@ -11792,7 +11827,6 @@ COPY trial_properties (id, idtrial, idproperty, value) FROM stdin;
 5417	195	28	\N
 5418	195	30	\N
 5419	195	29	\N
-233	25	18	12501
 5385	194	16	
 5420	195	16	\N
 5421	195	4	\N
@@ -11858,7 +11892,7 @@ COPY trial_properties (id, idtrial, idproperty, value) FROM stdin;
 5429	196	31	
 5444	196	15	mmm
 5451	196	14	
-5482	197	11	\N
+5482	197	11	
 5486	197	38	\N
 5490	197	21	\N
 5491	197	13	\N
@@ -11974,6 +12008,8 @@ SELECT pg_catalog.setval('trial_properties_id_seq', 5505, true);
 -- Data for Name: trial_property_annotations; Type: TABLE DATA; Schema: public; Owner: root
 --
 
+COPY trial_property_annotations (id, ldap, idfield, key, value) FROM stdin;
+\.
 
 
 --
