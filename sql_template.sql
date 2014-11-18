@@ -2757,7 +2757,7 @@ COPY all_trials (id, idgroup, name, codename, infotext) FROM stdin;
 196	19	New trial 3	\N	\N
 25	1	Demo 11001X	\N	\N
 197	1	Demo 11002X	\N	\N
-194	1	Demo 11002X	\N	\N
+194	1	Demo 11003X	\N	\N
 \.
 
 

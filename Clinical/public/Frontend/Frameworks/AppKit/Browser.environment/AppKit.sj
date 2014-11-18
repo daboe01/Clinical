@@ -1378,7 +1378,7 @@ class_addMethods(meta_class, [new objj_method(sel_getUid("_windowViewClassForSty
     return _CPPopoverWindowView;
 }
 ,["Class","unsigned"])]);
-}p;14;_CPPopUpList.jt;34830;@STATIC;1.0;i;9;CPPanel.ji;13;CPTableView.ji;8;CPText.ji;24;_CPPopUpListDataSource.jt;34738;objj_executeFile("CPPanel.j", YES);objj_executeFile("CPTableView.j", YES);objj_executeFile("CPText.j", YES);objj_executeFile("_CPPopUpListDataSource.j", YES);_CPPopUpListWillPopUpNotification = "_CPPopUpListWillPopUpNotification";
+}p;14;_CPPopUpList.jt;34919;@STATIC;1.0;i;9;CPPanel.ji;13;CPTableView.ji;8;CPText.ji;24;_CPPopUpListDataSource.jt;34827;objj_executeFile("CPPanel.j", YES);objj_executeFile("CPTableView.j", YES);objj_executeFile("CPText.j", YES);objj_executeFile("_CPPopUpListDataSource.j", YES);_CPPopUpListWillPopUpNotification = "_CPPopUpListWillPopUpNotification";
 _CPPopUpListWillDismissNotification = "_CPPopUpListWillDismissNotification";
 _CPPopUpListDidDismissNotification = "_CPPopUpListDidDismissNotification";
 _CPPopUpListItemWasClickedNotification = "_CPPopUpListItemWasClickedNotification";
@@ -1479,7 +1479,7 @@ class_addMethods(the_class, [new objj_method(sel_getUid("initWithDataSource:"), 
     ((___r1 = self._tableView), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "setEnabled:", ((___r2 = self._dataSource), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "numberOfItemsInList:", self)) > 0));
     self.isa.objj_msgSend1(self, "scrollItemAtIndexToTop:", ((___r1 = self._tableView), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "selectedRow")));
     self.isa.objj_msgSend0(self, "listWillPopUp");
-    ((___r1 = self._panel), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "orderFront:", nil));
+    ((___r1 = (aView == null ? null : aView.isa.objj_msgSend0(aView, "window"))), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "addChildWindow:ordered:", self._panel, CPWindowAbove));
     var ___r1, ___r2;
 }
 ,["void","CGRect","CPView","int"]), new objj_method(sel_getUid("listWidth"), function $_CPPopUpList__listWidth(self, _cmd)
@@ -3640,7 +3640,7 @@ solveCurveX = function(x, epsilon)
     ay = 1.0 - cy - by;
     return solve(t, solveEpsilon(duration));
 };
-p;15;CPApplication.jt;54423;@STATIC;1.0;I;21;Foundation/CPBundle.ji;25;CPApplication_Constants.ji;17;CPCompatibility.ji;14;CPColorPanel.ji;10;CPCursor.ji;22;CPDocumentController.ji;9;CPEvent.ji;8;CPMenu.ji;13;CPResponder.ji;14;CPThemeBlend.ji;14;CPCibLoading.ji;9;CPPanel.ji;12;CPPlatform.ji;20;CPWindowController.ji;18;_CPPopoverWindow.jt;54105;objj_executeFile("Foundation/CPBundle.j", NO);objj_executeFile("CPApplication_Constants.j", YES);objj_executeFile("CPCompatibility.j", YES);objj_executeFile("CPColorPanel.j", YES);objj_executeFile("CPCursor.j", YES);objj_executeFile("CPDocumentController.j", YES);objj_executeFile("CPEvent.j", YES);objj_executeFile("CPMenu.j", YES);objj_executeFile("CPResponder.j", YES);objj_executeFile("CPThemeBlend.j", YES);objj_executeFile("CPCibLoading.j", YES);objj_executeFile("CPPanel.j", YES);objj_executeFile("CPPlatform.j", YES);objj_executeFile("CPWindowController.j", YES);objj_executeFile("_CPPopoverWindow.j", YES);var CPMainCibFile = "CPMainCibFile",
+p;15;CPApplication.jt;54516;@STATIC;1.0;I;21;Foundation/CPBundle.ji;25;CPApplication_Constants.ji;17;CPCompatibility.ji;14;CPColorPanel.ji;10;CPCursor.ji;22;CPDocumentController.ji;9;CPEvent.ji;8;CPMenu.ji;13;CPResponder.ji;14;CPThemeBlend.ji;14;CPCibLoading.ji;9;CPPanel.ji;12;CPPlatform.ji;20;CPWindowController.ji;18;_CPPopoverWindow.jt;54198;objj_executeFile("Foundation/CPBundle.j", NO);objj_executeFile("CPApplication_Constants.j", YES);objj_executeFile("CPCompatibility.j", YES);objj_executeFile("CPColorPanel.j", YES);objj_executeFile("CPCursor.j", YES);objj_executeFile("CPDocumentController.j", YES);objj_executeFile("CPEvent.j", YES);objj_executeFile("CPMenu.j", YES);objj_executeFile("CPResponder.j", YES);objj_executeFile("CPThemeBlend.j", YES);objj_executeFile("CPCibLoading.j", YES);objj_executeFile("CPPanel.j", YES);objj_executeFile("CPPlatform.j", YES);objj_executeFile("CPWindowController.j", YES);objj_executeFile("_CPPopoverWindow.j", YES);var CPMainCibFile = "CPMainCibFile",
     CPMainCibFileHumanFriendly = "Main cib file base name",
     CPEventModifierFlags = 0;
 {var the_protocol = objj_allocateProtocol("CPApplicationDelegate");
@@ -4111,7 +4111,8 @@ class_addMethods(the_class, [new objj_method(sel_getUid("themeBlend"), function 
         CPException.isa.objj_msgSend2(CPException, "raise:reason:", CPInternalInconsistencyException, "The target window of beginSheet: cannot be a sheet");
         return;
     }
-    ((___r1 = aSheet._windowView), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "_enableSheet:inWindow:", YES, aWindow));
+    if (!(aWindow == null ? null : aWindow.isa.objj_msgSend0(aWindow, "attachedSheet")))
+        ((___r1 = aSheet._windowView), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "_enableSheet:inWindow:", YES, aWindow));
     (aWindow == null ? null : aWindow.isa.objj_msgSend(aWindow, "_attachSheet:modalDelegate:didEndSelector:contextInfo:", aSheet, aModalDelegate, didEndSelector, contextInfo));
     var ___r1;
 }
@@ -7302,7 +7303,7 @@ var meta_class = the_class.isa;class_addMethods(the_class, [new objj_method(sel_
     (aCoder == null ? null : aCoder.isa.objj_msgSend2(aCoder, "encodeObject:forKey:", self._periodicInterval, CPButtonPeriodicIntervalKey));
 }
 ,["void","CPCoder"])]);
-}p;13;CPButtonBar.jt;17197;@STATIC;1.0;i;8;CPView.ji;20;CPWindow_Constants.jt;17140;objj_executeFile("CPView.j", YES);objj_executeFile("CPWindow_Constants.j", YES);{var the_class = objj_allocateClassPair(CPView, "CPButtonBar"),
+}p;13;CPButtonBar.jt;17325;@STATIC;1.0;i;8;CPView.ji;20;CPWindow_Constants.jt;17268;objj_executeFile("CPView.j", YES);objj_executeFile("CPWindow_Constants.j", YES);{var the_class = objj_allocateClassPair(CPView, "CPButtonBar"),
 meta_class = the_class.isa;class_addIvars(the_class, [new objj_ivar("_hasResizeControl"), new objj_ivar("_resizeControlIsLeftAligned"), new objj_ivar("_buttons")]);objj_registerClassPair(the_class);
 class_addMethods(the_class, [new objj_method(sel_getUid("initWithFrame:"), function $CPButtonBar__initWithFrame_(self, _cmd, aFrame)
 {
@@ -7334,7 +7335,10 @@ class_addMethods(the_class, [new objj_method(sel_getUid("initWithFrame:"), funct
 ,["void"]), new objj_method(sel_getUid("setButtons:"), function $CPButtonBar__setButtons_(self, _cmd, buttons)
 {
     for (var i = ((___r1 = self._buttons), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "count")) - 1; i >= 0; i--)
+    {
+        ((___r1 = self._buttons[i]), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "removeFromSuperview"));
         ((___r1 = self._buttons[i]), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "removeObserver:forKeyPath:", self, "hidden"));
+    }
     self._buttons = CPArray.isa.objj_msgSend1(CPArray, "arrayWithArray:", buttons);
     for (var i = ((___r1 = self._buttons), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "count")) - 1; i >= 0; i--)
     {
@@ -10358,7 +10362,7 @@ var meta_class = the_class.isa;class_addMethods(the_class, [new objj_method(sel_
     (aCoder == null ? null : aCoder.isa.objj_msgSend2(aCoder, "encodeObject:forKey:", self.isa.objj_msgSend0(self, "isBordered"), CPColorWellBorderedKey));
 }
 ,["void","CPCoder"])]);
-}p;12;CPComboBox.jt;50969;@STATIC;1.0;i;8;CPText.ji;13;CPTextField.ji;14;_CPPopUpList.jt;50900;objj_executeFile("CPText.j", YES);objj_executeFile("CPTextField.j", YES);objj_executeFile("_CPPopUpList.j", YES);{var the_protocol = objj_allocateProtocol("CPComboBoxDelegate");
+}p;12;CPComboBox.jt;52134;@STATIC;1.0;i;8;CPText.ji;13;CPTextField.ji;14;_CPPopUpList.jt;52065;objj_executeFile("CPText.j", YES);objj_executeFile("CPTextField.j", YES);objj_executeFile("_CPPopUpList.j", YES);{var the_protocol = objj_allocateProtocol("CPComboBoxDelegate");
 var aProtocol = objj_getProtocol("CPObject");
 if (!aProtocol) throw new SyntaxError("*** Could not find definition for protocol \"CPComboBoxDelegate\"");
 protocol_addProtocol(the_protocol, aProtocol);
@@ -10378,7 +10382,7 @@ var CPComboBoxTextSubview = "text",
     CPComboBoxDefaultNumberOfVisibleItems = 5,
     CPComboBoxFocusRingWidth = -1;
 {var the_class = objj_allocateClassPair(CPTextField, "CPComboBox"),
-meta_class = the_class.isa;class_addIvars(the_class, [new objj_ivar("_items"), new objj_ivar("_listDelegate"), new objj_ivar("_dataSource"), new objj_ivar("_usesDataSource"), new objj_ivar("_completes"), new objj_ivar("_canComplete"), new objj_ivar("_numberOfVisibleItems"), new objj_ivar("_forceSelection"), new objj_ivar("_hasVerticalScroller"), new objj_ivar("_selectedStringValue"), new objj_ivar("_popUpButtonCausedResign")]);objj_registerClassPair(the_class);
+meta_class = the_class.isa;class_addIvars(the_class, [new objj_ivar("_items"), new objj_ivar("_listDelegate"), new objj_ivar("_dataSource"), new objj_ivar("_usesDataSource"), new objj_ivar("_completes"), new objj_ivar("_canComplete"), new objj_ivar("_numberOfVisibleItems"), new objj_ivar("_forceSelection"), new objj_ivar("_hasVerticalScroller"), new objj_ivar("_selectedStringValue"), new objj_ivar("_intercellSpacing"), new objj_ivar("_itemHeight"), new objj_ivar("_popUpButtonCausedResign")]);objj_registerClassPair(the_class);
 class_addMethods(the_class, [new objj_method(sel_getUid("initWithFrame:"), function $CPComboBox__initWithFrame_(self, _cmd, aFrame)
 {
     self = objj_msgSendSuper({ receiver:self, super_class:objj_getClass("CPComboBox").super_class }, "initWithFrame:", aFrame);
@@ -10413,7 +10417,8 @@ class_addMethods(the_class, [new objj_method(sel_getUid("initWithFrame:"), funct
     if (self._hasVerticalScroller === flag)
         return;
     self._hasVerticalScroller = flag;
-    ((___r1 = ((___r2 = self._listDelegate), ___r2 == null ? null : ___r2.isa.objj_msgSend0(___r2, "scrollView"))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "setHasVerticalScroller:", flag));
+    if (self._listDelegate)
+        ((___r1 = ((___r2 = self._listDelegate), ___r2 == null ? null : ___r2.isa.objj_msgSend0(___r2, "scrollView"))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "setHasVerticalScroller:", self._hasVerticalScroller));
     var ___r1, ___r2;
 }
 ,["void","BOOL"]), new objj_method(sel_getUid("intercellSpacing"), function $CPComboBox__intercellSpacing(self, _cmd)
@@ -10423,7 +10428,11 @@ class_addMethods(the_class, [new objj_method(sel_getUid("initWithFrame:"), funct
 }
 ,["CGSize"]), new objj_method(sel_getUid("setIntercellSpacing:"), function $CPComboBox__setIntercellSpacing_(self, _cmd, aSize)
 {
-    ((___r1 = ((___r2 = self._listDelegate), ___r2 == null ? null : ___r2.isa.objj_msgSend0(___r2, "tableView"))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "setIntercellSpacing:", aSize));
+    if (self._intercellSpacing && CGSizeEqualToSize(aSize, self._intercellSpacing))
+        return;
+    self._intercellSpacing = aSize;
+    if (self._listDelegate)
+        ((___r1 = ((___r2 = self._listDelegate), ___r2 == null ? null : ___r2.isa.objj_msgSend0(___r2, "tableView"))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "setIntercellSpacing:", self._intercellSpacing));
     var ___r1, ___r2;
 }
 ,["void","CGSize"]), new objj_method(sel_getUid("isButtonBordered"), function $CPComboBox__isButtonBordered(self, _cmd)
@@ -10444,8 +10453,14 @@ class_addMethods(the_class, [new objj_method(sel_getUid("initWithFrame:"), funct
 }
 ,["float"]), new objj_method(sel_getUid("setItemHeight:"), function $CPComboBox__setItemHeight_(self, _cmd, itemHeight)
 {
-    ((___r1 = ((___r2 = self._listDelegate), ___r2 == null ? null : ___r2.isa.objj_msgSend0(___r2, "tableView"))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "setRowHeight:", itemHeight));
-    ((___r1 = ((___r2 = self._listDelegate), ___r2 == null ? null : ___r2.isa.objj_msgSend0(___r2, "tableView"))), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "reloadData"));
+    if (itemHeight === self._itemHeight)
+        return;
+    self._itemHeight = itemHeight;
+    if (self._listDelegate)
+    {
+        ((___r1 = ((___r2 = self._listDelegate), ___r2 == null ? null : ___r2.isa.objj_msgSend0(___r2, "tableView"))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "setRowHeight:", self._itemHeight));
+        ((___r1 = ((___r2 = self._listDelegate), ___r2 == null ? null : ___r2.isa.objj_msgSend0(___r2, "tableView"))), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "reloadData"));
+    }
     var ___r1, ___r2;
 }
 ,["void","float"]), new objj_method(sel_getUid("numberOfVisibleItems"), function $CPComboBox__numberOfVisibleItems(self, _cmd)
@@ -10612,6 +10627,9 @@ class_addMethods(the_class, [new objj_method(sel_getUid("initWithFrame:"), funct
     (defaultCenter == null ? null : defaultCenter.isa.objj_msgSend(defaultCenter, "addObserver:selector:name:object:", self, sel_getUid("comboBoxSelectionDidChange:"), CPTableViewSelectionDidChangeNotification, tableView));
     ((___r1 = self._listDelegate), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "setFont:", self.isa.objj_msgSend0(self, "font")));
     ((___r1 = self._listDelegate), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "setAlignment:", self.isa.objj_msgSend0(self, "alignment")));
+    ((___r1 = ((___r2 = self._listDelegate), ___r2 == null ? null : ___r2.isa.objj_msgSend0(___r2, "scrollView"))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "setHasVerticalScroller:", self._hasVerticalScroller));
+    ((___r1 = ((___r2 = self._listDelegate), ___r2 == null ? null : ___r2.isa.objj_msgSend0(___r2, "tableView"))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "setIntercellSpacing:", self._intercellSpacing));
+    ((___r1 = ((___r2 = self._listDelegate), ___r2 == null ? null : ___r2.isa.objj_msgSend0(___r2, "tableView"))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "setRowHeight:", self._itemHeight));
     var ___r1, ___r2;
 }
 ,["void","_CPPopUpList"]), new objj_method(sel_getUid("indexOfItemWithObjectValue:"), function $CPComboBox__indexOfItemWithObjectValue_(self, _cmd, anObject)
@@ -10880,13 +10898,15 @@ class_addMethods(the_class, [new objj_method(sel_getUid("initWithFrame:"), funct
 ,["BOOL"]), new objj_method(sel_getUid("setFont:"), function $CPComboBox__setFont_(self, _cmd, aFont)
 {
     objj_msgSendSuper({ receiver:self, super_class:objj_getClass("CPComboBox").super_class }, "setFont:", aFont);
-    ((___r1 = self._listDelegate), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "setFont:", aFont));
+    if (self._listDelegate)
+        ((___r1 = self._listDelegate), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "setFont:", aFont));
     var ___r1;
 }
 ,["void","CPFont"]), new objj_method(sel_getUid("setAlignment:"), function $CPComboBox__setAlignment_(self, _cmd, alignment)
 {
     objj_msgSendSuper({ receiver:self, super_class:objj_getClass("CPComboBox").super_class }, "setAlignment:", alignment);
-    ((___r1 = self._listDelegate), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "setAlignment:", alignment));
+    if (self._listDelegate)
+        ((___r1 = self._listDelegate), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "setAlignment:", alignment));
     var ___r1;
 }
 ,["void","CPTextAlignment"]), new objj_method(sel_getUid("popupButtonRectForBounds:"), function $CPComboBox__popupButtonRectForBounds_(self, _cmd, bounds)
@@ -11183,7 +11203,7 @@ class_addMethods(the_class, [new objj_method(sel_getUid("initWithFrame:comboBox:
     return NO;
 }
 ,["BOOL"])]);
-}p;17;CPCompatibility.jt;10109;@STATIC;1.0;i;19;CPEvent_Constants.ji;12;CPPlatform.jt;10048;objj_executeFile("CPEvent_Constants.j", YES);objj_executeFile("CPPlatform.j", YES);CPUnknownBrowserEngine = 0;
+}p;17;CPCompatibility.jt;10248;@STATIC;1.0;i;19;CPEvent_Constants.ji;12;CPPlatform.jt;10187;objj_executeFile("CPEvent_Constants.j", YES);objj_executeFile("CPPlatform.j", YES);CPUnknownBrowserEngine = 0;
 CPGeckoBrowserEngine = 1;
 CPInternetExplorerBrowserEngine = 2;
 CPKHTMLBrowserEngine = 3;
@@ -11215,6 +11235,7 @@ CPInputSetFontOutsideOfDOM = 28;
 CPInput1PxLeftPadding = 29;
 CPInputOnInputEventFeature = 30;
 CPFileAPIFeature = 31;
+CPAltEnterTextAreaFeature = 32;
 CPCanvasParentDrawErrorsOnMovementBug = 1 << 0;
 CPJavaScriptPasteRequiresEditableTarget = 1 << 1;
 CPJavaScriptPasteCantRefocus = 1 << 2;
@@ -11225,6 +11246,7 @@ var USER_AGENT = "",
     PLATFORM_STYLE_JS_PROPERTIES = {};
 PLATFORM_FEATURES[CPInputTypeCanBeChangedFeature] = YES;
 PLATFORM_FEATURES[CPInputSetFontOutsideOfDOM] = YES;
+PLATFORM_FEATURES[CPAltEnterTextAreaFeature] = YES;
 if (typeof window !== "undefined" && typeof window.navigator !== "undefined")
     USER_AGENT = window.navigator.userAgent;
 if (typeof window !== "undefined" && window.opera)
@@ -11286,6 +11308,7 @@ if (typeof window !== "undefined" && window.opera)
     if (version < 3.0)
         PLATFORM_FEATURES[CPJavaScriptMouseWheelValues_8_15] = YES;
     PLATFORM_FEATURES[CPInput1PxLeftPadding] = YES;
+    PLATFORM_FEATURES[CPAltEnterTextAreaFeature] = NO;
 }if (typeof document != "undefined")
 {
     var canvasElement = document.createElement("canvas");
@@ -11415,7 +11438,7 @@ CPBrowserCSSProperty = function(aProperty)
         browserProperty = parts.join("-");
     return browserProperty.toLowerCase();
 }
-p;11;CPControl.jt;37261;@STATIC;1.0;I;24;Foundation/CPFormatter.jI;20;Foundation/CPTimer.ji;8;CPFont.ji;10;CPShadow.ji;8;CPView.ji;19;CPKeyValueBinding.jt;37124;objj_executeFile("Foundation/CPFormatter.j", NO);objj_executeFile("Foundation/CPTimer.j", NO);objj_executeFile("CPFont.j", YES);objj_executeFile("CPShadow.j", YES);objj_executeFile("CPView.j", YES);objj_executeFile("CPKeyValueBinding.j", YES);{var the_protocol = objj_allocateProtocol("CPControlTextEditingDelegate");
+p;11;CPControl.jt;37508;@STATIC;1.0;I;24;Foundation/CPFormatter.jI;20;Foundation/CPTimer.ji;8;CPFont.ji;10;CPShadow.ji;8;CPView.ji;19;CPKeyValueBinding.jt;37371;objj_executeFile("Foundation/CPFormatter.j", NO);objj_executeFile("Foundation/CPTimer.j", NO);objj_executeFile("CPFont.j", YES);objj_executeFile("CPShadow.j", YES);objj_executeFile("CPView.j", YES);objj_executeFile("CPKeyValueBinding.j", YES);{var the_protocol = objj_allocateProtocol("CPControlTextEditingDelegate");
 var aProtocol = objj_getProtocol("CPObject");
 if (!aProtocol) throw new SyntaxError("*** Could not find definition for protocol \"CPControlTextEditingDelegate\"");
 protocol_addProtocol(the_protocol, aProtocol);
@@ -11537,9 +11560,17 @@ default:
         minSize = self.isa.objj_msgSend1(self, "currentValueForThemeAttribute:", "min-size"),
         maxSize = self.isa.objj_msgSend1(self, "currentValueForThemeAttribute:", "max-size");
     if (minSize.width > 0)
+    {
         frameSize.width = MAX(minSize.width, frameSize.width);
+        if (maxSize.width > 0)
+            frameSize.width = MIN(maxSize.width, frameSize.width);
+    }
     if (minSize.height > 0)
-        frameSize.height = minSize.height;
+    {
+        frameSize.height = MAX(minSize.height, frameSize.height);
+        if (maxSize.height > 0)
+            frameSize.height = MIN(maxSize.height, frameSize.height);
+    }
     self.isa.objj_msgSend1(self, "setFrameSize:", frameSize);
 }
 ,["void"]), new objj_method(sel_getUid("setAction:"), function $CPControl__setAction_(self, _cmd, anAction)
@@ -30917,7 +30948,7 @@ CPRightTextMovement = 20;
 CPUpTextMovement = 21;
 CPDownTextMovement = 22;
 CPCancelTextMovement = 23;
-p;13;CPTextField.jt;82212;@STATIC;1.0;i;11;CPControl.ji;17;CPStringDrawing.ji;17;CPCompatibility.ji;8;CPText.ji;20;CPWindow_Constants.ji;21;_CPImageAndTextView.jt;82069;objj_executeFile("CPControl.j", YES);objj_executeFile("CPStringDrawing.j", YES);objj_executeFile("CPCompatibility.j", YES);objj_executeFile("CPText.j", YES);objj_executeFile("CPWindow_Constants.j", YES);objj_executeFile("_CPImageAndTextView.j", YES);{var the_protocol = objj_allocateProtocol("CPTextFieldDelegate");
+p;13;CPTextField.jt;86503;@STATIC;1.0;i;11;CPControl.ji;17;CPStringDrawing.ji;17;CPCompatibility.ji;8;CPText.ji;20;CPWindow_Constants.ji;21;_CPImageAndTextView.jt;86360;objj_executeFile("CPControl.j", YES);objj_executeFile("CPStringDrawing.j", YES);objj_executeFile("CPCompatibility.j", YES);objj_executeFile("CPText.j", YES);objj_executeFile("CPWindow_Constants.j", YES);objj_executeFile("_CPImageAndTextView.j", YES);{var the_protocol = objj_allocateProtocol("CPTextFieldDelegate");
 var aProtocol = objj_getProtocol("CPControlTextEditingDelegate");
 if (!aProtocol) throw new SyntaxError("*** Could not find definition for protocol \"CPTextFieldDelegate\"");
 protocol_addProtocol(the_protocol, aProtocol);
@@ -30927,9 +30958,10 @@ CPTextFieldSquareBezel = 0;
 CPTextFieldRoundedBezel = 1;
 CPTextFieldDidFocusNotification = "CPTextFieldDidFocusNotification";
 CPTextFieldDidBlurNotification = "CPTextFieldDidBlurNotification";
-var CPTextFieldDOMInputElement = nil,
-    CPTextFieldDOMPasswordInputElement = nil,
+var CPTextFieldDOMCurrentElement = nil,
+    CPTextFieldDOMTextAreaElement = nil,
     CPTextFieldDOMStandardInputElement = nil,
+    CPTextFieldDOMPasswordInputElement = nil,
     CPTextFieldInputOwner = nil,
     CPTextFieldTextDidChangeValue = nil,
     CPTextFieldInputResigning = NO,
@@ -30976,7 +31008,7 @@ var meta_class = the_class.isa;class_addMethods(the_class, [new objj_method(sel_
 }CPTextFieldStateRounded = CPThemeState("rounded");
 CPTextFieldStatePlaceholder = CPThemeState("placeholder");
 {var the_class = objj_allocateClassPair(CPControl, "CPTextField"),
-meta_class = the_class.isa;class_addIvars(the_class, [new objj_ivar("_isEditing"), new objj_ivar("_isEditable"), new objj_ivar("_isSelectable"), new objj_ivar("_isSecure"), new objj_ivar("_willBecomeFirstResponderByClick"), new objj_ivar("_invokedByUserEvent"), new objj_ivar("_drawsBackground"), new objj_ivar("_textFieldBackgroundColor"), new objj_ivar("_placeholderString"), new objj_ivar("_stringValue"), new objj_ivar("_delegate"), new objj_ivar("_implementedDelegateMethods"), new objj_ivar("_bezelStyle"), new objj_ivar("_isBordered")]);objj_registerClassPair(the_class);
+meta_class = the_class.isa;class_addIvars(the_class, [new objj_ivar("_isEditing"), new objj_ivar("_isEditable"), new objj_ivar("_isSelectable"), new objj_ivar("_isSecure"), new objj_ivar("_willBecomeFirstResponderByClick"), new objj_ivar("_invokedByUserEvent"), new objj_ivar("_drawsBackground"), new objj_ivar("_textFieldBackgroundColor"), new objj_ivar("_placeholderString"), new objj_ivar("_stringValue"), new objj_ivar("_delegate"), new objj_ivar("_implementedDelegateMethods"), new objj_ivar("_bezelStyle"), new objj_ivar("_isBordered"), new objj_ivar("_usesSingleLineMode"), new objj_ivar("_wraps"), new objj_ivar("_scrolls")]);objj_registerClassPair(the_class);
 class_addMethods(the_class, [new objj_method(sel_getUid("setControlSize:"), function $CPTextField__setControlSize_(self, _cmd, aControlSize)
 {
     objj_msgSendSuper({ receiver:self, super_class:objj_getClass("CPTextField").super_class }, "setControlSize:", aControlSize);
@@ -30985,66 +31017,78 @@ class_addMethods(the_class, [new objj_method(sel_getUid("setControlSize:"), func
 }
 ,["void","CPControlSize"]), new objj_method(sel_getUid("_inputElement"), function $CPTextField___inputElement(self, _cmd)
 {
-    if (!CPTextFieldDOMInputElement)
+    if (!CPTextFieldDOMTextAreaElement)
     {
-        CPTextFieldDOMInputElement = document.createElement("input");
-        CPTextFieldDOMInputElement.style.position = "absolute";
-        CPTextFieldDOMInputElement.style.border = "0px";
-        CPTextFieldDOMInputElement.style.padding = "0px";
-        CPTextFieldDOMInputElement.style.margin = "0px";
-        CPTextFieldDOMInputElement.style.whiteSpace = "pre";
-        CPTextFieldDOMInputElement.style.background = "transparent";
-        CPTextFieldDOMInputElement.style.outline = "none";
+        CPTextFieldDOMTextAreaElement = document.createElement("textarea");
+        CPTextFieldDOMTextAreaElement.style.position = "absolute";
+        CPTextFieldDOMTextAreaElement.style.border = "0px";
+        CPTextFieldDOMTextAreaElement.style.padding = "0px";
+        CPTextFieldDOMTextAreaElement.style.margin = "0px";
+        CPTextFieldDOMTextAreaElement.style.background = "transparent";
+        CPTextFieldDOMTextAreaElement.style.outline = "none";
+        CPTextFieldDOMTextAreaElement.style.resize = "none";
+        CPTextFieldDOMTextAreaElement.style.overflow = "hidden";
+        CPTextFieldDOMTextAreaElement.spellcheck = NO;
+    }
+    if (!CPTextFieldDOMStandardInputElement)
+    {
+        CPTextFieldDOMStandardInputElement = document.createElement("input");
+        CPTextFieldDOMStandardInputElement.style.position = "absolute";
+        CPTextFieldDOMStandardInputElement.style.border = "0px";
+        CPTextFieldDOMStandardInputElement.style.padding = "0px";
+        CPTextFieldDOMStandardInputElement.style.margin = "0px";
+        CPTextFieldDOMStandardInputElement.style.whiteSpace = "pre";
+        CPTextFieldDOMStandardInputElement.style.background = "transparent";
+        CPTextFieldDOMStandardInputElement.style.outline = "none";
+        CPTextFieldDOMStandardInputElement.spellcheck = NO;
+    }
+    if (!CPTextFieldDOMPasswordInputElement)
+    {
+        CPTextFieldDOMPasswordInputElement = document.createElement("input");
+        CPTextFieldDOMPasswordInputElement.style.position = "absolute";
+        CPTextFieldDOMPasswordInputElement.style.border = "0px";
+        CPTextFieldDOMPasswordInputElement.style.padding = "0px";
+        CPTextFieldDOMPasswordInputElement.style.margin = "0px";
+        CPTextFieldDOMPasswordInputElement.style.whiteSpace = "pre";
+        CPTextFieldDOMPasswordInputElement.style.background = "transparent";
+        CPTextFieldDOMPasswordInputElement.style.outline = "none";
+        CPTextFieldDOMPasswordInputElement.type = "password";
+        CPTextFieldDOMPasswordInputElement.spellcheck = NO;
+    }
+    if (!CPTextFieldBlurHandler)
+    {
         CPTextFieldBlurHandler = function(anEvent)
         {
-            return CPTextFieldBlurFunction(anEvent, CPTextFieldInputOwner, CPTextFieldInputOwner ? CPTextFieldInputOwner._DOMElement : nil, CPTextFieldDOMInputElement, CPTextFieldInputResigning, function(__input) { if (arguments.length) return CPTextFieldInputDidBlur = __input; return CPTextFieldInputDidBlur; });
+            return CPTextFieldBlurFunction(anEvent, CPTextFieldInputOwner, CPTextFieldInputOwner ? CPTextFieldInputOwner._DOMElement : nil, CPTextFieldDOMCurrentElement, CPTextFieldInputResigning, function(__input) { if (arguments.length) return CPTextFieldInputDidBlur = __input; return CPTextFieldInputDidBlur; });
         };
-        if (CPFeatureIsCompatible(CPInputOnInputEventFeature))
-        {
-            CPTextFieldInputFunction = function(anEvent)
-            {
-                if (!CPTextFieldInputOwner)
-                    return;
-                var cappEvent = CPEvent.isa.objj_msgSend(CPEvent, "keyEventWithType:location:modifierFlags:timestamp:windowNumber:context:characters:charactersIgnoringModifiers:isARepeat:keyCode:", CPKeyUp, CGPointMakeZero(), 0, CPEvent.isa.objj_msgSend0(CPEvent, "currentTimestamp"), ((___r1 = (CPApp == null ? null : CPApp.isa.objj_msgSend0(CPApp, "keyWindow"))), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "windowNumber")), nil, nil, nil, NO, nil);
-                (CPTextFieldInputOwner == null ? null : CPTextFieldInputOwner.isa.objj_msgSend1(CPTextFieldInputOwner, "keyUp:", cappEvent));
-                ((___r1 = CPRunLoop.isa.objj_msgSend0(CPRunLoop, "currentRunLoop")), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "limitDateForMode:", CPDefaultRunLoopMode));
-                var ___r1;
-            };
-            CPTextFieldDOMInputElement.oninput = CPTextFieldInputFunction;
-        }
-        CPTextFieldDOMInputElement.onblur = CPTextFieldBlurHandler;
-        CPTextFieldDOMStandardInputElement = CPTextFieldDOMInputElement;
     }
-    if (CPFeatureIsCompatible(CPInputTypeCanBeChangedFeature))
+    if (!CPTextFieldInputFunction)
     {
-        if (self.isa.objj_msgSend0(self, "isSecure"))
-            CPTextFieldDOMInputElement.type = "password";
-        else
-            CPTextFieldDOMInputElement.type = "text";
-        return CPTextFieldDOMInputElement;
+        if (!CPFeatureIsCompatible(CPInputOnInputEventFeature))
+            return;
+        CPTextFieldInputFunction = function(anEvent)
+        {
+            if (!CPTextFieldInputOwner)
+                return;
+            var cappEvent = CPEvent.isa.objj_msgSend(CPEvent, "keyEventWithType:location:modifierFlags:timestamp:windowNumber:context:characters:charactersIgnoringModifiers:isARepeat:keyCode:", CPKeyUp, CGPointMakeZero(), 0, CPEvent.isa.objj_msgSend0(CPEvent, "currentTimestamp"), ((___r1 = (CPApp == null ? null : CPApp.isa.objj_msgSend0(CPApp, "keyWindow"))), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "windowNumber")), nil, nil, nil, NO, nil);
+            (CPTextFieldInputOwner == null ? null : CPTextFieldInputOwner.isa.objj_msgSend1(CPTextFieldInputOwner, "keyUp:", cappEvent));
+            ((___r1 = CPRunLoop.isa.objj_msgSend0(CPRunLoop, "currentRunLoop")), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "limitDateForMode:", CPDefaultRunLoopMode));
+            var ___r1;
+        };
+        CPTextFieldDOMPasswordInputElement.oninput = CPTextFieldInputFunction;
+        CPTextFieldDOMPasswordInputElement.onblur = CPTextFieldBlurHandler;
+        CPTextFieldDOMStandardInputElement.oninput = CPTextFieldInputFunction;
+        CPTextFieldDOMPasswordInputElement.onblur = CPTextFieldBlurHandler;
+        CPTextFieldDOMTextAreaElement.oninput = CPTextFieldInputFunction;
+        CPTextFieldDOMTextAreaElement.onblur = CPTextFieldBlurHandler;
     }
     if (self.isa.objj_msgSend0(self, "isSecure"))
-    {
-        if (!CPTextFieldDOMPasswordInputElement)
-        {
-            CPTextFieldDOMPasswordInputElement = document.createElement("input");
-            CPTextFieldDOMPasswordInputElement.style.position = "absolute";
-            CPTextFieldDOMPasswordInputElement.style.border = "0px";
-            CPTextFieldDOMPasswordInputElement.style.padding = "0px";
-            CPTextFieldDOMPasswordInputElement.style.margin = "0px";
-            CPTextFieldDOMPasswordInputElement.style.whiteSpace = "pre";
-            CPTextFieldDOMPasswordInputElement.style.background = "transparent";
-            CPTextFieldDOMPasswordInputElement.style.outline = "none";
-            CPTextFieldDOMPasswordInputElement.type = "password";
-            CPTextFieldDOMPasswordInputElement.onblur = CPTextFieldBlurHandler;
-        }
-        CPTextFieldDOMInputElement = CPTextFieldDOMPasswordInputElement;
-    }
+        CPTextFieldDOMCurrentElement = CPTextFieldDOMPasswordInputElement;
+    else if (self._usesSingleLineMode)
+        CPTextFieldDOMCurrentElement = CPTextFieldDOMStandardInputElement;
     else
-    {
-        CPTextFieldDOMInputElement = CPTextFieldDOMStandardInputElement;
-    }
-    return CPTextFieldDOMInputElement;
+        CPTextFieldDOMCurrentElement = CPTextFieldDOMTextAreaElement;
+    return CPTextFieldDOMCurrentElement;
 }
 ,["DOMElement"]), new objj_method(sel_getUid("initWithFrame:"), function $CPTextField__initWithFrame_(self, _cmd, aFrame)
 {
@@ -31055,7 +31099,6 @@ class_addMethods(the_class, [new objj_method(sel_getUid("setControlSize:"), func
         (self == null ? null : self.isa.objj_msgSend1(self, "setPlaceholderString:", ""));
         self._sendActionOn = CPKeyUpMask | CPKeyDownMask;
         (self == null ? null : self.isa.objj_msgSend2(self, "setValue:forThemeAttribute:", CPLeftTextAlignment, "alignment"));
-        (self == null ? null : self.isa.objj_msgSend0(self, "_updateCursor"));
     }
     return self;
 }
@@ -31066,7 +31109,6 @@ class_addMethods(the_class, [new objj_method(sel_getUid("setControlSize:"), func
     self._isEditable = shouldBeEditable;
     if (shouldBeEditable)
         self._isSelectable = YES;
-    self.isa.objj_msgSend0(self, "_updateCursor");
     if (self._isEditable)
         self.isa.objj_msgSend1(self, "setThemeState:", CPThemeStateEditable);
     else
@@ -31086,7 +31128,6 @@ class_addMethods(the_class, [new objj_method(sel_getUid("setControlSize:"), func
 ,["BOOL"]), new objj_method(sel_getUid("setEnabled:"), function $CPTextField__setEnabled_(self, _cmd, shouldBeEnabled)
 {
     objj_msgSendSuper({ receiver:self, super_class:objj_getClass("CPTextField").super_class }, "setEnabled:", shouldBeEnabled);
-    self.isa.objj_msgSend0(self, "_updateCursor");
     if (!shouldBeEnabled && ((___r1 = self.isa.objj_msgSend0(self, "window")), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "firstResponder")) === self)
         ((___r1 = self.isa.objj_msgSend0(self, "window")), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "makeFirstResponder:", nil));
     var ___r1;
@@ -31094,7 +31135,6 @@ class_addMethods(the_class, [new objj_method(sel_getUid("setControlSize:"), func
 ,["void","BOOL"]), new objj_method(sel_getUid("setSelectable:"), function $CPTextField__setSelectable_(self, _cmd, aFlag)
 {
     self._isSelectable = aFlag;
-    self.isa.objj_msgSend0(self, "_updateCursor");
 }
 ,["void","BOOL"]), new objj_method(sel_getUid("isSelectable"), function $CPTextField__isSelectable(self, _cmd)
 {
@@ -31168,7 +31208,19 @@ class_addMethods(the_class, [new objj_method(sel_getUid("setControlSize:"), func
 {
     return self._textFieldBackgroundColor;
 }
-,["CPColor"]), new objj_method(sel_getUid("acceptsFirstResponder"), function $CPTextField__acceptsFirstResponder(self, _cmd)
+,["CPColor"]), new objj_method(sel_getUid("_setUsesSingleLineMode:"), function $CPTextField___setUsesSingleLineMode_(self, _cmd, aFlag)
+{
+    self._usesSingleLineMode = aFlag;
+}
+,["void","BOOL"]), new objj_method(sel_getUid("_setWraps:"), function $CPTextField___setWraps_(self, _cmd, aFlag)
+{
+    self._wraps = aFlag;
+}
+,["void","BOOL"]), new objj_method(sel_getUid("_setScrolls:"), function $CPTextField___setScrolls_(self, _cmd, aFlag)
+{
+    self._scrolls = aFlag;
+}
+,["void","BOOL"]), new objj_method(sel_getUid("acceptsFirstResponder"), function $CPTextField__acceptsFirstResponder(self, _cmd)
 {
     return self.isa.objj_msgSend0(self, "isEnabled") && (self.isa.objj_msgSend0(self, "isEditable") || self.isa.objj_msgSend0(self, "isSelectable")) && self.isa.objj_msgSend0(self, "_isWithinUsablePlatformRect");
 }
@@ -31194,20 +31246,9 @@ class_addMethods(the_class, [new objj_method(sel_getUid("setControlSize:"), func
     self.isa.objj_msgSend0(self, "setNeedsLayout");
     self._stringValue = self.isa.objj_msgSend0(self, "stringValue");
     self.isa.objj_msgSend0(self, "_setCSSStyleForInputElement");
-    var element = self.isa.objj_msgSend0(self, "_inputElement"),
-        font = self.isa.objj_msgSend1(self, "currentValueForThemeAttribute:", "font"),
-        contentRect = self.isa.objj_msgSend1(self, "contentRectForBounds:", self.isa.objj_msgSend0(self, "bounds")),
-        left = CGRectGetMinX(contentRect);
+    var element = self.isa.objj_msgSend0(self, "_inputElement");
     element.value = self._stringValue;
-    if (CPFeatureIsCompatible(CPInput1PxLeftPadding))
-        left -= 1;
-    element.style.left = left + "px";
-    element.style.width = CGRectGetWidth(contentRect) + "px";
-    element.style.verticalAlign = "top";
-    element.style.cursor = "auto";
     self._DOMElement.appendChild(element);
-    if (!CPFeatureIsCompatible(CPInputSetFontOutsideOfDOM))
-        element.style.font = (font == null ? null : font.isa.objj_msgSend0(font, "cssString"));
     CPTextFieldInputIsActive = YES;
     if (document.attachEvent)
     {
@@ -31240,24 +31281,10 @@ class_addMethods(the_class, [new objj_method(sel_getUid("setControlSize:"), func
         font = self.isa.objj_msgSend1(self, "currentValueForThemeAttribute:", "font"),
         lineHeight = (font == null ? null : font.isa.objj_msgSend0(font, "defaultLineHeightForFont")),
         contentRect = self.isa.objj_msgSend1(self, "contentRectForBounds:", self.isa.objj_msgSend0(self, "bounds")),
-        verticalAlign = self.isa.objj_msgSend1(self, "currentValueForThemeAttribute:", "vertical-alignment");
-    if (self.isa.objj_msgSend1(self, "hasThemeState:", CPTextFieldStatePlaceholder))
-        element.style.color = ((___r1 = self.isa.objj_msgSend2(self, "valueForThemeAttribute:inState:", "text-color", CPTextFieldStatePlaceholder)), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "cssString"));
-    else
-        element.style.color = ((___r1 = self.isa.objj_msgSend2(self, "valueForThemeAttribute:inState:", "text-color", CPThemeStateEditing)), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "cssString"));
-    if (CPFeatureIsCompatible(CPInputSetFontOutsideOfDOM))
-        element.style.font = (font == null ? null : font.isa.objj_msgSend0(font, "cssString"));
-    element.style.zIndex = 1000;
-    switch(self.isa.objj_msgSend0(self, "alignment")) {
-    case CPCenterTextAlignment:
-        element.style.textAlign = "center";
-        break;
-    case CPRightTextAlignment:
-        element.style.textAlign = "right";
-        break;
-default:
-        element.style.textAlign = "left";
-    }
+        verticalAlign = self.isa.objj_msgSend1(self, "currentValueForThemeAttribute:", "vertical-alignment"),
+        left = CGRectGetMinX(contentRect);
+    if (CPFeatureIsCompatible(CPInput1PxLeftPadding))
+        left -= 1;
     switch(verticalAlign) {
     case CPTopVerticalTextAlignment:
         var topPoint = CGRectGetMinY(contentRect) + "px";
@@ -31272,9 +31299,32 @@ default:
         var topPoint = CGRectGetMinY(contentRect) + "px";
         break;
     }
+    if (self.isa.objj_msgSend1(self, "hasThemeState:", CPTextFieldStatePlaceholder))
+        element.style.color = ((___r1 = self.isa.objj_msgSend2(self, "valueForThemeAttribute:inState:", "text-color", CPTextFieldStatePlaceholder)), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "cssString"));
+    else
+        element.style.color = ((___r1 = self.isa.objj_msgSend2(self, "valueForThemeAttribute:inState:", "text-color", CPThemeStateEditing)), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "cssString"));
+    switch(self.isa.objj_msgSend0(self, "alignment")) {
+    case CPCenterTextAlignment:
+        element.style.textAlign = "center";
+        break;
+    case CPRightTextAlignment:
+        element.style.textAlign = "right";
+        break;
+default:
+        element.style.textAlign = "left";
+    }
+    var isTextArea = element.nodeName.toUpperCase() == "TEXTAREA";
+    element.style.zIndex = 1000;
     element.style.top = topPoint;
-    element.style.height = ROUND(lineHeight) + "px";
     element.style.lineHeight = ROUND(lineHeight) + "px";
+    element.style.height = isTextArea ? CGRectGetHeight(contentRect) + "px" : ROUND(lineHeight) + "px";
+    element.style.width = CGRectGetWidth(contentRect) + "px";
+    element.style.left = left + "px";
+    element.style.verticalAlign = "top";
+    element.style.cursor = "auto";
+    element.style.font = (font == null ? null : font.isa.objj_msgSend0(font, "cssString"));
+    if (isTextArea)
+        element.style.whiteSpace = self._wraps ? "pre" : "nowrap";
     var ___r1;
 }
 ,["void"]), new objj_method(sel_getUid("resignFirstResponder"), function $CPTextField__resignFirstResponder(self, _cmd)
@@ -31408,7 +31458,12 @@ default:
     }
     self.isa.objj_msgSend1(self, "textDidChange:", CPNotification.isa.objj_msgSend3(CPNotification, "notificationWithName:object:userInfo:", CPControlTextDidChangeNotification, self, nil));
 }
-,["void"]), new objj_method(sel_getUid("mouseDown:"), function $CPTextField__mouseDown_(self, _cmd, anEvent)
+,["void"]), new objj_method(sel_getUid("mouseMoved:"), function $CPTextField__mouseMoved_(self, _cmd, anEvent)
+{
+    objj_msgSendSuper({ receiver:self, super_class:objj_getClass("CPTextField").super_class }, "mouseMoved:", anEvent);
+    self.isa.objj_msgSend1(self, "_updateCursorForEvent:", anEvent);
+}
+,["void","CPEvent"]), new objj_method(sel_getUid("mouseDown:"), function $CPTextField__mouseDown_(self, _cmd, anEvent)
 {
     if (self.isa.objj_msgSend0(self, "isEditable") && self.isa.objj_msgSend0(self, "isEnabled"))
     {
@@ -31533,7 +31588,8 @@ default:
     var oldValue = self._stringValue,
         range = self.isa.objj_msgSend0(self, "selectedRange"),
         element = self.isa.objj_msgSend0(self, "_inputElement");
-    element.value = ((___r1 = element.value), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "stringByReplacingCharactersInRange:withString:", self.isa.objj_msgSend0(self, "selectedRange"), aCharacter));
+    if (aCharacter != CPNewlineCharacter || element.nodeName.toUpperCase() != "TEXTAREA" || !CPFeatureIsCompatible(CPAltEnterTextAreaFeature))
+        element.value = ((___r1 = element.value), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "stringByReplacingCharactersInRange:withString:", self.isa.objj_msgSend0(self, "selectedRange"), aCharacter));
     self.isa.objj_msgSend1(self, "_setStringValue:", element.value);
     if (oldValue !== self._stringValue)
     {
@@ -31562,9 +31618,12 @@ default:
     self.isa.objj_msgSend0(self, "_continuouslyReverseSetBinding");
     objj_msgSendSuper({ receiver:self, super_class:objj_getClass("CPTextField").super_class }, "textDidChange:", note);
 }
-,["void","CPNotification"]), new objj_method(sel_getUid("_updateCursor"), function $CPTextField___updateCursor(self, _cmd)
+,["void","CPNotification"]), new objj_method(sel_getUid("_updateCursorForEvent:"), function $CPTextField___updateCursorForEvent_(self, _cmd, anEvent)
 {
-    if (self.isa.objj_msgSend0(self, "isEnabled") && (self.isa.objj_msgSend0(self, "isSelectable") || self.isa.objj_msgSend0(self, "isEditable")))
+    var frame = CGRectMakeCopy(self.isa.objj_msgSend0(self, "frame")),
+        contentInset = self.isa.objj_msgSend1(self, "currentValueForThemeAttribute:", "content-inset");
+    frame = ((___r1 = self.isa.objj_msgSend0(self, "superview")), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "convertRectToBase:", CGRectInsetByInset(frame, contentInset)));
+    if (self.isa.objj_msgSend0(self, "isEnabled") && (self.isa.objj_msgSend0(self, "isSelectable") || self.isa.objj_msgSend0(self, "isEditable")) && CGRectContainsPoint(frame, (anEvent == null ? null : anEvent.isa.objj_msgSend0(anEvent, "locationInWindow"))))
     {
         self._DOMElement.style.cursor = "text";
     }
@@ -31572,8 +31631,9 @@ default:
     {
         self._DOMElement.style.cursor = "default";
     }
+    var ___r1;
 }
-,["void"]), new objj_method(sel_getUid("objectValue"), function $CPTextField__objectValue(self, _cmd)
+,["void","CPEvent"]), new objj_method(sel_getUid("objectValue"), function $CPTextField__objectValue(self, _cmd)
 {
     return objj_msgSendSuper({ receiver:self, super_class:objj_getClass("CPTextField").super_class }, "objectValue");
 }
@@ -32147,7 +32207,10 @@ var CPTextFieldIsEditableKey = "CPTextFieldIsEditableKey",
     CPTextFieldLineBreakModeKey = "CPTextFieldLineBreakModeKey",
     CPTextFieldAlignmentKey = "CPTextFieldAlignmentKey",
     CPTextFieldBackgroundColorKey = "CPTextFieldBackgroundColorKey",
-    CPTextFieldPlaceholderStringKey = "CPTextFieldPlaceholderStringKey";
+    CPTextFieldPlaceholderStringKey = "CPTextFieldPlaceholderStringKey",
+    CPTextFieldUsesSingleLineMode = "CPTextFieldUsesSingleLineMode",
+    CPTextFieldWraps = "CPTextFieldWraps",
+    CPTextFieldScrolls = "CPTextFieldScrolls";
 {
 var the_class = objj_getClass("CPTextField")
 if(!the_class) throw new SyntaxError("*** Could not find definition for class \"CPTextField\"");
@@ -32163,7 +32226,9 @@ var meta_class = the_class.isa;class_addMethods(the_class, [new objj_method(sel_
         (self == null ? null : self.isa.objj_msgSend1(self, "setLineBreakMode:", (aCoder == null ? null : aCoder.isa.objj_msgSend1(aCoder, "decodeIntForKey:", CPTextFieldLineBreakModeKey))));
         (self == null ? null : self.isa.objj_msgSend1(self, "setAlignment:", (aCoder == null ? null : aCoder.isa.objj_msgSend1(aCoder, "decodeIntForKey:", CPTextFieldAlignmentKey))));
         (self == null ? null : self.isa.objj_msgSend1(self, "setPlaceholderString:", (aCoder == null ? null : aCoder.isa.objj_msgSend1(aCoder, "decodeObjectForKey:", CPTextFieldPlaceholderStringKey))));
-        (self == null ? null : self.isa.objj_msgSend0(self, "_updateCursor"));
+        (self == null ? null : self.isa.objj_msgSend1(self, "_setUsesSingleLineMode:", (aCoder == null ? null : aCoder.isa.objj_msgSend1(aCoder, "decodeBoolForKey:", CPTextFieldUsesSingleLineMode))));
+        (self == null ? null : self.isa.objj_msgSend1(self, "_setWraps:", (aCoder == null ? null : aCoder.isa.objj_msgSend1(aCoder, "decodeBoolForKey:", CPTextFieldWraps))));
+        (self == null ? null : self.isa.objj_msgSend1(self, "_setScrolls:", (aCoder == null ? null : aCoder.isa.objj_msgSend1(aCoder, "decodeBoolForKey:", CPTextFieldScrolls))));
     }
     return self;
 }
@@ -32177,6 +32242,9 @@ var meta_class = the_class.isa;class_addMethods(the_class, [new objj_method(sel_
     (aCoder == null ? null : aCoder.isa.objj_msgSend2(aCoder, "encodeInt:forKey:", self.isa.objj_msgSend0(self, "lineBreakMode"), CPTextFieldLineBreakModeKey));
     (aCoder == null ? null : aCoder.isa.objj_msgSend2(aCoder, "encodeInt:forKey:", self.isa.objj_msgSend0(self, "alignment"), CPTextFieldAlignmentKey));
     (aCoder == null ? null : aCoder.isa.objj_msgSend2(aCoder, "encodeObject:forKey:", self._placeholderString, CPTextFieldPlaceholderStringKey));
+    (aCoder == null ? null : aCoder.isa.objj_msgSend2(aCoder, "encodeBool:forKey:", self._usesSingleLineMode, CPTextFieldUsesSingleLineMode));
+    (aCoder == null ? null : aCoder.isa.objj_msgSend2(aCoder, "encodeBool:forKey:", self._wraps, CPTextFieldWraps));
+    (aCoder == null ? null : aCoder.isa.objj_msgSend2(aCoder, "encodeBool:forKey:", self._scrolls, CPTextFieldScrolls));
 }
 ,["void","CPCoder"])]);
 }{var the_class = objj_allocateClassPair(CPBinder, "_CPTextFieldValueBinder"),
@@ -32202,7 +32270,22 @@ class_addMethods(the_class, [new objj_method(sel_getUid("_updatePlaceholdersWith
     ((___r1 = self._source), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "setObjectValue:", aValue));
     var ___r1;
 }
-,["void","id","CPString"])]);
+,["void","id","CPString"]), new objj_method(sel_getUid("reverseSetValueFor:"), function $_CPTextFieldValueBinder__reverseSetValueFor_(self, _cmd, aBinding)
+{
+    var destination = ((___r1 = self._info), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPObservedObjectKey)),
+        keyPath = ((___r1 = self._info), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPObservedKeyPathKey)),
+        options = ((___r1 = self._info), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", CPOptionsKey)),
+        newValue = self.isa.objj_msgSend1(self, "valueForBinding:", aBinding),
+        value = (destination == null ? null : destination.isa.objj_msgSend1(destination, "valueForKeyPath:", keyPath));
+    if (CPIsControllerMarker(value) && newValue === nil)
+        return;
+    newValue = self.isa.objj_msgSend2(self, "reverseTransformValue:withOptions:", newValue, options);
+    self.isa.objj_msgSend2(self, "suppressSpecificNotificationFromObject:keyPath:", destination, keyPath);
+    (destination == null ? null : destination.isa.objj_msgSend2(destination, "setValue:forKeyPath:", newValue, keyPath));
+    self.isa.objj_msgSend2(self, "unsuppressSpecificNotificationFromObject:keyPath:", destination, keyPath);
+    var ___r1;
+}
+,["void","CPString"])]);
 }{var the_class = objj_allocateClassPair(CPValueWithPatternBinding, "_CPTextFieldPatternValueBinder"),
 meta_class = the_class.isa;objj_registerClassPair(the_class);
 class_addMethods(the_class, [new objj_method(sel_getUid("setPlaceholderValue:withMarker:forBinding:"), function $_CPTextFieldPatternValueBinder__setPlaceholderValue_withMarker_forBinding_(self, _cmd, aValue, aMarker, aBinding)
@@ -37662,7 +37745,7 @@ class_addMethods(the_class, [new objj_method(sel_getUid("initWithViewAnimations:
     }
 }
 ,["void","CPArray"])]);
-}p;18;CPViewController.jt;10809;@STATIC;1.0;I;20;Foundation/CPArray.ji;7;CPCib.ji;13;CPResponder.jt;10735;objj_executeFile("Foundation/CPArray.j", NO);objj_executeFile("CPCib.j", YES);objj_executeFile("CPResponder.j", YES);var CPViewControllerCachedCibs;
+}p;18;CPViewController.jt;10836;@STATIC;1.0;I;20;Foundation/CPArray.ji;7;CPCib.ji;13;CPResponder.jt;10762;objj_executeFile("Foundation/CPArray.j", NO);objj_executeFile("CPCib.j", YES);objj_executeFile("CPResponder.j", YES);var CPViewControllerCachedCibs;
 {var the_class = objj_allocateClassPair(CPResponder, "CPViewController"),
 meta_class = the_class.isa;class_addIvars(the_class, [new objj_ivar("_view"), new objj_ivar("_isLoading"), new objj_ivar("_isLazy"), new objj_ivar("_isViewLoaded"), new objj_ivar("_representedObject"), new objj_ivar("_title"), new objj_ivar("_cibName"), new objj_ivar("_cibBundle"), new objj_ivar("_cibExternalNameTable")]);objj_registerClassPair(the_class);
 class_addMethods(the_class, [new objj_method(sel_getUid("view"), function $CPViewController__view(self, _cmd)
@@ -37771,6 +37854,7 @@ class_addMethods(the_class, [new objj_method(sel_getUid("view"), function $CPVie
         if ((cibOwner == null ? null : cibOwner.isa.objj_msgSend1(cibOwner, "respondsToSelector:", sel_getUid("viewControllerDidLoadCib:"))))
             (cibOwner == null ? null : cibOwner.isa.objj_msgSend1(cibOwner, "viewControllerDidLoadCib:", self));
         self._isLoading = NO;
+        self._isLazy = NO;
         self.isa.objj_msgSend0(self, "_viewDidLoad");
     }
     else if (self._isLazy)
@@ -53814,7 +53898,7 @@ class_addMethods(meta_class, [new objj_method(sel_getUid("contentRectForFrameRec
     return objj_msgSend(objj_msgSend(CPDictionary, "alloc"), "initWithObjectsAndKeys:", 25, "title-bar-height", CGInsetMakeZero(), "shadow-inset", 5, "shadow-distance", CPColor.isa.objj_msgSend0(CPColor, "clearColor"), "window-shadow-color", CGSizeMakeZero(), "size-indicator", CPNull.isa.objj_msgSend0(CPNull, "null"), "resize-indicator", CPColor.isa.objj_msgSend0(CPColor, "blackColor"), "attached-sheet-shadow-color", 8, "shadow-height", CPNull.isa.objj_msgSend0(CPNull, "null"), "close-image-origin", CPNull.isa.objj_msgSend0(CPNull, "null"), "close-image-size", CPNull.isa.objj_msgSend0(CPNull, "null"), "close-image", CPNull.isa.objj_msgSend0(CPNull, "null"), "close-active-image", CPNull.isa.objj_msgSend0(CPNull, "null"), "bezel-color", CPColor.isa.objj_msgSend0(CPColor, "blackColor"), "title-text-color", CPFont.isa.objj_msgSend1(CPFont, "systemFontOfSize:", CPFontCurrentSystemSize), "title-font", CPNull.isa.objj_msgSend0(CPNull, "null"), "title-text-shadow-color", CGSizeMakeZero(), "title-text-shadow-offset", CPCenterTextAlignment, "title-alignment", CPLineBreakByTruncatingTail, "title-line-break-mode", CPTopVerticalTextAlignment, "title-vertical-alignment");
 }
 ,["CPDictionary"])]);
-}p;10;CPWindow.jt;134255;@STATIC;1.0;I;25;Foundation/CPCountedSet.jI;33;Foundation/CPNotificationCenter.jI;26;Foundation/CPUndoManager.ji;12;CGGeometry.ji;13;CPAnimation.ji;10;CPCursor.ji;14;CPDragServer.ji;9;CPEvent.ji;18;CPPlatformWindow.ji;22;CPPlatformWindow+DOM.ji;13;CPResponder.ji;10;CPScreen.ji;8;CPText.ji;8;CPView.ji;20;CPWindow_Constants.ji;31;_CPBorderlessBridgeWindowView.ji;25;_CPBorderlessWindowView.ji;23;_CPDocModalWindowView.ji;18;_CPHUDWindowView.ji;20;_CPModalWindowView.ji;22;_CPPopoverWindowView.ji;21;_CPShadowWindowView.ji;23;_CPStandardWindowView.ji;22;_CPToolTipWindowView.jt;133671;objj_executeFile("Foundation/CPCountedSet.j", NO);objj_executeFile("Foundation/CPNotificationCenter.j", NO);objj_executeFile("Foundation/CPUndoManager.j", NO);objj_executeFile("CGGeometry.j", YES);objj_executeFile("CPAnimation.j", YES);objj_executeFile("CPCursor.j", YES);objj_executeFile("CPDragServer.j", YES);objj_executeFile("CPEvent.j", YES);objj_executeFile("CPPlatformWindow.j", YES);objj_executeFile("CPPlatformWindow+DOM.j", YES);objj_executeFile("CPResponder.j", YES);objj_executeFile("CPScreen.j", YES);objj_executeFile("CPText.j", YES);objj_executeFile("CPView.j", YES);objj_executeFile("CPWindow_Constants.j", YES);objj_executeFile("_CPBorderlessBridgeWindowView.j", YES);objj_executeFile("_CPBorderlessWindowView.j", YES);objj_executeFile("_CPDocModalWindowView.j", YES);objj_executeFile("_CPHUDWindowView.j", YES);objj_executeFile("_CPModalWindowView.j", YES);objj_executeFile("_CPPopoverWindowView.j", YES);objj_executeFile("_CPShadowWindowView.j", YES);objj_executeFile("_CPStandardWindowView.j", YES);objj_executeFile("_CPToolTipWindowView.j", YES);{var the_protocol = objj_allocateProtocol("CPWindowDelegate");
+}p;10;CPWindow.jt;136445;@STATIC;1.0;I;25;Foundation/CPCountedSet.jI;33;Foundation/CPNotificationCenter.jI;26;Foundation/CPUndoManager.ji;12;CGGeometry.ji;13;CPAnimation.ji;10;CPCursor.ji;14;CPDragServer.ji;9;CPEvent.ji;18;CPPlatformWindow.ji;22;CPPlatformWindow+DOM.ji;13;CPResponder.ji;10;CPScreen.ji;8;CPText.ji;8;CPView.ji;20;CPWindow_Constants.ji;31;_CPBorderlessBridgeWindowView.ji;25;_CPBorderlessWindowView.ji;23;_CPDocModalWindowView.ji;18;_CPHUDWindowView.ji;20;_CPModalWindowView.ji;22;_CPPopoverWindowView.ji;21;_CPShadowWindowView.ji;23;_CPStandardWindowView.ji;22;_CPToolTipWindowView.jt;135861;objj_executeFile("Foundation/CPCountedSet.j", NO);objj_executeFile("Foundation/CPNotificationCenter.j", NO);objj_executeFile("Foundation/CPUndoManager.j", NO);objj_executeFile("CGGeometry.j", YES);objj_executeFile("CPAnimation.j", YES);objj_executeFile("CPCursor.j", YES);objj_executeFile("CPDragServer.j", YES);objj_executeFile("CPEvent.j", YES);objj_executeFile("CPPlatformWindow.j", YES);objj_executeFile("CPPlatformWindow+DOM.j", YES);objj_executeFile("CPResponder.j", YES);objj_executeFile("CPScreen.j", YES);objj_executeFile("CPText.j", YES);objj_executeFile("CPView.j", YES);objj_executeFile("CPWindow_Constants.j", YES);objj_executeFile("_CPBorderlessBridgeWindowView.j", YES);objj_executeFile("_CPBorderlessWindowView.j", YES);objj_executeFile("_CPDocModalWindowView.j", YES);objj_executeFile("_CPHUDWindowView.j", YES);objj_executeFile("_CPModalWindowView.j", YES);objj_executeFile("_CPPopoverWindowView.j", YES);objj_executeFile("_CPShadowWindowView.j", YES);objj_executeFile("_CPStandardWindowView.j", YES);objj_executeFile("_CPToolTipWindowView.j", YES);{var the_protocol = objj_allocateProtocol("CPWindowDelegate");
 var aProtocol = objj_getProtocol("CPObject");
 if (!aProtocol) throw new SyntaxError("*** Could not find definition for protocol \"CPWindowDelegate\"");
 protocol_addProtocol(the_protocol, aProtocol);
@@ -54746,6 +54830,9 @@ default:
         self._leftMouseDownView = ((___r1 = self._windowView), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "hitTest:", point));
         if (self._leftMouseDownView !== self._firstResponder && ((___r1 = self._leftMouseDownView), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "acceptsFirstResponder")))
             self.isa.objj_msgSend1(self, "makeFirstResponder:", self._leftMouseDownView);
+        var keyWindow = (CPApp == null ? null : CPApp.isa.objj_msgSend0(CPApp, "keyWindow"));
+        if ((keyWindow == null ? null : keyWindow.isa.objj_msgSend0(keyWindow, "platformWindow")) != self.isa.objj_msgSend0(self, "platformWindow"))
+            self.isa.objj_msgSend1(self, "makeKeyAndOrderFront:", self);
         (CPApp == null ? null : CPApp.isa.objj_msgSend1(CPApp, "activateIgnoringOtherApps:", YES));
         var theWindow = (anEvent == null ? null : anEvent.isa.objj_msgSend0(anEvent, "window")),
             selector = type == CPRightMouseDown ? sel_getUid("rightMouseDown:") : sel_getUid("mouseDown:");
@@ -55130,7 +55217,7 @@ default:
                     menuWindow = currentWindow;
                 if (currentWindow === self || currentWindow === menuWindow)
                     continue;
-                if ((currentWindow == null ? null : currentWindow.isa.objj_msgSend0(currentWindow, "isVisible")) && (currentWindow == null ? null : currentWindow.isa.objj_msgSend0(currentWindow, "canBecomeKeyWindow")))
+                if ((currentWindow == null ? null : currentWindow.isa.objj_msgSend0(currentWindow, "isVisible")) && (currentWindow == null ? null : currentWindow.isa.objj_msgSend0(currentWindow, "canBecomeKeyWindow")) && (currentWindow == null ? null : currentWindow.isa.objj_msgSend0(currentWindow, "platformWindow")) == (keyWindow == null ? null : keyWindow.isa.objj_msgSend0(keyWindow, "platformWindow")))
                 {
                     (currentWindow == null ? null : currentWindow.isa.objj_msgSend0(currentWindow, "makeKeyWindow"));
                     break;
@@ -55271,16 +55358,44 @@ default:
     (attachedSheet == null ? null : attachedSheet.isa.objj_msgSend3(attachedSheet, "setFrame:display:animate:", sheetFrame, YES, NO));
     var ___r1;
 }
-,["void"]), new objj_method(sel_getUid("_attachSheet:modalDelegate:didEndSelector:contextInfo:"), function $CPWindow___attachSheet_modalDelegate_didEndSelector_contextInfo_(self, _cmd, aSheet, aModalDelegate, didEndSelector, contextInfo)
+,["void"]), new objj_method(sel_getUid("_previousSheetIsClosedNotification:"), function $CPWindow___previousSheetIsClosedNotification_(self, _cmd, aNotification)
+{
+    ((___r1 = CPNotificationCenter.isa.objj_msgSend0(CPNotificationCenter, "defaultCenter")), ___r1 == null ? null : ___r1.isa.objj_msgSend3(___r1, "removeObserver:name:object:", self, CPWindowDidEndSheetNotification, self));
+    var sheet = self._sheetContext["nextSheet"],
+        modalDelegate = self._sheetContext["nextModalDelegate"],
+        endSelector = self._sheetContext["nextEndSelector"],
+        contextInfo = self._sheetContext["nextContextInfo"];
+    setTimeout(function()
+    {
+        ((___r1 = sheet._windowView), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "_enableSheet:inWindow:", YES, self));
+        self.isa.objj_msgSend(self, "_attachSheet:modalDelegate:didEndSelector:contextInfo:", sheet, modalDelegate, endSelector, contextInfo);
+        var ___r1;
+    }, 0);
+    var ___r1;
+}
+,["void","CPNotification"]), new objj_method(sel_getUid("_attachSheet:modalDelegate:didEndSelector:contextInfo:"), function $CPWindow___attachSheet_modalDelegate_didEndSelector_contextInfo_(self, _cmd, aSheet, aModalDelegate, didEndSelector, contextInfo)
 {
     if (self._sheetContext)
     {
-        CPException.isa.objj_msgSend2(CPException, "raise:reason:", CPInternalInconsistencyException, "The target window of beginSheet: already has a sheet, did you forget orderOut: ?");
-        return;
+        if (self._sheetContext["isClosing"])
+        {
+            self._sheetContext["nextSheet"] = aSheet;
+            self._sheetContext["nextModalDelegate"] = aModalDelegate;
+            self._sheetContext["nextEndSelector"] = didEndSelector;
+            self._sheetContext["nextContextInfo"] = contextInfo;
+            ((___r1 = CPNotificationCenter.isa.objj_msgSend0(CPNotificationCenter, "defaultCenter")), ___r1 == null ? null : ___r1.isa.objj_msgSend(___r1, "addObserver:selector:name:object:", self, sel_getUid("_previousSheetIsClosedNotification:"), CPWindowDidEndSheetNotification, self));
+            return;
+        }
+        else
+        {
+            CPException.isa.objj_msgSend2(CPException, "raise:reason:", CPInternalInconsistencyException, "The target window of beginSheet: already has a sheet, did you forget orderOut: ?");
+            return;
+        }
     }
     self._sheetContext = {"sheet": aSheet, "modalDelegate": aModalDelegate, "endSelector": didEndSelector, "contextInfo": contextInfo, "returnCode": -1, "opened": NO, "isAttached": YES, "savedConstrains": aSheet._constrainsToUsableScreen};
     aSheet._constrainsToUsableScreen = NO;
     CPTimer.isa.objj_msgSend(CPTimer, "scheduledTimerWithTimeInterval:target:selector:userInfo:repeats:", 0.0, self, sel_getUid("_sheetShouldAnimateIn:"), nil, NO);
+    var ___r1;
 }
 ,["void","CPWindow","id","SEL","id"]), new objj_method(sel_getUid("_endSheet"), function $CPWindow___endSheet(self, _cmd)
 {
@@ -55296,7 +55411,11 @@ default:
 }
 ,["void"]), new objj_method(sel_getUid("_detachSheetWindow"), function $CPWindow___detachSheetWindow(self, _cmd)
 {
+    if (self._sheetContext["isClosing"])
+        return;
     self._sheetContext["isAttached"] = NO;
+    self._sheetContext["isClosing"] = YES;
+    self._sheetContext["opened"] = NO;
     CPTimer.isa.objj_msgSend(CPTimer, "scheduledTimerWithTimeInterval:target:selector:userInfo:repeats:", 0.0, self, sel_getUid("_sheetShouldAnimateOut:"), nil, NO);
 }
 ,["void"]), new objj_method(sel_getUid("_cleanupSheetWindow"), function $CPWindow___cleanupSheetWindow(self, _cmd)
@@ -55378,10 +55497,6 @@ default:
         self._sheetContext["shouldClose"] = YES;
         return;
     }
-    if (self._sheetContext["isClosing"])
-        return;
-    self._sheetContext["opened"] = NO;
-    self._sheetContext["isClosing"] = YES;
     if (self.isa.objj_msgSend0(self, "isVisible"))
     {
         var sheet = self._sheetContext["sheet"],
@@ -56840,7 +56955,7 @@ class_addMethods(the_class, [new objj_method(sel_getUid("init"), function $CPPla
     var ___r1;
 }
 ,["boolean","DOMEvent"])]);
-}p;22;CPPlatformWindow+DOM.jt;62009;@STATIC;1.0;I;33;Foundation/CPNotificationCenter.jI;21;Foundation/CPObject.jI;22;Foundation/CPRunLoop.jI;18;Foundation/CPSet.jI;20;Foundation/CPTimer.ji;25;CPApplication_Constants.ji;17;CPCompatibility.ji;10;CPCursor.ji;18;CPDOMWindowLayer.ji;24;CPDragServer_Constants.ji;9;CPEvent.ji;14;CPPasteboard.ji;12;CPPlatform.ji;22;CPPlatformPasteboard.ji;26;CPPlatformWindow+DOMKeys.ji;18;CPPlatformWindow.ji;8;CPText.ji;20;CPWindow_Constants.jt;61564;objj_executeFile("Foundation/CPNotificationCenter.j", NO);objj_executeFile("Foundation/CPObject.j", NO);objj_executeFile("Foundation/CPRunLoop.j", NO);objj_executeFile("Foundation/CPSet.j", NO);objj_executeFile("Foundation/CPTimer.j", NO);objj_executeFile("CPApplication_Constants.j", YES);objj_executeFile("CPCompatibility.j", YES);objj_executeFile("CPCursor.j", YES);objj_executeFile("CPDOMWindowLayer.j", YES);objj_executeFile("CPDragServer_Constants.j", YES);objj_executeFile("CPEvent.j", YES);objj_executeFile("CPPasteboard.j", YES);objj_executeFile("CPPlatform.j", YES);objj_executeFile("CPPlatformPasteboard.j", YES);objj_executeFile("CPPlatformWindow+DOMKeys.j", YES);objj_executeFile("CPPlatformWindow.j", YES);objj_executeFile("CPText.j", YES);objj_executeFile("CPWindow_Constants.j", YES);var PlatformWindows = CPSet.isa.objj_msgSend0(CPSet, "set");
+}p;22;CPPlatformWindow+DOM.jt;62051;@STATIC;1.0;I;33;Foundation/CPNotificationCenter.jI;21;Foundation/CPObject.jI;22;Foundation/CPRunLoop.jI;18;Foundation/CPSet.jI;20;Foundation/CPTimer.ji;25;CPApplication_Constants.ji;17;CPCompatibility.ji;10;CPCursor.ji;18;CPDOMWindowLayer.ji;24;CPDragServer_Constants.ji;9;CPEvent.ji;14;CPPasteboard.ji;12;CPPlatform.ji;22;CPPlatformPasteboard.ji;26;CPPlatformWindow+DOMKeys.ji;18;CPPlatformWindow.ji;8;CPText.ji;20;CPWindow_Constants.jt;61606;objj_executeFile("Foundation/CPNotificationCenter.j", NO);objj_executeFile("Foundation/CPObject.j", NO);objj_executeFile("Foundation/CPRunLoop.j", NO);objj_executeFile("Foundation/CPSet.j", NO);objj_executeFile("Foundation/CPTimer.j", NO);objj_executeFile("CPApplication_Constants.j", YES);objj_executeFile("CPCompatibility.j", YES);objj_executeFile("CPCursor.j", YES);objj_executeFile("CPDOMWindowLayer.j", YES);objj_executeFile("CPDragServer_Constants.j", YES);objj_executeFile("CPEvent.j", YES);objj_executeFile("CPPasteboard.j", YES);objj_executeFile("CPPlatform.j", YES);objj_executeFile("CPPlatformPasteboard.j", YES);objj_executeFile("CPPlatformWindow+DOMKeys.j", YES);objj_executeFile("CPPlatformWindow.j", YES);objj_executeFile("CPText.j", YES);objj_executeFile("CPWindow_Constants.j", YES);var PlatformWindows = CPSet.isa.objj_msgSend0(CPSet, "set");
 var CPDOMEventGetClickCount,
     StopDOMEventPropagation,
     StopContextMenuDOMEventPropagation;
@@ -57545,7 +57660,7 @@ var meta_class = the_class.isa;class_addMethods(the_class, [new objj_method(sel_
         (_CPToolTip == null ? null : _CPToolTip.isa.objj_msgSend0(_CPToolTip, "invalidateCurrentToolTipIfNeeded"));
         var button = aDOMEvent.button;
         self._mouseDownIsRightClick = button == 2 || CPBrowserIsOperatingSystem(CPMacOperatingSystem) && button == 0 && modifierFlags & CPControlKeyMask;
-        if (sourceElement.tagName === "INPUT" && sourceElement != self._DOMFocusElement)
+        if ((sourceElement.tagName === "INPUT" || sourceElement.tagName === "TEXTAREA") && sourceElement != self._DOMFocusElement)
         {
             if (CPPlatform.isa.objj_msgSend0(CPPlatform, "supportsDragAndDrop"))
             {
