@@ -384,7 +384,7 @@
                 var msg=j[i]["missing_service"];
                 var o=[entity _registeredObjectForPK:pk];
                 entity._store=nil;
-                [o setValue: msg forKey:"missing_service"];
+                [o setValue:msg forKey:"missing_service"];
                 entity._store=store;
 
             }
