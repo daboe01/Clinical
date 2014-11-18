@@ -1359,13 +1359,56 @@ CREATE VIEW due_billings_list AS
 ALTER TABLE public.due_billings_list OWNER TO root;
 
 --
+-- Name: personnel_event; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE personnel_event (
+    id integer NOT NULL,
+    idpersonnel integer,
+    type integer,
+    start_time timestamp without time zone DEFAULT now(),
+    end_time timestamp without time zone,
+    comment text
+);
+
+
+ALTER TABLE public.personnel_event OWNER TO postgres;
+
+--
+-- Name: procedures_personnel; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE procedures_personnel (
+    id integer NOT NULL,
+    idpersonnel integer,
+    idprocedure integer
+);
+
+
+ALTER TABLE public.procedures_personnel OWNER TO postgres;
+
+--
+-- Name: visit_procedures; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE TABLE visit_procedures (
+    id integer NOT NULL,
+    idvisit integer,
+    idprocedure integer,
+    actual_cost double precision
+);
+
+
+ALTER TABLE public.visit_procedures OWNER TO root;
+
+--
 -- Name: event_overview; Type: VIEW; Schema: public; Owner: root
 --
 
 CREATE VIEW event_overview AS
  SELECT DISTINCT a.name,
     a.event_date,
-    personnel_catalogue.ldap,
+    COALESCE(a.ldap, personnel_catalogue.ldap) AS ldap,
     a.type,
     a.piz,
     a.tooltip
@@ -1374,39 +1417,62 @@ CREATE VIEW event_overview AS
             a_1.event_date,
             1 AS type,
             a_1.piz,
-            a_1.tooltip
+            a_1.tooltip,
+            a_1.ldap
            FROM ( SELECT patients.idtrial,
                     ((trial_visits.name || ' '::text) || all_trials_1.name) AS name,
                     patient_visits.visit_date AS event_date,
                     patients.piz,
-                    ((((patients.name || ', '::text) || patients.givenname) || ', *'::text) || patients.birthdate) AS tooltip
-                   FROM (((patient_visits
+                    ((((patients.name || ', '::text) || patients.givenname) || ', *'::text) || patients.birthdate) AS tooltip,
+                    personnel_catalogue_1.ldap
+                   FROM ((((((patient_visits
                      JOIN patients ON ((patient_visits.idpatient = patients.id)))
                      JOIN all_trials all_trials_1 ON ((patients.idtrial = all_trials_1.id)))
-                     JOIN trial_visits ON ((patient_visits.idvisit = trial_visits.id)))) a_1
+                     JOIN trial_visits ON ((patient_visits.idvisit = trial_visits.id)))
+                     LEFT JOIN visit_procedures ON ((visit_procedures.idvisit = trial_visits.id)))
+                     LEFT JOIN procedures_personnel ON ((procedures_personnel.idprocedure = visit_procedures.id)))
+                     LEFT JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = procedures_personnel.idpersonnel)))) a_1
         UNION
          SELECT trial_process_step.idtrial,
             ((COALESCE(process_steps_catalogue.name, ''::text) || ' '::text) || COALESCE(trial_process_step.title, ''::text)),
             trial_process_step.start_date AS event_date,
             2 AS type,
             NULL::integer AS piz,
-            NULL::text AS tooltip
+            NULL::text AS tooltip,
+            NULL::text AS ldap
            FROM (trial_process_step
              JOIN process_steps_catalogue ON ((trial_process_step.type = process_steps_catalogue.id)))
+        UNION
+         SELECT ( SELECT min(all_trials_1.id) AS min
+                   FROM (all_trials all_trials_1
+                     JOIN group_assignments group_assignments_1 ON ((group_assignments_1.idgroup = all_trials_1.idgroup)))
+                  WHERE (group_assignments_1.idpersonnel = personnel_catalogue_1.id)) AS idtrial,
+            ('Urlaub: '::text || personnel_catalogue_1.ldap),
+            a_1.day AS event_date,
+            3 AS type,
+            NULL::integer AS piz,
+            personnel_event.comment AS tooltip,
+            NULL::text AS ldap
+           FROM ((personnel_event
+             JOIN ( SELECT day.day
+                   FROM generate_series(((now())::date - '1 year'::interval), ((now())::date + '1 year'::interval), '1 day'::interval) day(day)) a_1 ON (((a_1.day >= (personnel_event.start_time)::date) AND (a_1.day <= (personnel_event.end_time)::date))))
+             JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = personnel_event.idpersonnel)))
+          WHERE (personnel_event.type = 1)
         UNION
          SELECT trial_process_step.idtrial,
             ((COALESCE(process_steps_catalogue.name, ''::text) || ' '::text) || COALESCE(trial_process_step.title, ''::text)),
             trial_process_step.end_date AS event_date,
             2 AS type,
             NULL::integer AS piz,
-            NULL::text AS tooltip
+            NULL::text AS tooltip,
+            NULL::text AS ldap
            FROM (trial_process_step
              JOIN process_steps_catalogue ON ((trial_process_step.type = process_steps_catalogue.id)))) a
-     JOIN all_trials ON ((a.idtrial = all_trials.id)))
-     JOIN group_assignments ON ((group_assignments.idgroup = all_trials.idgroup)))
-     JOIN personnel_catalogue ON ((personnel_catalogue.id = group_assignments.idpersonnel)))
+     LEFT JOIN all_trials ON ((a.idtrial = all_trials.id)))
+     LEFT JOIN group_assignments ON ((group_assignments.idgroup = all_trials.idgroup)))
+     LEFT JOIN personnel_catalogue ON ((personnel_catalogue.id = group_assignments.idpersonnel)))
   WHERE ((a.name IS NOT NULL) AND (a.event_date IS NOT NULL))
-  ORDER BY personnel_catalogue.ldap;
+  ORDER BY a.type DESC;
 
 
 ALTER TABLE public.event_overview OWNER TO root;
@@ -1693,6 +1759,50 @@ ALTER SEQUENCE patient_visits_id_seq OWNED BY patient_visits.id;
 
 
 --
+-- Name: visit_conflicts; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW visit_conflicts AS
+ SELECT a.id
+   FROM (( SELECT a_1.id,
+            count(*) AS count
+           FROM ( SELECT DISTINCT patient_visits.id,
+                    personnel_catalogue_1.ldap
+                   FROM (((((((patient_visits
+                     JOIN patients ON ((patient_visits.idpatient = patients.id)))
+                     JOIN all_trials all_trials_1 ON ((patients.idtrial = all_trials_1.id)))
+                     JOIN trial_visits ON ((patient_visits.idvisit = trial_visits.id)))
+                     LEFT JOIN visit_procedures ON ((visit_procedures.idvisit = trial_visits.id)))
+                     LEFT JOIN procedures_personnel ON ((procedures_personnel.idprocedure = visit_procedures.id)))
+                     LEFT JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = procedures_personnel.idpersonnel)))
+                     JOIN ( SELECT a_1_1.day,
+                            personnel_catalogue_1_1.ldap,
+                            personnel_event.comment
+                           FROM ((personnel_event
+                             JOIN ( SELECT day.day
+                                   FROM generate_series(((now())::date - '1 year'::interval), ((now())::date + '1 year'::interval), '1 day'::interval) day(day)) a_1_1 ON (((a_1_1.day >= (personnel_event.start_time)::date) AND (a_1_1.day <= (personnel_event.end_time)::date))))
+                             JOIN personnel_catalogue personnel_catalogue_1_1 ON ((personnel_catalogue_1_1.id = personnel_event.idpersonnel)))
+                          WHERE (personnel_event.type = 1)) a_2 ON (((a_2.ldap = personnel_catalogue_1.ldap) AND ((a_2.day)::date = (patient_visits.visit_date)::date))))) a_1
+          GROUP BY a_1.id) a
+     JOIN ( SELECT b_1.id,
+            count(*) AS count
+           FROM ( SELECT DISTINCT patient_visits.id,
+                    patient_visits.idvisit,
+                    personnel_catalogue_1.ldap
+                   FROM ((((((patient_visits
+                     JOIN patients ON ((patient_visits.idpatient = patients.id)))
+                     JOIN all_trials all_trials_1 ON ((patients.idtrial = all_trials_1.id)))
+                     JOIN trial_visits ON ((patient_visits.idvisit = trial_visits.id)))
+                     LEFT JOIN visit_procedures ON ((visit_procedures.idvisit = trial_visits.id)))
+                     LEFT JOIN procedures_personnel ON ((procedures_personnel.idprocedure = visit_procedures.id)))
+                     LEFT JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = procedures_personnel.idpersonnel)))
+                  WHERE (personnel_catalogue_1.ldap IS NOT NULL)) b_1
+          GROUP BY b_1.id, b_1.idvisit) b ON (((a.id = b.id) AND (a.count >= b.count))));
+
+
+ALTER TABLE public.visit_conflicts OWNER TO postgres;
+
+--
 -- Name: patient_visits_rich; Type: VIEW; Schema: public; Owner: root
 --
 
@@ -1705,7 +1815,10 @@ CREATE VIEW patient_visits_rich AS
     visit_calculator.lower_margin,
     visit_calculator.center_margin,
     visit_calculator.upper_margin,
-    NULL::text AS missing_service,
+        CASE
+            WHEN (visit_conflicts.id IS NOT NULL) THEN 'alert'::text
+            ELSE NULL::text
+        END AS missing_service,
     trial_visits.ordering,
     trial_visits.comment,
     patient_visits.travel_costs,
@@ -1713,9 +1826,10 @@ CREATE VIEW patient_visits_rich AS
     patient_visits.travel_comment,
     patient_visits.travel_additional_costs,
     patient_visits.actual_costs
-   FROM ((patient_visits
+   FROM (((patient_visits
      LEFT JOIN visit_calculator ON ((patient_visits.id = visit_calculator.idvisit)))
-     LEFT JOIN trial_visits ON ((patient_visits.idvisit = trial_visits.id)));
+     LEFT JOIN trial_visits ON ((patient_visits.idvisit = trial_visits.id)))
+     LEFT JOIN visit_conflicts ON ((visit_conflicts.id = patient_visits.id)));
 
 
 ALTER TABLE public.patient_visits_rich OWNER TO root;
@@ -1817,6 +1931,60 @@ CREATE VIEW personnel_costs_ldap AS
 ALTER TABLE public.personnel_costs_ldap OWNER TO root;
 
 --
+-- Name: personnel_event_catalogue; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE personnel_event_catalogue (
+    id integer NOT NULL,
+    description text
+);
+
+
+ALTER TABLE public.personnel_event_catalogue OWNER TO postgres;
+
+--
+-- Name: personnel_event_catalogue_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE personnel_event_catalogue_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.personnel_event_catalogue_id_seq OWNER TO postgres;
+
+--
+-- Name: personnel_event_catalogue_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE personnel_event_catalogue_id_seq OWNED BY personnel_event_catalogue.id;
+
+
+--
+-- Name: personnel_event_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE personnel_event_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.personnel_event_id_seq OWNER TO postgres;
+
+--
+-- Name: personnel_event_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE personnel_event_id_seq OWNED BY personnel_event.id;
+
+
+--
 -- Name: personnel_properties; Type: TABLE; Schema: public; Owner: root; Tablespace: 
 --
 
@@ -1903,20 +2071,6 @@ CREATE TABLE procedures_catalogue (
 ALTER TABLE public.procedures_catalogue OWNER TO root;
 
 --
--- Name: visit_procedures; Type: TABLE; Schema: public; Owner: root; Tablespace: 
---
-
-CREATE TABLE visit_procedures (
-    id integer NOT NULL,
-    idvisit integer,
-    idprocedure integer,
-    actual_cost double precision
-);
-
-
-ALTER TABLE public.visit_procedures OWNER TO root;
-
---
 -- Name: procedure_statistics; Type: VIEW; Schema: public; Owner: root
 --
 
@@ -1925,10 +2079,12 @@ CREATE VIEW procedure_statistics AS
     avg(a.base_cost) AS base_cost,
     min(a.actual_cost) AS min_cost,
     max(a.actual_cost) AS max_cost,
-    avg(a.actual_cost) AS avg_cost
+    avg(a.actual_cost) AS avg_cost,
+    min(a.name) AS name
    FROM ( SELECT DISTINCT visit_procedures.idprocedure,
             procedures_catalogue.base_cost,
-            visit_procedures.actual_cost
+            visit_procedures.actual_cost,
+            procedures_catalogue.name
            FROM (visit_procedures
              JOIN procedures_catalogue ON ((procedures_catalogue.id = visit_procedures.idprocedure)))) a
   GROUP BY a.idprocedure;
@@ -1955,6 +2111,27 @@ ALTER TABLE public.procedures_catalogue_id_seq OWNER TO root;
 --
 
 ALTER SEQUENCE procedures_catalogue_id_seq OWNED BY procedures_catalogue.id;
+
+
+--
+-- Name: procedures_personnel_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE procedures_personnel_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.procedures_personnel_id_seq OWNER TO postgres;
+
+--
+-- Name: procedures_personnel_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE procedures_personnel_id_seq OWNED BY procedures_personnel.id;
 
 
 --
@@ -2317,8 +2494,12 @@ CREATE VIEW visit_dates AS
  SELECT visit_intervals.idvisit,
     calendar.caldate,
     calendar.startdate,
-    calendar.dcid
-   FROM (( SELECT visit_calculator.idvisit,
+    calendar.dcid,
+        CASE
+            WHEN (visit_conflicts.id IS NOT NULL) THEN 'alert'::text
+            ELSE NULL::text
+        END AS missing_service
+   FROM ((( SELECT visit_calculator.idvisit,
             visit_calculator.upper_margin,
             visit_calculator.lower_margin,
             groups_catalogue.sprechstunde
@@ -2327,6 +2508,7 @@ CREATE VIEW visit_dates AS
              JOIN all_trials ON ((all_trials.id = patients.idtrial)))
              JOIN groups_catalogue ON ((groups_catalogue.id = all_trials.idgroup)))) visit_intervals
      JOIN calendar ON ((((calendar.caldate >= visit_intervals.lower_margin) AND (calendar.caldate <= visit_intervals.upper_margin)) AND (calendar.source = visit_intervals.sprechstunde))))
+     LEFT JOIN visit_conflicts ON ((visit_intervals.idvisit = visit_conflicts.id)))
   ORDER BY calendar.caldate;
 
 
@@ -2352,6 +2534,22 @@ ALTER TABLE public.visit_procedures_id_seq OWNER TO root;
 
 ALTER SEQUENCE visit_procedures_id_seq OWNED BY visit_procedures.id;
 
+
+--
+-- Name: visit_procedures_name; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW visit_procedures_name AS
+ SELECT visit_procedures.id,
+    visit_procedures.idvisit,
+    visit_procedures.idprocedure,
+    visit_procedures.actual_cost,
+    procedures_catalogue.name AS procedure_name
+   FROM (visit_procedures
+     LEFT JOIN procedures_catalogue ON ((procedures_catalogue.id = visit_procedures.idprocedure)));
+
+
+ALTER TABLE public.visit_procedures_name OWNER TO postgres;
 
 --
 -- Name: id; Type: DEFAULT; Schema: public; Owner: root
@@ -2417,6 +2615,20 @@ ALTER TABLE ONLY personnel_costs ALTER COLUMN id SET DEFAULT nextval('personnel_
 
 
 --
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY personnel_event ALTER COLUMN id SET DEFAULT nextval('personnel_event_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY personnel_event_catalogue ALTER COLUMN id SET DEFAULT nextval('personnel_event_catalogue_id_seq'::regclass);
+
+
+--
 -- Name: id; Type: DEFAULT; Schema: public; Owner: root
 --
 
@@ -2435,6 +2647,13 @@ ALTER TABLE ONLY personnel_properties_catalogue ALTER COLUMN id SET DEFAULT next
 --
 
 ALTER TABLE ONLY procedures_catalogue ALTER COLUMN id SET DEFAULT nextval('procedures_catalogue_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY procedures_personnel ALTER COLUMN id SET DEFAULT nextval('procedures_personnel_id_seq'::regclass);
 
 
 --
@@ -2534,7 +2753,11 @@ SELECT pg_catalog.setval('account_transaction_id_seq', 610, true);
 --
 
 COPY all_trials (id, idgroup, name, codename, infotext) FROM stdin;
-25	1	Humptydumpty XXX1234	\N	\N
+195	100	New trial 2	\N	\N
+196	19	New trial 3	\N	\N
+25	1	Demo 11001X	\N	\N
+197	1	Demo 11002X	\N	\N
+194	1	Demo 11002X	\N	\N
 \.
 
 
@@ -2542,7 +2765,7 @@ COPY all_trials (id, idgroup, name, codename, infotext) FROM stdin;
 -- Name: all_trials_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('all_trials_id_seq', 193, true);
+SELECT pg_catalog.setval('all_trials_id_seq', 197, true);
 
 
 --
@@ -11054,6 +11277,7 @@ COPY bic_catalogue ("row.names", blz, name, bic) FROM stdin;
 --
 
 COPY billings (id, idtrial, creation_date, start_date, end_date, comment, visit_ids, amount, visit_ids_travel_costs) FROM stdin;
+208	25	2014-11-03 00:00:00	2015-02-04 00:00:00	2014-11-05 00:00:00	699.72 EUR	3782, 	699.720000000000027	\N
 \.
 
 
@@ -11061,7 +11285,7 @@ COPY billings (id, idtrial, creation_date, start_date, end_date, comment, visit_
 -- Name: billings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('billings_id_seq', 207, true);
+SELECT pg_catalog.setval('billings_id_seq', 208, true);
 
 
 --
@@ -11070,6 +11294,8 @@ SELECT pg_catalog.setval('billings_id_seq', 207, true);
 
 COPY group_assignments (id, idgroup, idpersonnel) FROM stdin;
 1	1	1
+100	19	36
+101	1	37
 \.
 
 
@@ -11077,7 +11303,7 @@ COPY group_assignments (id, idgroup, idpersonnel) FROM stdin;
 -- Name: group_assignments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('group_assignments_id_seq', 99, true);
+SELECT pg_catalog.setval('group_assignments_id_seq', 101, true);
 
 
 --
@@ -11085,7 +11311,8 @@ SELECT pg_catalog.setval('group_assignments_id_seq', 99, true);
 --
 
 COPY groups_catalogue (id, name, sprechstunde, websitename, telephone) FROM stdin;
-1	Reinhard/Böhringer	HH-Studien	<a href="http://www.uniklinik-freiburg.de/?id=3617" target="_parent">&#187;Vordere Augenabschnitte</a>	0761 270 93650
+19	Other group	\N	\N	\N
+1	Team1	HH-Studien	<a href="http://"</a>	xxx
 \.
 
 
@@ -11093,7 +11320,7 @@ COPY groups_catalogue (id, name, sprechstunde, websitename, telephone) FROM stdi
 -- Name: groups_catalogue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('groups_catalogue_id_seq', 18, true);
+SELECT pg_catalog.setval('groups_catalogue_id_seq', 19, true);
 
 
 --
@@ -11101,6 +11328,37 @@ SELECT pg_catalog.setval('groups_catalogue_id_seq', 18, true);
 --
 
 COPY patient_visits (id, idpatient, idvisit, visit_date, state, travel_costs, date_reimbursed, travel_comment, travel_additional_costs, actual_costs) FROM stdin;
+3782	608	7	2014-11-13 00:00:00	\N	\N	\N	\N	\N	\N
+3784	608	6	\N	\N	\N	\N	\N	\N	\N
+3785	608	9	\N	\N	\N	\N	\N	\N	\N
+3786	608	10	\N	\N	\N	\N	\N	\N	\N
+3787	609	\N	2014-11-05 00:00:00	\N	\N	\N	\N	\N	\N
+3783	608	5	2014-11-28 00:00:00	\N	\N	\N	\N	\N	\N
+3788	610	7	2014-11-17 00:00:00	\N	\N	\N	\N	\N	\N
+3789	610	5	\N	\N	\N	\N	\N	\N	\N
+3790	610	6	\N	\N	\N	\N	\N	\N	\N
+3791	610	9	\N	\N	\N	\N	\N	\N	\N
+3792	610	10	\N	\N	\N	\N	\N	\N	\N
+3793	611	7	2014-11-17 00:00:00	\N	\N	\N	\N	\N	\N
+3794	611	5	\N	\N	\N	\N	\N	\N	\N
+3795	611	6	\N	\N	\N	\N	\N	\N	\N
+3796	611	9	\N	\N	\N	\N	\N	\N	\N
+3797	611	10	\N	\N	\N	\N	\N	\N	\N
+3798	612	7	2014-11-17 00:00:00	\N	\N	\N	\N	\N	\N
+3800	612	6	\N	\N	\N	\N	\N	\N	\N
+3801	612	9	\N	\N	\N	\N	\N	\N	\N
+3802	612	10	\N	\N	\N	\N	\N	\N	\N
+3803	613	7	2014-11-17 00:00:00	\N	\N	\N	\N	\N	\N
+3804	613	5	\N	\N	\N	\N	\N	\N	\N
+3805	613	6	\N	\N	\N	\N	\N	\N	\N
+3806	613	9	\N	\N	\N	\N	\N	\N	\N
+3807	613	10	\N	\N	\N	\N	\N	\N	\N
+3808	614	7	2014-11-17 00:00:00	\N	\N	\N	\N	\N	\N
+3809	614	5	\N	\N	\N	\N	\N	\N	\N
+3810	614	6	\N	\N	\N	\N	\N	\N	\N
+3811	614	9	\N	\N	\N	\N	\N	\N	\N
+3812	614	10	\N	\N	\N	\N	\N	\N	\N
+3799	612	5	2014-11-18 00:00:00	\N	\N	\N	\N	\N	\N
 \.
 
 
@@ -11108,7 +11366,7 @@ COPY patient_visits (id, idpatient, idvisit, visit_date, state, travel_costs, da
 -- Name: patient_visits_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('patient_visits_id_seq', 3781, true);
+SELECT pg_catalog.setval('patient_visits_id_seq', 3812, true);
 
 
 --
@@ -11116,6 +11374,13 @@ SELECT pg_catalog.setval('patient_visits_id_seq', 3781, true);
 --
 
 COPY patients (id, idtrial, piz, code1, code2, comment, state, name, givenname, birthdate, street, zip, town, telephone, insertion_date, female, iban, bic, bank, travel_distance) FROM stdin;
+609	197	\N	\N	\N	\N	\N	xxx	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
+608	25	1	\N	\N	\N	\N	Test	\N	\N	\N	\N	\N	\N	2014-11-13	\N	\N	\N	\N	\N
+610	25	2	\N	\N	\N	\N	test2	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
+611	25	3	\N	\N	\N	\N	test3	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
+612	25	4	\N	\N	\N	\N	test43	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
+613	25	5	\N	\N	\N	\N	test5	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
+614	25	6	\N	\N	\N	\N	test6	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
 \.
 
 
@@ -11123,7 +11388,7 @@ COPY patients (id, idtrial, piz, code1, code2, comment, state, name, givenname, 
 -- Name: patients_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('patients_id_seq', 607, true);
+SELECT pg_catalog.setval('patients_id_seq', 614, true);
 
 
 --
@@ -11131,7 +11396,9 @@ SELECT pg_catalog.setval('patients_id_seq', 607, true);
 --
 
 COPY personnel_catalogue (id, name, ldap, email, function, tel, level, abrechnungsname) FROM stdin;
-1	Prof.Dr.med. Daniel Boehringer	daboe01	Daniel.Boehringer@uniklinik-freiburg.de	Pruefarzt	\N	3	\N
+36	Mickey Mouse	mm	\N	\N	\N	\N	\N
+37	Icaljoe	ics	\N	\N	\N	\N	\N
+1	I am the PI	daboe01	my.email@xx.com	Pruefarzt	\N	3	\N
 \.
 
 
@@ -11139,7 +11406,7 @@ COPY personnel_catalogue (id, name, ldap, email, function, tel, level, abrechnun
 -- Name: personnel_catalogue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('personnel_catalogue_id_seq', 35, true);
+SELECT pg_catalog.setval('personnel_catalogue_id_seq', 37, true);
 
 
 --
@@ -11158,10 +11425,52 @@ SELECT pg_catalog.setval('personnel_costs_id_seq', 20, true);
 
 
 --
+-- Data for Name: personnel_event; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY personnel_event (id, idpersonnel, type, start_time, end_time, comment) FROM stdin;
+1	1	1	2014-11-16 14:39:58.984701	2014-11-18 14:39:58.984701	coimbra
+2	37	1	2014-11-18 16:22:23.27589	2014-11-19 00:00:00	test
+\.
+
+
+--
+-- Data for Name: personnel_event_catalogue; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY personnel_event_catalogue (id, description) FROM stdin;
+1	Urlaub
+2	Schulung
+\.
+
+
+--
+-- Name: personnel_event_catalogue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('personnel_event_catalogue_id_seq', 2, true);
+
+
+--
+-- Name: personnel_event_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('personnel_event_id_seq', 2, true);
+
+
+--
 -- Data for Name: personnel_properties; Type: TABLE DATA; Schema: public; Owner: root
 --
 
 COPY personnel_properties (id, propertydate, idpersonnel, idproperty, value) FROM stdin;
+121	\N	36	1	\N
+122	\N	36	4	\N
+123	\N	36	2	\N
+124	\N	36	5	\N
+125	\N	37	1	\N
+126	\N	37	4	\N
+127	\N	37	5	\N
+128	\N	37	2	\N
 \.
 
 
@@ -11190,7 +11499,7 @@ SELECT pg_catalog.setval('personnel_properties_catalogue_id_seq', 9, true);
 -- Name: personnel_properties_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('personnel_properties_id_seq', 120, true);
+SELECT pg_catalog.setval('personnel_properties_id_seq', 128, true);
 
 
 --
@@ -11271,6 +11580,26 @@ SELECT pg_catalog.setval('procedures_catalogue_id_seq', 167, true);
 
 
 --
+-- Data for Name: procedures_personnel; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY procedures_personnel (id, idpersonnel, idprocedure) FROM stdin;
+3	36	136
+5	37	139
+7	37	140
+4	37	133
+9	1	139
+\.
+
+
+--
+-- Name: procedures_personnel_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('procedures_personnel_id_seq', 10, true);
+
+
+--
 -- Data for Name: process_steps_catalogue; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -11339,6 +11668,18 @@ SELECT pg_catalog.setval('shadow_accounts_id_seq', 91, true);
 --
 
 COPY status_catalogue (id, idtrial, name, alerting) FROM stdin;
+495	194	Screen fail	1
+496	194	Screen	1
+497	194	Randomized	1
+498	195	Screen fail	1
+499	195	Screen	1
+500	195	Randomized	1
+501	196	Screen fail	1
+502	196	Screen	1
+503	196	Randomized	1
+504	197	Screen fail	1
+505	197	Screen	1
+506	197	Randomized	1
 5	25	Rando	1
 4	25	Screen	1
 6	25	Fail	1
@@ -11349,7 +11690,7 @@ COPY status_catalogue (id, idtrial, name, alerting) FROM stdin;
 -- Name: status_catalogue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('status_catalogue_id_seq', 494, true);
+SELECT pg_catalog.setval('status_catalogue_id_seq', 506, true);
 
 
 --
@@ -11374,8 +11715,37 @@ SELECT pg_catalog.setval('trial_personnel_id_seq', 14, true);
 COPY trial_process_step (id, idtrial, type, start_date, end_date, deadline, idpersonnel, title) FROM stdin;
 417	25	7	2013-09-01	2014-02-28	\N	\N	
 823	25	\N	2014-11-13	\N	\N	\N	\N
+824	25	\N	2014-11-13	\N	\N	\N	\N
+825	25	\N	2014-11-13	\N	\N	\N	\N
+826	25	\N	2014-11-13	\N	\N	\N	\N
+827	25	\N	2014-11-13	\N	\N	\N	\N
+828	25	\N	2014-11-13	\N	\N	\N	\N
+829	25	\N	2014-11-13	\N	\N	\N	\N
+830	25	\N	2014-11-13	\N	\N	\N	\N
+831	25	\N	2014-11-13	\N	\N	\N	\N
+832	25	\N	2014-11-13	\N	\N	\N	\N
+833	25	\N	2014-11-13	\N	\N	\N	\N
+834	25	\N	2014-11-13	\N	\N	\N	\N
+835	25	\N	2014-11-13	\N	\N	\N	\N
+836	25	\N	2014-11-13	\N	\N	\N	\N
+837	25	\N	2014-11-13	\N	\N	\N	\N
+838	25	\N	2014-11-13	\N	\N	\N	\N
+839	25	\N	2014-11-13	\N	\N	\N	\N
+840	25	\N	2014-11-13	\N	\N	\N	\N
+841	25	\N	2014-11-13	\N	\N	\N	\N
+842	25	\N	2014-11-13	\N	\N	\N	\N
+843	25	\N	2014-11-13	\N	\N	\N	\N
+844	25	\N	2014-11-13	\N	\N	\N	\N
+845	25	\N	2014-11-13	\N	\N	\N	\N
+846	25	\N	2014-11-13	\N	\N	\N	\N
+847	25	\N	2014-11-13	\N	\N	\N	\N
+848	25	\N	2014-11-13	\N	\N	\N	\N
 749	25	11	2014-09-01	2014-07-31	\N	\N	\N
 465	25	12	2014-02-25	\N	\N	2	\N
+849	194	11	2014-11-16	\N	\N	\N	\N
+850	195	11	2014-11-16	\N	\N	\N	\N
+851	196	11	2014-11-16	\N	\N	\N	\N
+852	197	11	2014-11-17	\N	\N	\N	\N
 627	25	12	2014-05-06	2014-05-07	\N	\N	\N
 750	25	17	2014-07-31	2029-07-31	\N	\N	\N
 \.
@@ -11385,7 +11755,7 @@ COPY trial_process_step (id, idtrial, type, start_date, end_date, deadline, idpe
 -- Name: trial_process_step_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('trial_process_step_id_seq', 848, true);
+SELECT pg_catalog.setval('trial_process_step_id_seq', 852, true);
 
 
 --
@@ -11394,33 +11764,128 @@ SELECT pg_catalog.setval('trial_process_step_id_seq', 848, true);
 
 COPY trial_properties (id, idtrial, idproperty, value) FROM stdin;
 227	25	12	Prof. XX
-223	25	7	XXX
 228	25	1	2012-XXX
 219	25	3	ZVSXX
-224	25	8	1234
 232	25	16	https://www.xxx.com
 778	25	27	NCT0XXX
 230	25	14	2408,00 (overhead included!)
-553	25	23	Dry eye
-568	25	21	250,00 / pro Pat. (max. 50,- / visit)
+5394	194	8	
+5398	195	25	\N
+5399	195	26	\N
+5400	195	27	\N
+5401	195	11	\N
+5402	195	17	\N
+5403	195	33	\N
+5404	195	31	\N
+5405	195	34	\N
 231	25	15	10
-1615	25	34	
-225	25	11	2000,00 (+ Archival fee 370,00)
+5406	195	12	\N
+5407	195	18	\N
+5408	195	2	\N
+5409	195	15	\N
+5410	195	13	\N
+5411	195	21	\N
+5412	195	37	\N
+5413	195	32	\N
+5415	195	38	\N
+5416	195	8	\N
+5417	195	28	\N
+5418	195	30	\N
+5419	195	29	\N
 233	25	18	12501
-226	25	2	MPG
-229	25	13	100,00
-220	25	4	Firma XX
-548	25	26	Derwisch
+5385	194	16	
+5420	195	16	\N
+5421	195	4	\N
+5422	195	23	\N
+5423	195	1	\N
+5424	195	22	\N
+5425	195	3	\N
+5426	195	14	\N
+5427	195	63	\N
+5428	195	7	\N
+5414	195	24	
+5377	194	11	
+5470	194	4	
+5471	194	65	
+5472	194	61	
+5389	194	1	
+5372	194	32	dsdffsd
+5379	194	33	dsffdssdffdsfsd
+5376	194	27	dsssss
+5380	194	17	lll
+5382	194	34	
+5368	194	13	
+5369	194	21	
+5392	194	63	
+5388	194	22	
+5373	194	38	
+5370	194	37	dssd
+5476	197	18	\N
+5477	197	34	\N
+5478	197	12	\N
 234	25	17	http://www.ccc.com
 1440	25	33	J
-779	25	28	12345
-780	25	29	xxx@yy.com
+5430	196	17	\N
+5431	196	33	\N
+5432	196	11	\N
+5437	196	27	\N
+5439	196	26	\N
+5440	196	37	\N
+5441	196	38	\N
+5443	196	32	\N
+5446	196	13	\N
+5447	196	29	\N
+5448	196	28	\N
+5449	196	30	\N
+5455	196	23	\N
+5457	196	16	\N
+5479	197	31	\N
+5442	196	24	fdffddf
+5456	196	4	
+5480	197	33	\N
+5458	196	22	
+5445	196	21	
+5436	196	18	
+5454	196	63	mm
+5452	196	3	
+5450	196	8	
+5459	196	1	
+5435	196	34	
+5433	196	2	
+5453	196	7	
+5434	196	12	
+5438	196	25	
+5429	196	31	
+5444	196	15	mmm
+5451	196	14	
+5482	197	11	\N
+5486	197	38	\N
+5490	197	21	\N
+5491	197	13	\N
+5492	197	15	\N
+5496	197	8	\N
+5498	197	63	\N
+5500	197	3	\N
+5501	197	22	\N
+5502	197	1	\N
+5503	197	23	\N
+5487	197	24	
+5494	197	30	
+5475	197	2	
+5489	197	37	
+5505	197	16	
+5488	197	32	
+5483	197	27	dsssss
+5499	197	14	
+5504	197	4	
+5485	197	25	dfdfdf
+5495	197	28	
+5481	197	17	fdfdsfsgd
 781	25	30	1235
 782	25	31	12345
-776	25	22	
+5466	194	62	
+5467	194	24	
 783	25	32	J
-549	25	25	Herr XX
-777	25	24	A Multicenter, Double-masked, Randomized Study to Compare something
 1899	25	37	XXX
 3901	25	43	\\documentclass{scrreprt}\n\\usepackage[ngerman]{babel}\n\\usepackage[latin1]{inputenc}\n\\usepackage{graphicx}\n\\usepackage{wallpaper}\n\\usepackage{tabularx} \n\n\n\\renewcommand{\\familydefault}{\\sfdefault} \n\\usepackage{helvet} \n\n\\pagenumbering{none}\n\n\\begin{document}\n\\baselineskip15pt\n\\setlength{\\headheight}{7\\baselineskip}\n\\setlength{\\oddsidemargin}{-3mm} \n\\addtolength{\\textwidth}{2cm}\n\n<foreach:patients>\n\n\\ThisCenterWallPaper{1}{<copytex:briefkopfAdresszeile3.pdf>}\n\n\\noindent <anrede1>\\\\\n\\noindent <givenname> <name>\\\\\n\\noindent <street> \\\\\n\\noindent <zip> <town> \\\\\n\\\\ \\\\ \n\\hspace*{11.0cm}  Freiburg, <today>\\\\ \n\n\\noindent Datenschutzerkl"arung in der klinischen Studie {\\it <Voller Titel>}\\\\ \n\n\\noindent  Sehr geehrte<anrede2>, <name>,\\\\\n\n\\noindent hiermit m"ochten wir Sie dar"uber informieren, dass sich in der Datenschutzerkl"arung, die Teil der Patienteninformation ist und die Sie zur Teilnahme an der o.g. Studie  in unserer Klinik am <insertion_date> schriftlich eingewilligt haben, ein kleiner Fehler eingeschlichen hat. Auf Seite 15 steht:\\\\\n\n\\noindent {\\it \\small Ich erkl"are mich damit einverstanden, dass im Rahmen dieser klinischen Pr"ufung personenbezogene Daten, insbesondere Angaben "uber meine Gesundheit und meine ethnische Herkunft, "uber mich erhoben und in Papierform sowie auf elektronischen Datentr"agern bei/in Universit"atsklinikum Leipzig aufgezeichnet werden}.\\\\\n\n\n\n\\noindent Abschlie"send m"ochte ich Sie bitten, sich nach Erhalt dieses Briefes telefonisch bei Frau Dr. Goos zu melden +49 (761) 27093650 damit wir die Gewissheit haben, dass dieser Brief bei Ihnen angekommen ist.\\\\\\\\\n\n\\noindent Mit freundlichen Gr"u"sen und bestem Dank im Voraus, \\\\ \\\\ \n\n\\hspace*{-7mm}  \\begin{tabularx}{20cm}{XX}\n<_Loginname_>\\\\ \n<_Loginrole_> \\\\ \n\\end{tabularx}\n\n\\newpage\n\n</foreach:patients>\n\n\n\\end{document}\n
 \.
@@ -11502,12 +11967,13 @@ SELECT pg_catalog.setval('trial_properties_catalogue_id_seq', 65, true);
 -- Name: trial_properties_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('trial_properties_id_seq', 5366, true);
+SELECT pg_catalog.setval('trial_properties_id_seq', 5505, true);
 
 
 --
 -- Data for Name: trial_property_annotations; Type: TABLE DATA; Schema: public; Owner: root
 --
+
 
 
 --
@@ -11522,6 +11988,7 @@ SELECT pg_catalog.setval('trial_property_annotations_id_seq', 48, true);
 --
 
 COPY trial_visits (id, name, idtrial, idreference_visit, visit_interval, lower_margin, upper_margin, reimbursement, additional_docscal_booking_name, ordering, comment) FROM stdin;
+299	\N	196	\N	\N	\N	\N	\N	\N	\N	\N
 5	Visit 1	25	7	7 days	3 days	3 days	448	\N	\N	\N
 7	Baseline	25	\N	00:00:00	00:00:00	00:00:00	588	\N	\N	\N
 8	Unschelduled	25	\N	00:00:00	-2 years	2 years	154	\N	\N	\N
@@ -11535,7 +12002,7 @@ COPY trial_visits (id, name, idtrial, idreference_visit, visit_interval, lower_m
 -- Name: trial_visits_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('trial_visits_id_seq', 298, true);
+SELECT pg_catalog.setval('trial_visits_id_seq', 299, true);
 
 
 --
@@ -11543,6 +12010,12 @@ SELECT pg_catalog.setval('trial_visits_id_seq', 298, true);
 --
 
 COPY visit_procedures (id, idvisit, idprocedure, actual_cost) FROM stdin;
+120	\N	\N	\N
+136	299	162	\N
+139	5	15	\N
+140	5	162	\N
+133	7	151	\N
+141	7	51	\N
 \.
 
 
@@ -11550,7 +12023,7 @@ COPY visit_procedures (id, idvisit, idprocedure, actual_cost) FROM stdin;
 -- Name: visit_procedures_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('visit_procedures_id_seq', 116, true);
+SELECT pg_catalog.setval('visit_procedures_id_seq', 141, true);
 
 
 --
@@ -11642,6 +12115,22 @@ ALTER TABLE ONLY personnel_costs
 
 
 --
+-- Name: personnel_event_catalogue_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY personnel_event_catalogue
+    ADD CONSTRAINT personnel_event_catalogue_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: personnel_event_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY personnel_event
+    ADD CONSTRAINT personnel_event_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: personnel_properties_catalogue_pkey; Type: CONSTRAINT; Schema: public; Owner: root; Tablespace: 
 --
 
@@ -11663,6 +12152,14 @@ ALTER TABLE ONLY personnel_properties
 
 ALTER TABLE ONLY procedures_catalogue
     ADD CONSTRAINT procedures_catalogue_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: procedures_personnel_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY procedures_personnel
+    ADD CONSTRAINT procedures_personnel_pkey PRIMARY KEY (id);
 
 
 --
@@ -11813,6 +12310,28 @@ CREATE RULE enrich_newtrial AS
 
 
 --
+-- Name: procedure_statistics_writable; Type: RULE; Schema: public; Owner: root
+--
+
+CREATE RULE procedure_statistics_writable AS
+    ON UPDATE TO procedure_statistics DO INSTEAD  UPDATE visit_procedures SET idprocedure = ( SELECT min(a.id) AS min
+           FROM procedures_catalogue a
+          WHERE (a.name = new.name))
+  WHERE (visit_procedures.id = old.id);
+
+
+--
+-- Name: visit_procedures_name_writable; Type: RULE; Schema: public; Owner: postgres
+--
+
+CREATE RULE visit_procedures_name_writable AS
+    ON UPDATE TO visit_procedures_name DO INSTEAD  UPDATE visit_procedures SET idprocedure = ( SELECT min(a.id) AS min
+           FROM procedures_catalogue a
+          WHERE (a.name = new.procedure_name))
+  WHERE (visit_procedures.id = new.id);
+
+
+--
 -- Name: account_transaction_account_number_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -11885,6 +12404,14 @@ ALTER TABLE ONLY personnel_costs
 
 
 --
+-- Name: personnel_event_idpersonnel_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY personnel_event
+    ADD CONSTRAINT personnel_event_idpersonnel_fkey FOREIGN KEY (idpersonnel) REFERENCES personnel_catalogue(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
 -- Name: personnel_properties_idpersonnel_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -11898,6 +12425,22 @@ ALTER TABLE ONLY personnel_properties
 
 ALTER TABLE ONLY personnel_properties
     ADD CONSTRAINT personnel_properties_idproperty_fkey FOREIGN KEY (idproperty) REFERENCES personnel_properties_catalogue(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: procedures_personnel_idpersonnel_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY procedures_personnel
+    ADD CONSTRAINT procedures_personnel_idpersonnel_fkey FOREIGN KEY (idpersonnel) REFERENCES personnel_catalogue(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- Name: procedures_personnel_idprocedure_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY procedures_personnel
+    ADD CONSTRAINT procedures_personnel_idprocedure_fkey FOREIGN KEY (idprocedure) REFERENCES visit_procedures(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --

@@ -163,6 +163,7 @@
      <vbox>
         <scrollView hasHorizontalScroller="YES">
              <tableView zebra="yes" id="pats2tv" autosaveName ="pats2tv0"  delegate="#myadmincontroller" valueBinding="#CPOwner.patientVisitsController">
+                <tableColumn identifier="id" title="id"/>
                 <tableColumn identifier="idvisit" title="visit" dataView="#column_idvisit"/>
                 <tableColumn identifier="visit_date" title="date" editable="YES"/>
                 <tableColumn identifier="lower_margin" title="lower"/>
@@ -178,9 +179,9 @@
      </vbox>
      <vbox>
         <scrollView hasHorizontalScroller="NO">
-             <tableView zebra="yes" id="patdatestv" autosaveName="patdatestv0" target="#myadmincontroller" doubleAction="bookInDocscal:" valueBinding="#CPOwner.visitDatesController">
+             <tableView zebra="yes" id="patdatestv" autosaveName="patdatestv_1" target="#myadmincontroller" doubleAction="bookInDocscal:" valueBinding="#CPOwner.visitDatesController">
                 <tableColumn identifier="startdate" title="visit proposals"/>
-                <tableColumn identifier="dcid" title="dcid"/>
+                <tableColumn identifier="missing_service" title="MS" dataView="#visitsmissingicon" minWidth="32" maxWidth="32"/>
              </tableView>
         </scrollView>
         <ButtonBar target="#myadmincontroller" actionsButton="YES">

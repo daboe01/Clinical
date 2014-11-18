@@ -292,6 +292,7 @@
 		<column name="caldate"/>
 		<column name="idvisit"/>
 		<column name="dcid"/>
+		<column name="missing_service"/>
 		<relationship type="toMany" name="tagesinfos" bindingColumn="caldate" target="tagesinfos"/>
 	</entity>
 	<entity id="tagesinfos" store="#CPOwner.store">
