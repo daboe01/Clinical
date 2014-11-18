@@ -139,6 +139,8 @@ BaseURL=HostURL+"/";
     id    visitProcsTV;
     id    visitpersoBB;
     id    visitprocBB;
+    id    persoEventsTV;
+    id    graphicalPicker;
 
     id    addTXWindow;
     id    accountsTV;
@@ -366,9 +368,42 @@ BaseURL=HostURL+"/";
         [scrollView addSubview:combobox]; // positioned:CPWindowAbove relativeTo:tableView
        [[tableView window] makeFirstResponder:combobox];
         [combobox setDelegate:self];
-       return NO;
+        return NO;
+    } else if(tableView == persoEventsTV)
+    {
+       var identifier= [column identifier];
+       if (identifier === 'comment')
+       {   return YES;
+       }
+
+       datePickerPopover =[CPPopover new];
+       [datePickerPopover setDelegate:self];
+       [datePickerPopover setAnimates:NO];
+       [datePickerPopover setBehavior: CPPopoverBehaviorTransient ];
+       [datePickerPopover setAppearance: CPPopoverAppearanceMinimal];
+       var myViewController=[CPViewController new];
+       [datePickerPopover setContentViewController:myViewController];
+       [myViewController setView:graphicalPicker];
+       [graphicalPicker setLocale: [[CPLocale alloc] initWithLocaleIdentifier:@"de_DE"]];
+       graphicalPicker.tableViewEditedRowIndex = row;
+       graphicalPicker.tableViewEditedColumnObj = column;
+       graphicalPicker._table = tableView;
+       [tableView _setObjectValueForTableColumn:column row:row forView:graphicalPicker];
+       [graphicalPicker setTarget:self];
+       [graphicalPicker setAction:@selector(_commitDateValue:)];
+       var frame = [tableView frameOfDataViewAtColumn:[[tableView tableColumns] indexOfObject:column] row:row];
+       [datePickerPopover showRelativeToRect:frame ofView:tableView preferredEdge: nil];
+       [[tableView window] makeKeyAndOrderFront:self];
+       return YES;
    }
    return NO;
+}
+-(void) _commitDateValue:(id)sender
+{
+    [datePickerPopover close];
+    [[sender._table window] makeKeyAndOrderFront:self]
+    [sender._table _commitDataViewObjectValue:sender];
+    [sender._table setNeedsDisplay:YES];
 }
 
 // for combobox

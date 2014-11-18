@@ -11476,7 +11476,7 @@ SELECT pg_catalog.setval('personnel_costs_id_seq', 20, true);
 
 COPY personnel_event (id, idpersonnel, type, start_time, end_time, comment) FROM stdin;
 2	37	1	2014-11-18 16:22:23.27589	2014-11-19 00:00:00	test
-1	1	1	2014-11-16 14:39:58.984701	2014-11-17 14:39:58.984701	coimbra
+1	1	1	2014-11-17 00:00:00	2014-11-18 00:00:00	coimbra
 \.
 
 
@@ -11485,8 +11485,8 @@ COPY personnel_event (id, idpersonnel, type, start_time, end_time, comment) FROM
 --
 
 COPY personnel_event_catalogue (id, description) FROM stdin;
-1	Urlaub
 2	Schulung
+1	Urlaub
 \.
 
 
@@ -11933,7 +11933,6 @@ COPY trial_properties (id, idtrial, idproperty, value) FROM stdin;
 5467	194	24	
 783	25	32	J
 1899	25	37	XXX
-3901	25	43	\\documentclass{scrreprt}\n\\usepackage[ngerman]{babel}\n\\usepackage[latin1]{inputenc}\n\\usepackage{graphicx}\n\\usepackage{wallpaper}\n\\usepackage{tabularx} \n\n\n\\renewcommand{\\familydefault}{\\sfdefault} \n\\usepackage{helvet} \n\n\\pagenumbering{none}\n\n\\begin{document}\n\\baselineskip15pt\n\\setlength{\\headheight}{7\\baselineskip}\n\\setlength{\\oddsidemargin}{-3mm} \n\\addtolength{\\textwidth}{2cm}\n\n<foreach:patients>\n\n\\ThisCenterWallPaper{1}{<copytex:briefkopfAdresszeile3.pdf>}\n\n\\noindent <anrede1>\\\\\n\\noindent <givenname> <name>\\\\\n\\noindent <street> \\\\\n\\noindent <zip> <town> \\\\\n\\\\ \\\\ \n\\hspace*{11.0cm}  Freiburg, <today>\\\\ \n\n\\noindent Datenschutzerkl"arung in der klinischen Studie {\\it <Voller Titel>}\\\\ \n\n\\noindent  Sehr geehrte<anrede2>, <name>,\\\\\n\n\\noindent hiermit m"ochten wir Sie dar"uber informieren, dass sich in der Datenschutzerkl"arung, die Teil der Patienteninformation ist und die Sie zur Teilnahme an der o.g. Studie  in unserer Klinik am <insertion_date> schriftlich eingewilligt haben, ein kleiner Fehler eingeschlichen hat. Auf Seite 15 steht:\\\\\n\n\\noindent {\\it \\small Ich erkl"are mich damit einverstanden, dass im Rahmen dieser klinischen Pr"ufung personenbezogene Daten, insbesondere Angaben "uber meine Gesundheit und meine ethnische Herkunft, "uber mich erhoben und in Papierform sowie auf elektronischen Datentr"agern bei/in Universit"atsklinikum Leipzig aufgezeichnet werden}.\\\\\n\n\n\n\\noindent Abschlie"send m"ochte ich Sie bitten, sich nach Erhalt dieses Briefes telefonisch bei Frau Dr. Goos zu melden +49 (761) 27093650 damit wir die Gewissheit haben, dass dieser Brief bei Ihnen angekommen ist.\\\\\\\\\n\n\\noindent Mit freundlichen Gr"u"sen und bestem Dank im Voraus, \\\\ \\\\ \n\n\\hspace*{-7mm}  \\begin{tabularx}{20cm}{XX}\n<_Loginname_>\\\\ \n<_Loginrole_> \\\\ \n\\end{tabularx}\n\n\\newpage\n\n</foreach:patients>\n\n\n\\end{document}\n
 \.
 
 

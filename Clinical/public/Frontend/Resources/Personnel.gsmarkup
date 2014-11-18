@@ -4,8 +4,6 @@
 
 <objects>
 
-
-
 <window id="mywindow" bridge="YES">
 
  <tabView type="topBezel">
@@ -51,7 +49,7 @@
   <tabViewItem title="Events">
        <vbox>
        <scrollView hasHorizontalScroller="NO">
-         <tableView zebra="yes" autosaveName="perso_events_tv" valueBinding="#CPOwner.personnelEventController">
+         <tableView zebra="yes" id="perso_events_tv" autosaveName="perso_events_tv" delegate="#CPOwner" valueBinding="#CPOwner.personnelEventController">
             <tableColumn dataView="#popupdataviewstates" identifier="type" title="name"/>
             <tableColumn identifier="start_time" title="start_time" editable="YES"/>
             <tableColumn identifier="end_time" title="end_time" editable="YES"/>
@@ -69,6 +67,7 @@
  <vbox>
    <popUpButton width="200" id="popupdataviewdoctags" itemsBinding="#CPOwner.pdoctagsController.arrangedObjects.name"/>
    <popUpButton width="200" id="popupdataviewstates" itemsBinding="#CPOwner.personnelEventCatController.arrangedObjects.description"/>
+   <datePicker style="graphical" id="graphical_picker"/>
  </vbox>
 </window>
 
@@ -94,6 +93,8 @@
 	<outlet source="#CPOwner" target="pdocumentsbuttonbar" label="pdocumentsButtonBar"/>
         <outlet source="#CPOwner" target="addpropswindow" label="addPropsWindow"/>
         <outlet source="#CPOwner" target="addpropstv" label="addPropsTV"/>
+        <outlet source="#CPOwner" target="perso_events_tv" label="persoEventsTV"/>
+        <outlet source="#CPOwner" target="graphical_picker" label="graphicalPicker"/>
 </connectors>
 
 </gsmarkup>
