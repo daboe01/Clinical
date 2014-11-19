@@ -52,10 +52,18 @@ BaseURL=HostURL+"/";
     [self setButtons: [[self buttons] arrayByAddingObject:newbutton] ];
     return newbutton;
 }
-- (void) registerWithArrayController:(CPArrayController) aController
+- (void) registerWithArrayController:(CPArrayController) aController plusTooltip:(CPString)ptt minusTooltip:(CPString)mtt
 {
     [[self buttons][1] bind:CPEnabledBinding toObject:aController withKeyPath:"selectedObjects.@count" options: nil];
+    if(ptt)
+        [[self buttons][0] setToolTip: ptt]
+    if(mtt)
+        [[self buttons][1] setToolTip: mtt]
     //<!> fixme add insert and remove actions unless already wired!
+}
+- (void) registerWithArrayController:(CPArrayController) aController
+{
+    [self registerWithArrayController:aController plusTooltip:nil minusTooltip:nil]
 }
 
 @end

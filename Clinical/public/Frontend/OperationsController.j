@@ -119,32 +119,42 @@
 
 	var button=[mainButtonBar addButtonWithImageName:"config.png" target:self action:@selector(runConfig:)];
     [button bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"trialsController.selection.@count" options:nil];
-	[mainButtonBar addButtonWithImageName:"reload.png" target:self action:@selector(reloadTrialsList:)];
-	[mainButtonBar addButtonWithImageName:"download.png" target:self action:@selector(downloadExcel:)];
-    [mainButtonBar registerWithArrayController:[CPApp delegate].trialsController];
+    [button setToolTip:"Configure trial and visits"];
+	button=[mainButtonBar addButtonWithImageName:"reload.png" target:self action:@selector(reloadTrialsList:)];
+    [button setToolTip:"Reload trials"];
+	button=[mainButtonBar addButtonWithImageName:"download.png" target:self action:@selector(downloadExcel:)];
+    [button setToolTip:"Download trial list"];
+    [mainButtonBar registerWithArrayController:[CPApp delegate].trialsController plusTooltip:"Create new trial" minusTooltip:"Delete selected trial..."];
 
-	[visitsButtonBar addButtonWithImageName:"reload.png" target:self action:@selector(recalcVisits:)];
-	var button=[visitsButtonBar addButtonWithImageName:"print.png" target:self action:@selector(printVisits:)];
+	button=[visitsButtonBar addButtonWithImageName:"reload.png" target:self action:@selector(recalcVisits:)];
+    [button setToolTip:"Reload and validate visits"];
+	button=[visitsButtonBar addButtonWithImageName:"print.png" target:self action:@selector(printVisits:)];
+    [button setToolTip:"Print visits overview"];
     [button bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"patientVisitsController.arrangedObjects.@count" options:nil];
-    [visitsButtonBar registerWithArrayController:[CPApp delegate].patientVisitsController];
+    [visitsButtonBar registerWithArrayController:[CPApp delegate].patientVisitsController plusTooltip:"Insert visit" minusTooltip:"Delete selected visit"];
 
 
 	var button=[documentsButtonBar addButtonWithImageName:"download.png" target:self action:@selector(doDownload:)];
+    [button setToolTip:"Download/view document"];
     [button bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"dokusController.selection.@count" options:nil];
-    [documentsButtonBar registerWithArrayController:[CPApp delegate].dokusController];
+    [documentsButtonBar registerWithArrayController:[CPApp delegate].dokusController plusTooltip:"Upload document" minusTooltip:"Delete selected document..."];
 
-	[propsButtonBar addButtonWithImageName:"edit.png" target:editTextWindow action:@selector(makeKeyAndOrderFront:)];
+	button=[propsButtonBar addButtonWithImageName:"edit.png" target:editTextWindow action:@selector(makeKeyAndOrderFront:)];
+    [button setToolTip:"Open multiline editor"];
 	var button=[propsButtonBar addButtonWithImageName:"play.png" target:self action:@selector(openURL:)];
+    [button setToolTip:"Open ressource"];
     [button bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"propertiesController.selection.value" options:nil];
-    [propsButtonBar registerWithArrayController:[CPApp delegate].propertiesController];
+    [propsButtonBar registerWithArrayController:[CPApp delegate].propertiesController plusTooltip:"Insert property" minusTooltip:"Delete selected property"];
 
 	var button=[billingButtonBar addButtonWithImageName:"download.png" target:self action:@selector(printBill:)];
+    [button setToolTip:"Download billing form"];
     [button bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"billingsController.selectedObjects.@count" options:nil];
-    [billingButtonBar registerWithArrayController:[CPApp delegate].billingsController];
+    [billingButtonBar registerWithArrayController:[CPApp delegate].billingsController plusTooltip:"Create new billing" minusTooltip:"Delete selected billing..."];
 
 	var button=[patientsButtonBar addButtonWithImageName:"download.png" target:self action:@selector(downloadPatients:)];
+    [button setToolTip:"Download list of patients"];
     [button bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"patientsController.selection.@count" options:nil];
-    [patientsButtonBar registerWithArrayController:[CPApp delegate].patientsController];
+    [patientsButtonBar registerWithArrayController:[CPApp delegate].patientsController plusTooltip:"Add patient to trial" minusTooltip:"Remove patient..."];
     
 	var button=[travelButtonBar addButtonWithImageName:"print.png" target:self action:@selector(fahrtkostenForm:)];
     [button bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"patientVisitsController2.selectedObjects.@count" options:nil];
