@@ -240,7 +240,7 @@
   </vbox>
 </window>
 
-<window title="Edit text" id="edittextwindow" x="260" y="300" width="400" height="800" visible="NO"  resizable="YES">
+<window title="Edit text" id="edittextwindow" x="460" y="60" width="400" height="600" visible="NO"  resizable="YES">
     <scrollView hasHorizontalScroller="NO" width="400" height="800">
             <textView editable="YES" valueBinding="#CPOwner.propertiesController.selection.value" continuousBinding="YES" backgroundColor="white"/>
     </scrollView>

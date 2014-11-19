@@ -11403,7 +11403,6 @@ COPY patient_visits (id, idpatient, idvisit, visit_date, state, travel_costs, da
 3811	614	9	\N	\N	\N	\N	\N	\N	\N
 3812	614	10	\N	\N	\N	\N	\N	\N	\N
 3799	612	5	2014-11-18 00:00:00	\N	\N	\N	\N	\N	\N
-3782	608	7	2014-11-13 00:00:00	\N	\N	\N	\N	\N	0
 3783	608	5	2014-11-28 00:00:00	\N	\N	\N	\N	\N	0
 \.
 
@@ -11485,8 +11484,9 @@ COPY personnel_event (id, idpersonnel, type, start_time, end_time, comment) FROM
 --
 
 COPY personnel_event_catalogue (id, description) FROM stdin;
-2	Schulung
-1	Urlaub
+1	Urlaub genehmigt
+2	Urlaub geplant
+3	Audit/Monitoring
 \.
 
 
@@ -11494,7 +11494,7 @@ COPY personnel_event_catalogue (id, description) FROM stdin;
 -- Name: personnel_event_catalogue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('personnel_event_catalogue_id_seq', 2, true);
+SELECT pg_catalog.setval('personnel_event_catalogue_id_seq', 3, true);
 
 
 --
@@ -11760,32 +11760,6 @@ SELECT pg_catalog.setval('trial_personnel_id_seq', 14, true);
 
 COPY trial_process_step (id, idtrial, type, start_date, end_date, deadline, idpersonnel, title) FROM stdin;
 417	25	7	2013-09-01	2014-02-28	\N	\N	
-823	25	\N	2014-11-13	\N	\N	\N	\N
-824	25	\N	2014-11-13	\N	\N	\N	\N
-825	25	\N	2014-11-13	\N	\N	\N	\N
-826	25	\N	2014-11-13	\N	\N	\N	\N
-827	25	\N	2014-11-13	\N	\N	\N	\N
-828	25	\N	2014-11-13	\N	\N	\N	\N
-829	25	\N	2014-11-13	\N	\N	\N	\N
-830	25	\N	2014-11-13	\N	\N	\N	\N
-831	25	\N	2014-11-13	\N	\N	\N	\N
-832	25	\N	2014-11-13	\N	\N	\N	\N
-833	25	\N	2014-11-13	\N	\N	\N	\N
-834	25	\N	2014-11-13	\N	\N	\N	\N
-835	25	\N	2014-11-13	\N	\N	\N	\N
-836	25	\N	2014-11-13	\N	\N	\N	\N
-837	25	\N	2014-11-13	\N	\N	\N	\N
-838	25	\N	2014-11-13	\N	\N	\N	\N
-839	25	\N	2014-11-13	\N	\N	\N	\N
-840	25	\N	2014-11-13	\N	\N	\N	\N
-841	25	\N	2014-11-13	\N	\N	\N	\N
-842	25	\N	2014-11-13	\N	\N	\N	\N
-843	25	\N	2014-11-13	\N	\N	\N	\N
-844	25	\N	2014-11-13	\N	\N	\N	\N
-845	25	\N	2014-11-13	\N	\N	\N	\N
-846	25	\N	2014-11-13	\N	\N	\N	\N
-847	25	\N	2014-11-13	\N	\N	\N	\N
-848	25	\N	2014-11-13	\N	\N	\N	\N
 749	25	11	2014-09-01	2014-07-31	\N	\N	\N
 465	25	12	2014-02-25	\N	\N	2	\N
 849	194	11	2014-11-16	\N	\N	\N	\N
@@ -11927,7 +11901,6 @@ COPY trial_properties (id, idtrial, idproperty, value) FROM stdin;
 5485	197	25	dfdfdf
 5495	197	28	
 5481	197	17	fdfdsfsgd
-781	25	30	1235
 782	25	31	12345
 5466	194	62	
 5467	194	24	
