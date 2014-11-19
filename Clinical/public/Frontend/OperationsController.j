@@ -805,7 +805,13 @@
 
 -(void)cancelOperation:sender
 {
-// fixme!
+    if([sender isKindOfClass:CPComboBox])
+    {
+        [sender setDelegate:nil];
+        var win=[sender window];
+        [win makeFirstResponder:propsTV]
+        [sender removeFromSuperview];
+    }
 }
 
 @end
