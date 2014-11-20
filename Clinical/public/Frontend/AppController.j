@@ -357,6 +357,7 @@ BaseURL=HostURL+"/";
 - (BOOL)tableView:(CPTableView)tableView shouldEditTableColumn:(CPTableColumn)column row:(int)row {
     if(tableView === visitProcsTV){
         var columnIndex = [[tableView tableColumns] indexOfObject:column];
+        if (columnIndex !== [tableView findColumnWithTitle:"procedure_name"]) return YES;
         var scrollView=[tableView enclosingScrollView];
         var frame = [tableView frameOfDataViewAtColumn:[[tableView tableColumns] indexOfObject:column] row:row];
         frame=[tableView convertRect:frame toView: scrollView]
