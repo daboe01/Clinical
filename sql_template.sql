@@ -2501,17 +2501,17 @@ ALTER SEQUENCE trial_visits_id_seq OWNED BY trial_visits.id;
 
 
 --
--- Name: visit_dates; Type: VIEW; Schema: public; Owner: postgres
+-- Name: visit_dates; Type: VIEW; Schema: public; Owner: root
 --
 
 CREATE VIEW visit_dates AS
  WITH absent_intervals AS (
-         SELECT a_1.idvisit,
-            a_1.start_time,
-            a_1.end_time
+         SELECT a.idvisit,
+            a.start_time,
+            a.end_time
            FROM ( SELECT DISTINCT visit_calculator.idvisit,
-                    a_2.start_time,
-                    (a_2.end_time)::date AS end_time
+                    a_1.start_time,
+                    (a_1.end_time)::date AS end_time
                    FROM (((((((visit_calculator
                      JOIN patients ON ((visit_calculator.idpatient = patients.id)))
                      JOIN all_trials all_trials_1 ON ((patients.idtrial = all_trials_1.id)))
@@ -2524,27 +2524,22 @@ CREATE VIEW visit_dates AS
                             personnel_event.end_time,
                             personnel_event.comment
                            FROM personnel_event
-                          WHERE (personnel_event.type = 1)) a_2 ON ((personnel_catalogue_1.id = a_2.idpersonnel)))
-                  WHERE (((a_2.start_time >= visit_calculator.lower_margin) AND (a_2.start_time <= visit_calculator.upper_margin)) OR ((a_2.end_time >= visit_calculator.lower_margin) AND (a_2.end_time <= visit_calculator.upper_margin)))) a_1
-        )
- SELECT a.dcid,
-    min(a.idvisit) AS idvisit,
-    min(a.caldate) AS caldate,
-    min(a.startdate) AS startdate,
-    max(a.missing_service) AS missing_service
-   FROM ( SELECT a_1.idvisit,
-            a_1.caldate,
-            a_1.startdate,
-            a_1.dcid,
+                          WHERE (personnel_event.type = 1)) a_1 ON ((personnel_catalogue_1.id = a_1.idpersonnel)))
+                  WHERE (((a_1.start_time >= visit_calculator.lower_margin) AND (a_1.start_time <= visit_calculator.upper_margin)) OR ((a_1.end_time >= visit_calculator.lower_margin) AND (a_1.end_time <= visit_calculator.upper_margin)))) a
+        ), visit_dates_all AS (
+         SELECT a.idvisit,
+            a.caldate,
+            a.startdate,
+            a.dcid,
                 CASE
-                    WHEN (a_1.idvisit IS NOT NULL) THEN 'alert'::text
+                    WHEN (b.idvisit IS NOT NULL) THEN 'alert'::text
                     ELSE ''::text
                 END AS missing_service
-           FROM ( SELECT visit_intervals.idvisit,
+           FROM (( SELECT visit_intervals.idvisit,
                     calendar.caldate,
                     calendar.startdate,
                     calendar.dcid
-                   FROM ((( SELECT visit_calculator.idvisit,
+                   FROM (( SELECT visit_calculator.idvisit,
                             visit_calculator.upper_margin,
                             visit_calculator.lower_margin,
                             groups_catalogue.sprechstunde
@@ -2552,13 +2547,22 @@ CREATE VIEW visit_dates AS
                              JOIN patients ON ((visit_calculator.idpatient = patients.id)))
                              JOIN all_trials ON ((all_trials.id = patients.idtrial)))
                              JOIN groups_catalogue ON ((groups_catalogue.id = all_trials.idgroup)))) visit_intervals
-                     JOIN calendar ON ((((calendar.caldate >= visit_intervals.lower_margin) AND (calendar.caldate <= visit_intervals.upper_margin)) AND (calendar.source = visit_intervals.sprechstunde))))
-                     LEFT JOIN absent_intervals ON (((visit_intervals.idvisit = absent_intervals.idvisit) AND ((calendar.caldate >= absent_intervals.start_time) AND (calendar.caldate <= absent_intervals.end_time)))))
-                  ORDER BY calendar.caldate) a_1) a
-  GROUP BY a.dcid;
+                     JOIN calendar ON ((((calendar.caldate >= visit_intervals.lower_margin) AND (calendar.caldate <= visit_intervals.upper_margin)) AND (calendar.source = visit_intervals.sprechstunde))))) a
+             LEFT JOIN ( SELECT DISTINCT absent_intervals.idvisit,
+                    absent_intervals.start_time,
+                    absent_intervals.end_time
+                   FROM absent_intervals) b ON ((((a.idvisit = b.idvisit) AND (a.caldate >= b.start_time)) AND (a.caldate <= b.end_time))))
+        )
+ SELECT visit_dates_all.idvisit,
+    min(visit_dates_all.caldate) AS caldate,
+    min(visit_dates_all.startdate) AS startdate,
+    visit_dates_all.dcid,
+    max(visit_dates_all.missing_service) AS missing_service
+   FROM visit_dates_all
+  GROUP BY visit_dates_all.idvisit, visit_dates_all.dcid;
 
 
-ALTER TABLE public.visit_dates OWNER TO postgres;
+ALTER TABLE public.visit_dates OWNER TO root;
 
 --
 -- Name: visit_procedures_id_seq; Type: SEQUENCE; Schema: public; Owner: root
