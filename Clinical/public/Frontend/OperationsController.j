@@ -778,6 +778,18 @@
        [tableView _setObjectValueForTableColumn:column row:row forView:graphicalPicker];
        [graphicalPicker setTarget:self];
        [graphicalPicker setAction:@selector(_commitDateValue:)];
+       [graphicalPicker setMinDate:[CPDate distantPast]];
+       [graphicalPicker setMaxDate:[CPDate distantFuture]];
+       if (tableView === visitsTV && identifier === 'visit_date') 
+       {
+           var lower=[[CPApp delegate].patientVisitsController valueForKeyPath:"selection.lower_margin"];
+           var upper=[[CPApp delegate].patientVisitsController valueForKeyPath:"selection.upper_margin"];
+
+           if (lower !== CPNullMarker && upper !== CPNullMarker){
+               [graphicalPicker setMinDate: [CPDate dateWithShortString:lower]];
+               [graphicalPicker setMaxDate: [CPDate dateWithShortString:upper]];
+           }
+       }
        var frame = [tableView frameOfDataViewAtColumn:[[tableView tableColumns] indexOfObject:column] row:row];
        [datePickerPopover showRelativeToRect:frame ofView:tableView preferredEdge: nil];
        [[tableView window] makeKeyAndOrderFront:self];
