@@ -14,6 +14,43 @@
 
 
 /////////////////////////////////////////////////////////
+@implementation _CPDatePickerMonthView(DisablingExtension)
+- (void)reloadData
+{
+    if (!_date)
+        return;
+
+    var currentMonth = _date,
+        startOfMonthDay = [self startOfWeekForDate:currentMonth],
+        daysInPreviousMonth = [_previousMonth _daysInMonth],
+        firstDayToShowInPreviousMonth = daysInPreviousMonth - startOfMonthDay,
+        currentDate = new Date(_previousMonth.getFullYear(), _previousMonth.getMonth(), firstDayToShowInPreviousMonth),
+        now = [CPDate date],
+        dateValue = [_datePicker dateValue];
+
+    // Update the tiles
+    for (var i = 0; i < [_dayTiles count]; i++)
+    {
+        var dayTile = _dayTiles[i];
+
+        // Increment to next day
+        currentDate.setTime(currentDate.getTime() + 90000000);
+        [currentDate _resetToMidnight];
+
+        var isPresentMonth = (now.getMonth() == currentDate.getMonth()
+                      && now.getFullYear() == currentDate.getFullYear());
+
+        [dayTile setDate:[currentDate copy]];
+        [dayTile setStringValue:currentDate.getDate()];
+        [dayTile setDisabled:![self isEnabled] || currentDate.getMonth() !== currentMonth.getMonth() || currentDate < [_datePicker minDate] || currentDate > [_datePicker maxDate]];
+        [dayTile setHighlighted:isPresentMonth && currentDate.getDate() == now.getDate()];
+    }
+
+    // Select the dates
+    [self _selectDate:[_datePicker dateValue] timeInterval:[_datePicker timeInterval]];
+}
+@end
+
 
 @implementation CPTableView(ColumnFinder)
 -(unsigned) findColumnWithTitle:(CPString) aTitle
