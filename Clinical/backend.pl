@@ -22,6 +22,9 @@ use Mojolicious::Plugin::RenderFile;
 use pdfgen;
 use DateTime;
 use Mojo::UserAgent::Proxy;
+use Date::ICal;
+use Data::ICal;
+use Data::ICal::Entry::Event;
 
 # enable receiving uploads up to 1GB
 $ENV{MOJO_MAX_MESSAGE_SIZE} = 1_073_741_824;
@@ -1009,6 +1012,30 @@ post '/CT/make_bill/:idtrial'=> [idtrial =>qr/\d+/] => sub
         $sth->execute(@bind);
     }
     $self->render( text=> 'OK' );
+};
+get '/CT/iCAL/:ldap'=> [ldap =>qr/[a-z_0-9]+/i] => sub
+{
+    my $self=shift;
+    my $ldap = $self->param('ldap');
+	my $sql="SELECT  distinct name, event_date, tooltip || '\n' || piz as description  from event_overview where ldap=?";
+	my $sth = $self->db->prepare( $sql );
+	$sth->execute(($ldap));
+  	my $rowarrref;
+	my $calendar = Data::ICal->new();
+        my $i;
+	while($rowarrref=$sth->fetchrow_arrayref() )
+	{
+        my $piz=$1 if $rowarrref->[2]=~/([0-9]{8})/;
+        my ($year,$month,$day,$hour,$min)= $rowarrref->[1]=~ /([0-9]+)-([0-9]+)-([0-9]+) ([0-9]+):([0-9]+).+/;
+		my $vevent = Data::ICal::Entry::Event->new();
+		$vevent->add_properties(
+        summary => $rowarrref->[0].' '.$rowarrref->[2],
+        uid=> 'iclinical_'. DateTime->now->epoch.'_'.$i++,
+        description => $piz? "http://augimageserver/Viewer/?$piz":$rowarrref->[2],
+        dtstart   =>  Date::ICal->new( year => $year, month => $month, day => $day, hour => ($hour), min => $min, sec => 1, offset => "-000" )->ical);
+		$calendar->add_entry($vevent);
+	}
+    $self->render( text=> $calendar->as_string );
 };
 
 ###################################################################
