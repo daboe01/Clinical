@@ -1411,7 +1411,8 @@ CREATE VIEW event_overview AS
     COALESCE(a.ldap, personnel_catalogue.ldap) AS ldap,
     a.type,
     a.piz,
-    a.tooltip
+    a.tooltip,
+    personnel_catalogue.ldap AS ldap_unfiltered
    FROM (((( SELECT a_1.idtrial,
             a_1.name,
             a_1.event_date,
@@ -1434,14 +1435,15 @@ CREATE VIEW event_overview AS
                      LEFT JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = procedures_personnel.idpersonnel)))) a_1
         UNION
          SELECT trial_process_step.idtrial,
-            ((COALESCE(process_steps_catalogue.name, ''::text) || ' '::text) || COALESCE(trial_process_step.title, ''::text)),
+            ((((COALESCE(process_steps_catalogue.name, ''::text) || ' '::text) || COALESCE(trial_process_step.title, ''::text)) || ' '::text) || all_trials_1.name),
             trial_process_step.start_date AS event_date,
             2 AS type,
             NULL::integer AS piz,
             NULL::text AS tooltip,
             NULL::text AS ldap
-           FROM (trial_process_step
+           FROM ((trial_process_step
              JOIN process_steps_catalogue ON ((trial_process_step.type = process_steps_catalogue.id)))
+             JOIN all_trials all_trials_1 ON ((all_trials_1.id = trial_process_step.idtrial)))
         UNION
          SELECT ( SELECT min(all_trials_1.id) AS min
                    FROM (all_trials all_trials_1
@@ -1460,14 +1462,15 @@ CREATE VIEW event_overview AS
           WHERE (personnel_event.type = 1)
         UNION
          SELECT trial_process_step.idtrial,
-            ((COALESCE(process_steps_catalogue.name, ''::text) || ' '::text) || COALESCE(trial_process_step.title, ''::text)),
+            (((('Ende: '::text || (COALESCE(process_steps_catalogue.name, ''::text) || ' '::text)) || COALESCE(trial_process_step.title, ''::text)) || ' '::text) || all_trials_1.name),
             trial_process_step.end_date AS event_date,
             2 AS type,
             NULL::integer AS piz,
             NULL::text AS tooltip,
             NULL::text AS ldap
-           FROM (trial_process_step
-             JOIN process_steps_catalogue ON ((trial_process_step.type = process_steps_catalogue.id)))) a
+           FROM ((trial_process_step
+             JOIN process_steps_catalogue ON ((trial_process_step.type = process_steps_catalogue.id)))
+             JOIN all_trials all_trials_1 ON ((all_trials_1.id = trial_process_step.idtrial)))) a
      LEFT JOIN all_trials ON ((a.idtrial = all_trials.id)))
      LEFT JOIN group_assignments ON ((group_assignments.idgroup = all_trials.idgroup)))
      LEFT JOIN personnel_catalogue ON ((personnel_catalogue.id = group_assignments.idpersonnel)))
@@ -2501,17 +2504,46 @@ ALTER SEQUENCE trial_visits_id_seq OWNED BY trial_visits.id;
 
 
 --
+-- Name: unbilled_visits; Type: VIEW; Schema: public; Owner: root
+--
+
+CREATE VIEW unbilled_visits AS
+ SELECT DISTINCT all_trials.idgroup,
+    all_trials.name,
+    a.idtrial,
+    a.first_visit,
+    a.last_visit,
+    a.number_visits,
+    a.amount,
+    personnel_catalogue.ldap
+   FROM (((( SELECT list_for_billing.idtrial,
+            min(list_for_billing.visit_date) AS first_visit,
+            max(list_for_billing.visit_date) AS last_visit,
+            count(*) AS number_visits,
+            sum(list_for_billing.reimbursement) AS amount
+           FROM list_for_billing
+          GROUP BY list_for_billing.idtrial) a
+     JOIN all_trials ON ((all_trials.id = a.idtrial)))
+     JOIN group_assignments ON ((group_assignments.idgroup = all_trials.idgroup)))
+     JOIN personnel_catalogue ON ((personnel_catalogue.id = group_assignments.idpersonnel)))
+  WHERE ((COALESCE(a.first_visit, a.last_visit) IS NOT NULL) AND (a.amount > (0)::numeric))
+  ORDER BY all_trials.idgroup, a.first_visit;
+
+
+ALTER TABLE public.unbilled_visits OWNER TO root;
+
+--
 -- Name: visit_dates; Type: VIEW; Schema: public; Owner: root
 --
 
 CREATE VIEW visit_dates AS
  WITH absent_intervals AS (
-         SELECT a.idvisit,
-            a.start_time,
-            a.end_time
+         SELECT a_1.idvisit,
+            a_1.start_time,
+            a_1.end_time
            FROM ( SELECT DISTINCT visit_calculator.idvisit,
-                    a_1.start_time,
-                    (a_1.end_time)::date AS end_time
+                    a_2.start_time,
+                    (a_2.end_time)::date AS end_time
                    FROM (((((((visit_calculator
                      JOIN patients ON ((visit_calculator.idpatient = patients.id)))
                      JOIN all_trials all_trials_1 ON ((patients.idtrial = all_trials_1.id)))
@@ -2524,13 +2556,18 @@ CREATE VIEW visit_dates AS
                             personnel_event.end_time,
                             personnel_event.comment
                            FROM personnel_event
-                          WHERE (personnel_event.type = 1)) a_1 ON ((personnel_catalogue_1.id = a_1.idpersonnel)))
-                  WHERE (((a_1.start_time >= visit_calculator.lower_margin) AND (a_1.start_time <= visit_calculator.upper_margin)) OR ((a_1.end_time >= visit_calculator.lower_margin) AND (a_1.end_time <= visit_calculator.upper_margin)))) a
-        ), visit_dates_all AS (
-         SELECT a.idvisit,
-            a.caldate,
-            a.startdate,
-            a.dcid,
+                          WHERE (personnel_event.type = 1)) a_2 ON ((personnel_catalogue_1.id = a_2.idpersonnel)))
+                  WHERE (((a_2.start_time >= visit_calculator.lower_margin) AND (a_2.start_time <= visit_calculator.upper_margin)) OR ((a_2.end_time >= visit_calculator.lower_margin) AND (a_2.end_time <= visit_calculator.upper_margin)))) a_1
+        )
+ SELECT a.idvisit,
+    min(a.caldate) AS caldate,
+    min(a.startdate) AS startdate,
+    a.dcid,
+    max(a.missing_service) AS missing_service
+   FROM ( SELECT a_1.idvisit,
+            a_1.caldate,
+            a_1.startdate,
+            a_1.dcid,
                 CASE
                     WHEN (b.idvisit IS NOT NULL) THEN 'alert'::text
                     ELSE ''::text
@@ -2547,19 +2584,12 @@ CREATE VIEW visit_dates AS
                              JOIN patients ON ((visit_calculator.idpatient = patients.id)))
                              JOIN all_trials ON ((all_trials.id = patients.idtrial)))
                              JOIN groups_catalogue ON ((groups_catalogue.id = all_trials.idgroup)))) visit_intervals
-                     JOIN calendar ON ((((calendar.caldate >= visit_intervals.lower_margin) AND (calendar.caldate <= visit_intervals.upper_margin)) AND (calendar.source = visit_intervals.sprechstunde))))) a
+                     JOIN calendar ON ((((calendar.caldate >= visit_intervals.lower_margin) AND (calendar.caldate <= visit_intervals.upper_margin)) AND (calendar.source = visit_intervals.sprechstunde))))) a_1
              LEFT JOIN ( SELECT DISTINCT absent_intervals.idvisit,
                     absent_intervals.start_time,
                     absent_intervals.end_time
-                   FROM absent_intervals) b ON ((((a.idvisit = b.idvisit) AND (a.caldate >= b.start_time)) AND (a.caldate <= b.end_time))))
-        )
- SELECT visit_dates_all.idvisit,
-    min(visit_dates_all.caldate) AS caldate,
-    min(visit_dates_all.startdate) AS startdate,
-    visit_dates_all.dcid,
-    max(visit_dates_all.missing_service) AS missing_service
-   FROM visit_dates_all
-  GROUP BY visit_dates_all.idvisit, visit_dates_all.dcid;
+                   FROM absent_intervals) b ON ((((a_1.idvisit = b.idvisit) AND (a_1.caldate >= b.start_time)) AND (a_1.caldate <= b.end_time))))) a
+  GROUP BY a.idvisit, a.dcid;
 
 
 ALTER TABLE public.visit_dates OWNER TO root;
@@ -11382,10 +11412,6 @@ COPY patient_visits (id, idpatient, idvisit, visit_date, state, travel_costs, da
 3785	608	9	\N	\N	\N	\N	\N	\N	\N
 3786	608	10	\N	\N	\N	\N	\N	\N	\N
 3787	609	\N	2014-11-05 00:00:00	\N	\N	\N	\N	\N	\N
-3788	610	7	2014-11-17 00:00:00	\N	\N	\N	\N	\N	\N
-3789	610	5	\N	\N	\N	\N	\N	\N	\N
-3790	610	6	\N	\N	\N	\N	\N	\N	\N
-3791	610	9	\N	\N	\N	\N	\N	\N	\N
 3792	610	10	\N	\N	\N	\N	\N	\N	\N
 3793	611	7	2014-11-17 00:00:00	\N	\N	\N	\N	\N	\N
 3794	611	5	\N	\N	\N	\N	\N	\N	\N
@@ -11407,7 +11433,11 @@ COPY patient_visits (id, idpatient, idvisit, visit_date, state, travel_costs, da
 3811	614	9	\N	\N	\N	\N	\N	\N	\N
 3812	614	10	\N	\N	\N	\N	\N	\N	\N
 3799	612	5	2014-11-18 00:00:00	\N	\N	\N	\N	\N	\N
-3783	608	5	2014-11-28 00:00:00	\N	\N	\N	\N	\N	0
+3790	610	6	2014-12-11 00:00:00	\N	\N	\N	\N	\N	\N
+3788	610	7	2014-11-03 00:00:00	\N	\N	\N	\N	\N	\N
+3783	608	5	2014-11-11 00:00:00	\N	\N	\N	\N	\N	0
+3789	610	5	2014-11-12 00:00:00	\N	\N	\N	\N	\N	\N
+3791	610	9	2014-12-27 00:00:00	\N	\N	\N	\N	\N	\N
 \.
 
 
