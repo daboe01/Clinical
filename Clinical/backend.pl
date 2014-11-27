@@ -392,7 +392,7 @@ put '/DBI/:table/:pk/:key'=> [key=>qr/\d+/] => sub
         if($jsonR->{piz})
         {
             my $ua = Mojo::UserAgent->new;
-            my $data=$ua->get('http://auginfo/piz/'.$jsonR->{piz})->res->body;
+            my $data='{}'; # $ua->get('http://auginfo/piz/'.$jsonR->{piz})->res->body;
             my $a=JSON::XS->new->utf8->decode( $data );
             my $update_d={name=>$a->{name}, givenname=>$a->{vorname}, birthdate=>$a->{geburtsdatum}, telephone=>$a->{tel}, town=>$a->{ort}, zip=>$a->{plz}, street=>$a->{anschrift}, female=>$a->{weiblich}||'0' };
             my($stmt, @bind) = $sql->update($table, $update_d, {$pk=>$key});
@@ -743,7 +743,7 @@ any '/CT/pdfstamper/:idtrial/:formname'=> [idtrial =>qr/\d+/, formname =>qr/[a-z
         my $sql = SQL::Abstract::More->new;
         my $ua = Mojo::UserAgent->new;
         my $json_decoder= Mojo::JSON->new;
-        my $data=$ua->get('http://auginfo/piz/'.$piz.'?history=4')->res->body;
+        my $data='[]';    # $ua->get('http://auginfo/piz/'.$piz.'?history=4')->res->body;
         my $jsonR   = $json_decoder->decode( $data );
         for my $curr_address (@$jsonR) {
             my @name_arr=split/\^/o,$curr_address->{name};
@@ -758,7 +758,7 @@ any '/CT/pdfstamper/:idtrial/:formname'=> [idtrial =>qr/\d+/, formname =>qr/[a-z
             $keyvaldict->{$curr_address->{type}.'_street'}="$addr_arr[0]";
             $keyvaldict->{$curr_address->{type}.'_ort'}="$addr_arr[4] $addr_arr[2]";
         }
-        $data=$ua->get('http://auginfo/piz/'.$piz)->res->body;
+        $data='{}';   # $ua->get('http://auginfo/piz/'.$piz)->res->body;
         $jsonR   = $json_decoder->decode( $data );
         for my $ckey (keys %$jsonR) {
             $keyvaldict->{"PAT_".$ckey}=$jsonR->{$ckey};
