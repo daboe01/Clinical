@@ -460,7 +460,7 @@
 	[myreq setHTTPMethod:"POST"];
 	[myreq setHTTPBody: text];
 	 bookingConnection=[CPURLConnection connectionWithRequest: myreq delegate: self];
-	 bookingConnection._bookingDate=[[visitDatesController selectedObject] valueForKey:"caldate"];
+	 bookingConnection._bookingDate=[[visitDatesController selectedObject] valueForKey:"startdate"];
      bookingConnection._bookingObject= [[CPApp delegate].patientVisitsController selectedObject];
 	[bookingProgress startAnimation: self];
 	[bookingOk setEnabled:NO];
@@ -600,6 +600,9 @@
 {	document.location='/CT/todolist?session='+ window.G_SESSION;
 }
 
+-(void)createUnbilledList: sender
+{	document.location='/CT/unbilledlist?session='+ window.G_SESSION;
+}
 -(void) runDCV: sender
 {
 	window.open("http://augimageserver/Viewer/?"+ [[[CPApp delegate].patientsController selectedObject] valueForKeyPath:"piz"], 'docscal_window');

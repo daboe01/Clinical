@@ -544,6 +544,20 @@ get '/CT/todolist_trial/:idtrial' => [idtrial=>qr/[0-9]+/] => sub
     my $outR=$sth->fetchall_arrayref();
     $self->render_file('data' => $self->get_XLS_for_arr($outR, $sth->{NAME}), 'format'   => 'xls', 'filename' => 'todolist_trial.xls');
 };
+get '/CT/unbilledlist' =>  sub
+{   my $self=shift;
+    my $idtrial=$self->param('idtrial');
+    my $sessionid=$self->param('session');
+    my  %session;
+    tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
+    my $dbh=$self->db;
+    my $sql=qq{SELECT name, first_visit, last_visit, number_visits, amount from unbilled_visits where ldap=?};
+    my $sth = $dbh->prepare( $sql );
+    $sth->execute(($session{username}));
+    my $outR=$sth->fetchall_arrayref();
+    $self->render_file('data' => $self->get_XLS_for_arr($outR, $sth->{NAME}), 'format'   => 'xls', 'filename' => 'unbilled_visits.xls');
+};
+
 get '/CT/duelist' => sub
 {   my $self=shift;
     my $idtrial=$self->param('idtrial');
@@ -675,10 +689,11 @@ get '/CT/CAL/:date'=> [date =>qr/[-\d]+/] => sub
 {   my $self=shift;
     my $date        = $self->param('date');
     my $sessionid=$self->param('session');
+    my $personal=$self->param('personal');
     my  %session;
     tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
     my $dbh=$self->db;
-    my $sql="SELECT * from event_overview where event_date::date=? and ldap=?";
+    my $sql="SELECT * from event_overview where event_date::date=? and ".($personal?"ldap":"ldap_unfiltered")."=?";
     my $sth = $dbh->prepare( $sql );
     $sth->execute(($date, $session{username}));
     my @a;
@@ -1016,20 +1031,21 @@ post '/CT/make_bill/:idtrial'=> [idtrial =>qr/\d+/] => sub
 get '/CT/iCAL/:ldap'=> [ldap =>qr/[a-z_0-9]+/i] => sub
 {
     my $self=shift;
+    my $personal=$self->param('personal');
     my $ldap = $self->param('ldap');
-	my $sql="SELECT  distinct name, event_date, tooltip || '\n' || piz as description  from event_overview where ldap=?";
+	my $sql="SELECT  distinct name, event_date, tooltip || ' (' || piz ||')' as description  from event_overview where ".($personal?"ldap":"ldap_unfiltered")."=?";
 	my $sth = $self->db->prepare( $sql );
 	$sth->execute(($ldap));
   	my $rowarrref;
 	my $calendar = Data::ICal->new();
-        my $i;
+    my $i;
 	while($rowarrref=$sth->fetchrow_arrayref() )
 	{
         my $piz=$1 if $rowarrref->[2]=~/([0-9]{8})/;
         my ($year,$month,$day,$hour,$min)= $rowarrref->[1]=~ /([0-9]+)-([0-9]+)-([0-9]+) ([0-9]+):([0-9]+).+/;
 		my $vevent = Data::ICal::Entry::Event->new();
 		$vevent->add_properties(
-        summary => $rowarrref->[0].' '.$rowarrref->[2],
+        summary => ucfirst $rowarrref->[0].' '.$rowarrref->[2],
         uid=> 'iclinical_'. DateTime->now->epoch.'_'.$i++,
         description => $piz? "http://augimageserver/Viewer/?$piz":$rowarrref->[2],
         dtstart   =>  Date::ICal->new( year => $year, month => $month, day => $day, hour => ($hour), min => $min, sec => 1, offset => "-000" )->ical);

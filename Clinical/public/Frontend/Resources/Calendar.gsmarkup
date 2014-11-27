@@ -22,6 +22,7 @@
 		</popUpButton>
 		<textField halign="min" width="50" valueBinding="#CPOwner.year"/><stepper min="2000" max="2050" halign="left" width="5" valueBinding="#CPOwner.year"/>
 		<button title="Heute" target="#CPOwner" action="selectToday:"/>
+                <switchButton id="filter_switch" target="#CPOwner" action="changeFilterForMe:" title="Filtered for me" halign="min" width="120"/> 
 		<hspace/>
 	</hbox>
 	<collectionView id="calendar_header_view" itemWidth="150" itemHeight="25" maxColumns="7" itemsClassName="CalendarHeaderItem" halign="min" valign="min" width="1100" height="21"/>
@@ -42,6 +43,7 @@
 	<outlet source="#CPOwner" target="calendarwindow" label="calendarWindow"/>
 	<outlet source="#CPOwner" target="calendar_view" label="calendarView"/>
 	<outlet source="#CPOwner" target="calendar_header_view" label="calendarHeader"/>
+	<outlet source="#CPOwner" target="filter_switch" label="filterSwitch"/>
 </connectors>
 
 </gsmarkup>

@@ -1,6 +1,7 @@
 @import <AppKit/CPCollectionViewItem.j>
 @import <AppKit/CPTokenField.j>
 
+var G_filtered;
 
 @implementation CalendarItem:_CPTokenFieldToken
 
@@ -87,6 +88,8 @@ var _itemcache=[];
 	[myview setContentView: myscroller];
 	if(aday)
 	{	var myurl=HostURL+"/CT/CAL/"+ aday+'?session='+ window.G_SESSION;
+        if(G_filtered)
+            myurl+="&personal=1";
 		var myreq=[CPURLRequest requestWithURL: myurl];
 		[CPURLConnection connectionWithRequest: myreq delegate: self];
 	}
@@ -119,6 +122,7 @@ var _itemcache=[];
 {	id	calendarWindow;
 	id	calendarView;
 	id	calendarHeader;
+    id  filterSwitch;
 	id	month @accessors;
 	id	year @accessors;
 }
@@ -132,7 +136,9 @@ var _itemcache=[];
 }
 
 - (void) loadCalendarForMonth:(unsigned) month andYear:(unsigned) year
-{	var myreq=[CPURLRequest requestWithURL: HostURL +"/CT/CAL/"+ year+"/"+month ];
+{
+    G_filtered=[filterSwitch state];
+	var myreq=[CPURLRequest requestWithURL: HostURL +"/CT/CAL/"+ year+"/"+month ];
 	var data=[[CPURLConnection sendSynchronousRequest: myreq returningResponse: nil]  rawString];
 	var arr = JSON.parse( data );
 	if(!arr) arr=[];
@@ -144,6 +150,13 @@ var _itemcache=[];
 	}
 	[calendarView setContent: content];
 }
+
+-(void)changeFilterForMe:sender
+{
+    _itemcache=[];
+    [self loadCalendarForMonth: month andYear: year]
+}
+
 - (void) selectDate: myDate
 {	var arr=[calendarView content];
 	var i,l=[arr count];

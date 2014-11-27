@@ -4,7 +4,7 @@
 
 <objects>
 
-<window id="mywindow" bridge="YES">
+<window id="mywindow" x="10" y="50" width="640" height="480" visible="YES" title="My personal space">
 
  <tabView type="topBezel">
   <tabViewItem title="Dokumente">

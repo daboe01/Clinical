@@ -187,7 +187,8 @@ BaseURL=HostURL+"/";
     var o=[personnelController._entity._store  fetchObjectsWithKey:"ldap" equallingValue:window.G_USERNAME inEntity:personnelController._entity options:@{"FSSynchronous": 1}];
 	[personnelController setSelectedObjects:o];
 
-    [[[CPApp mainWindow] delegate] _performPostLoadInit];
+    if ([[[CPApp mainWindow] delegate] respondsToSelector:@selector(_performPostLoadInit)])
+        [[[CPApp mainWindow] delegate] _performPostLoadInit];
 }
 
 -(void) delete:sender
@@ -253,9 +254,8 @@ BaseURL=HostURL+"/";
 }
 
 
-// FIXME: this stuff leaks...
 -(void) runPersonnel: sender
-{   [[CPApp mainWindow] close];
+{
     [CPBundle loadRessourceNamed: "Personnel.gsmarkup" owner:self];
 
 	[pdokusController2 addObserver:self forKeyPath:"selection" options: nil context: nil];
@@ -443,16 +443,12 @@ BaseURL=HostURL+"/";
 
 // MISC stuff
 -(void) runAccounts: sender
-{   [[CPApp mainWindow] close];
-    [CPBundle loadRessourceNamed: "Accounts.gsmarkup" owner:self];
+{ 
+    window.open("/Frontend/index_deep.html?t=Accounts.gsmarkup&session="+window.G_SESSION, 'accounts_window');
 }
 -(void) runAdmin: sender
-{   [[CPApp mainWindow] close];
-    [CPBundle loadRessourceNamed: "Admin.gsmarkup" owner:self];
-}
--(void) runOperations: sender
-{   [[CPApp mainWindow] close];
-    [CPBundle loadRessourceNamed: "Operations.gsmarkup" owner:self];
+{
+    window.open("/Frontend/index_deep.html?t=Admin.gsmarkup&session="+window.G_SESSION, 'admin_window');
 }
 
 @end

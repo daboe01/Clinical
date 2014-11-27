@@ -288,7 +288,6 @@
 	</entity>
 	<entity id="visit_dates" store="#CPOwner.store">
 		<column name="startdate" primaryKey="YES"/>
-		<column name="source"/>
 		<column name="caldate"/>
 		<column name="idvisit"/>
 		<column name="dcid"/>
