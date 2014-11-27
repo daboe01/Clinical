@@ -1612,9 +1612,9 @@ CREATE VIEW list_for_billing AS
     full_billing_list.id,
     full_billing_list.idpatient
    FROM full_billing_list
-  WHERE (NOT ((full_billing_list.id)::text IN ( SELECT unnest(regexp_split_to_array(( SELECT textcat_all(COALESCE(billings.visit_ids, ''::text)) AS ids
+  WHERE ((NOT ((full_billing_list.id)::text IN ( SELECT unnest(regexp_split_to_array(( SELECT textcat_all(COALESCE(billings.visit_ids, ''::text)) AS ids
                    FROM billings
-                  WHERE (billings.idtrial = full_billing_list.idtrial)), '[, ]+'::text)) AS unnest)));
+                  WHERE (billings.idtrial = full_billing_list.idtrial)), '[, ]+'::text)) AS unnest))) AND (full_billing_list.visit_date < now()));
 
 
 ALTER TABLE public.list_for_billing OWNER TO root;
@@ -2522,6 +2522,7 @@ CREATE VIEW unbilled_visits AS
             count(*) AS number_visits,
             sum(list_for_billing.reimbursement) AS amount
            FROM list_for_billing
+          WHERE (list_for_billing.visit_date < now())
           GROUP BY list_for_billing.idtrial) a
      JOIN all_trials ON ((all_trials.id = a.idtrial)))
      JOIN group_assignments ON ((group_assignments.idgroup = all_trials.idgroup)))
