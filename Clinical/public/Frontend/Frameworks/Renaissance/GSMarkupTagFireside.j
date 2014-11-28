@@ -103,17 +103,6 @@
 {	id _entity @accessors(property=entity);
 	id _defaultDict;
 }
--(void) undo:sender
-{
-debugger
-    [[[self window] undoManager] undo];
-}
--(void) redo:sender
-{
-debugger
-    [[[self window] undoManager] redo];
-}
-
 -(CPString) pk
 {	return [_entity pk];
 
