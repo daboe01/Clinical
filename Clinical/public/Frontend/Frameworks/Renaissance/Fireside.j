@@ -30,6 +30,8 @@
 }
 @end
 
+var _sharedUndoManager;
+
 @implementation FSEntity : CPObject 
 {	CPString	_name @accessors(property=name);
 	CPString	_pk @accessors(property=pk);
@@ -41,6 +43,15 @@
 	CPMutableDictionary _formatters;
     id          _undoManager @accessors(property=undoManager);
 }
++(id) sharedUndoManager
+{
+    if(!_sharedUndoManager)
+    {
+        _sharedUndoManager=[CPUndoManager new];
+    }
+    return _sharedUndoManager;
+}
+
 -(CPArray) relationshipsWithTargetProperty: aKey
 {	var ret=[];
 	var rels=[_relations allObjects];
@@ -77,6 +88,7 @@
 	{	_store = someStore;
 		_name = aName;
     }
+    _undoManager=[FSEntity sharedUndoManager];
     return self;
 }
 -(id) init
