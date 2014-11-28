@@ -11,7 +11,7 @@
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-
+   
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -21,7 +21,7 @@
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+*/ 
 
 @import "GSMarkupTagControl.j"
 @import "GSMarkupTagPopUpButtonItem.j"
@@ -41,11 +41,11 @@
 - (id) initPlatformObject: (id)platformObject
 {
   platformObject = [super initPlatformObject: platformObject];
-
+  
   /* title */
   {
     var title = [self localizedStringValueForAttribute: @"title"];
-
+  
     if (title != nil)
       {
 	[platformObject setTitle: title];
@@ -55,12 +55,12 @@
   /* Create content.  */
   {
     var i, count = [_content count];
-
+    
     for (i = 0; i < count; i++)
       {
 	var item = [_content objectAtIndex: i];
 	var title = [item localizedStringValueForAttribute: @"title"];
-
+	
 	if (title == nil)
 	  {
 	    title = @"";
@@ -92,7 +92,7 @@
   /* pullsDown */
   {
     var pullsDown = [self boolValueForAttribute: @"pullsDown"];
-
+    
     if (pullsDown == 1)
       {
 	[platformObject setPullsDown: YES];
@@ -167,7 +167,7 @@
 			if(m) rhkey =m[1];
 			var filterValue;
 
-			if(rhkey) filterValue= ![owner isKindOfClass:[CPString class]]? [owner valueForKeyPath: rhkey]: owner;
+			if(rhkey) filterValue= [owner isKindOfClass:[CPString class]]? owner: [owner valueForKeyPath: rhkey];
 			var mypred = [CPPredicate predicateWithFormat: predf ];
 			if(filterValue) mypred = [mypred predicateWithSubstitutionVariables:@{rhkey: filterValue} ];
 			sourceArray =[sourceArray filteredArrayUsingPredicate: mypred];
@@ -211,3 +211,4 @@
 }
 
 @end
+

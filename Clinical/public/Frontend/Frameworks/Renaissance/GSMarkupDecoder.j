@@ -317,6 +317,11 @@
 				{	if(itemsFace && valItemsFace)
 					{	[oPO bind:"itemArray" toObject: arrCtrl withKeyPath: "arrangedObjects."+itemsFace   options: @{"valueFace": valItemsFace}];
 					}
+				} else if([oPO isKindOfClass: [CPSegmentedControl class]])
+				{
+                	if(itemsFace && valItemsFace)
+					{	[oPO bind:"segments" toObject: arrCtrl withKeyPath: "arrangedObjects."+itemsFace   options: @{"valueFace": valItemsFace}];
+					}
 				} else if([oPO isKindOfClass: [CPComboBox class] ])
 				{	[oPO bind: CPContentValuesBinding  toObject: arrCtrl withKeyPath: "arrangedObjects."+itemsFace options:nil];
 				}
@@ -398,7 +403,7 @@
 			else [oPO setFormatter: [CPClassFromString(peek)
 					formatterWithDisplayFormat: displayFormat
 					editingFormat: editingFormat
-					 emptyIsValid: emptyIsValid]];
+					emptyIsValid: emptyIsValid]];
 
 		}
 		[self _postprocessForBindings:[o content]];

@@ -1,14 +1,5 @@
 @import <CPTextView/CPTextView.j>
 
-@implementation _CPTextViewValueBinder : CPBinder
-
-- (void)setValue:(id)aValue forBinding:(CPString)aBinding
-{
-    [_source setObjectValue:aValue];
-}
-
-@end
-
 
 @implementation KVOCPText:CPTextView
 - (CPString)objectValue
@@ -24,20 +15,16 @@
     [self _continuouslyReverseSetBinding];
 	[super didChangeText];
 }
+- (void) didChangeText
+{
+    [self _continuouslyReverseSetBinding];
+	[super didChangeText];
+}
 - (BOOL) resignFirstResponder
 {
     [self _reverseSetBinding];
 	return [super resignFirstResponder];
 }
-
-+ (Class)_binderClassForBinding:(CPString)aBinding
-{
-    if (aBinding === CPValueBinding)
-        return [_CPTextViewValueBinder class];
-
-    return [super _binderClassForBinding:aBinding];
-}
-
 @end
 
 @implementation GSMarkupTagTextView: GSMarkupTagView

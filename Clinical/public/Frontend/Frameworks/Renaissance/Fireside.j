@@ -35,9 +35,11 @@
 	CPString	_pk @accessors(property=pk);
 	CPSet		_columns @accessors(property=columns);
 	CPSet		_relations;
+	CPSet		_numerics;
 	FSStore		_store @accessors(property=store);
 	CPMutableArray _pkcache;
 	CPMutableDictionary _formatters;
+    id          _undoManager @accessors(property=undoManager);
 }
 -(CPArray) relationshipsWithTargetProperty: aKey
 {	var ret=[];
@@ -152,6 +154,13 @@
 -(void) addRelationship:(FSRelationship) someRel
 {	if(!_relations) _relations=[CPSet setWithObject:someRel];
 	else [_relations addObject: someRel];
+}
+-(void) addNumericColumn:(CPString) aCol
+{	if(!_numerics) _numerics =[CPSet setWithObject:aCol];
+	else [_numerics addObject: aCol];
+}
+-(BOOL) isNumericColumn:(CPString) aCol
+{	return [_numerics containsObject: aCol];
 }
 
 -(CPArray) allObjects
@@ -326,14 +335,15 @@ var _allRelationships;
 		}
 	
 		var  o= [([_changes containsKey: aKey]? _changes:_data) objectForKey: aKey];
-		if  (o)
+		var peek=[self formatterForColumnName:aKey];
+		if(peek || (peek=[_entity formatterForColumnName:aKey]))
+		{   return [peek objectValueForString: o error: nil];	//<!> fixme handle errors somehow
+		} else if([_entity  isNumericColumn:aKey]) return [CPNumber numberWithInt:parseInt(o)];
+        else if (o)
 		{	if(![o isKindOfClass:[CPString class]])	// cast numbers to strings in order to make predicate filtering work
 				 o=[o stringValue];
 		}
-		var peek=[self formatterForColumnName:aKey];
-		if(peek || (peek=[_entity formatterForColumnName:aKey]))
-		{	return [peek stringForObjectValue: o];
-		} else return o;
+		return o;
 	} else if(type == 1)	// a relationship is accessed
 	{	var rel=[_entity relationOfName: aKey];
 		var bindingColumn=[rel bindingColumn];
@@ -359,7 +369,6 @@ var _allRelationships;
 		if (propSEL && [self respondsToSelector: propSEL ]) return [self performSelector:propSEL];
 		else [CPException raise:CPInvalidArgumentException reason:@"Key "+aKey+" is not a column in entity "+[_entity name]];
 	}
-	
 }
 - (id)valueForKey:(CPString)aKey
 {	return [self valueForKey: aKey synchronous: NO];
@@ -369,12 +378,17 @@ var _allRelationships;
 	var oldval=[self valueForKey: aKey];
 
 	if(oldval === someval) return;	// we are not interested in side effects, so ignore identity-updates
+
+    if(_entity._undoManager)
+        [[_entity._undoManager prepareWithInvocationTarget:self]
+            setValue:oldval forKey:aKey];
+
 	if(type == 0)
 	{	if(!_changes) _changes = [CPMutableDictionary dictionary];
 		[self willChangeValueForKey:aKey];
 		var peek=[self formatterForColumnName: aKey];
 		if(peek || (peek=[_entity formatterForColumnName: aKey]))
-		{	someval= [peek objectValueForString: someval error: nil];	//<!> fixme handle errors somehow
+		{   someval= [peek stringForObjectValue:someval];
 		}
 		[_changes setObject: someval forKey: aKey];
 		[self didChangeValueForKey:aKey];
@@ -521,8 +535,7 @@ var _allRelationships;
     }
 	if(err && err['err'])
     {   alert(err['err']);
-        obj._changes=nil;
-        [obj reload];
+        obj._changes=nil;  // discard changes that weren't accepted by the backend
     }
 
 	[obj reload];
