@@ -5,20 +5,18 @@ Clinical trials administration system
 
 Features include:
  * Completely browser based
- * Trials database
+ * Structured trials database
+ * Full text search in realtime
  * Document repository
  * Visit management
  * Cost calculation
- * Event tracker
- * Personal ressources
+ * Billing / Accounting / Reimbusement
+ * Human ressources / Holiday planning
  * Team calendar
- * Full text search
  * Password manager
- * Document (form) generator
- * Billing/reimbursements
- * Accounting
- * Reporting framework
+ * Document generator
  * Archive management
+ * Reporting framework
 
 INSTALL
 =====
