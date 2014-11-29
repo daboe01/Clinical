@@ -196,6 +196,7 @@ var _sharedUndoManager;
 {
     var undoManager=[[self class] sharedUndoManager];
     var sel,l;
+
     if (undoManager && (sel=[self selectedObjects]) && (l = [sel count]) )
     {   var arr=[];
         for(var i = 0; i < l; i++)
