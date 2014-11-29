@@ -121,22 +121,29 @@ var _sharedUndoManager;
 -(FSObject) insertObject:  someObj
 {	if([someObj isKindOfClass: [CPDictionary class]])
 	{	someObj=[self createObjectWithDictionary: someObj];
-        if(_undoManager)
-            [[_undoManager prepareWithInvocationTarget:self]
-                deleteObject:someObj];
-
 	} else if(![someObj isKindOfClass: [FSObject class]])
 	{	//<!> fixme warn or raise...
 	}
 	
-	[[self store] insertObject: someObj];
+    if(_undoManager)
+        [[_undoManager prepareWithInvocationTarget:self]
+                deleteObject:someObj];
+
+	[_store insertObject: someObj];
 	return someObj;
 }
 -(void) deleteObject:  someObj
-{	[[self store] deleteObject: someObj];
+{
     if(_undoManager)
+    {
+	    var o=[someObj._data copy];
+	    if(!o) o=[CPMutableDictionary new];
+	    if(someObj._changes) [o addEntriesFromDictionary: someObj._changes];
         [[_undoManager prepareWithInvocationTarget:self]
-                insertObject:someObj];
+                insertObject:o];
+    }
+
+	[[self store] deleteObject: someObj];
 }
 
 -(void) setFormatter: (CPFormatter) aFormatter forColumnName:(CPString) aName
@@ -564,7 +571,7 @@ var _allRelationships;
 {	var entity=[someObj entity];
 	var request= [CPURLRequest requestWithURL: [self baseURL]+"/"+[entity name]+"/"+[entity pk] ];	// pk is necessary to get id after inserting
     [request setHTTPMethod:"POST"];
-	[request setHTTPBody: [someObj._changes toJSON] ];
+	[request setHTTPBody:[someObj._changes toJSON] ];
 	var data=[CPURLConnection sendSynchronousRequest: request returningResponse: nil];
 	var j = JSON.parse( [data rawString]);	// this is necessary for retrieving the PK
 	var pk=j["pk"];

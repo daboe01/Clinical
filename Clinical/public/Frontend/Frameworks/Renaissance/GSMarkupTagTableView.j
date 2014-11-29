@@ -60,7 +60,9 @@
    var binder=[CPBinder getBinding:"content" forObject:self];
    var ac=[binder._info objectForKey:CPObservedObjectKey]
    if (ac._entity && ac._entity._undoManager)
-       [ac._entity._undoManager undo];
+   {   [ac._entity._undoManager undo];
+       [ac rearrangeObjects]
+   }
 }
 
 -(void) redo:sender
@@ -68,7 +70,9 @@
    var binder=[CPBinder getBinding:"content" forObject:self];
    var ac=[binder._info objectForKey:CPObservedObjectKey]
    if (ac._entity && ac._entity._undoManager)
-       [ac._entity._undoManager redo];
+   {   [ac._entity._undoManager redo];
+       [ac rearrangeObjects]
+   }
 }
 @end
 
