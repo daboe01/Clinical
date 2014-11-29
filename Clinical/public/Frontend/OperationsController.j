@@ -145,7 +145,7 @@
 - (void)deleteTrialWarningDidEnd:(CPAlert)anAlert code:(id)code context:(id)context
 {   var trialsController=[CPApp delegate].trialsController;
     if(code)
-	{	[trialsController remove:self];
+	{	[trialsController removeObjectsAtArrangedObjectIndexes:[trialsController selectionIndexes] ];
 	}
 }
 
@@ -720,7 +720,7 @@
 - (void)deleteBillWarningDidEnd:(CPAlert)anAlert code:(id)code context:(id)context
 {   var myController= [CPApp delegate].billingsController
     if(code)
-	{	[myController remove:self];
+	{	[myController removeObjectsAtArrangedObjectIndexes:[myController selectionIndexes] ];
 	}
 }
 
