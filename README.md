@@ -7,6 +7,7 @@ Features include:
  * Completely browser based
  * Structured trials database
  * Full text search in realtime
+ * Full undo in the GUI
  * Document repository
  * Visit management
  * Cost calculation
