@@ -428,6 +428,7 @@ post '/DBI/:table/:pk'=> sub
     my $json_decoder= Mojo::JSON->new;
     my $jsonR   = $json_decoder->decode( $self->req->body );
 
+warn $self->req->body;
     if($table eq 'personnel_catalogue')
     {   my  %session;
         my $sessionid=$self->param('session');
@@ -440,7 +441,8 @@ post '/DBI/:table/:pk'=> sub
     my $sth = $self->db->prepare($stmt);
     $sth->execute(@bind);
     app->log->debug("err: ".$DBI::errstr ) if $DBI::errstr;
-    my $valpk= $self->db->last_insert_id(undef, undef, $table, $pk);
+    my $valpk;
+    $valpk = (exists $jsonR->{$pk})? $jsonR->{$pk}:$self->db->last_insert_id(undef, undef, $table, $pk);
     $self->render( json=>{err=> $DBI::errstr, pk => $valpk} );
 };
 
