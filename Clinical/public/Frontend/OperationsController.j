@@ -145,7 +145,7 @@
 - (void)deleteTrialWarningDidEnd:(CPAlert)anAlert code:(id)code context:(id)context
 {   var trialsController=[CPApp delegate].trialsController;
     if(code)
-	{	[trialsController removeObjectsAtArrangedObjectIndexes:[trialsController selectionIndexes] ];
+	{	[trialsController remove:self];
 	}
 }
 
@@ -328,7 +328,7 @@
 - (void)deleteDocWarningDidEnd:(CPAlert)anAlert code:(id)code context:(id)context
 {	var dokusController=[CPApp delegate].dokusController;
     if(code)
-	{	[dokusController removeObjectsAtArrangedObjectIndexes:[dokusController selectionIndexes] ];
+	{	[dokusController remove:self];
 	}
 }
 -(void) deleteDoku: sender
@@ -720,7 +720,7 @@
 - (void)deleteBillWarningDidEnd:(CPAlert)anAlert code:(id)code context:(id)context
 {   var myController= [CPApp delegate].billingsController
     if(code)
-	{	[myController removeObjectsAtArrangedObjectIndexes:[myController selectionIndexes] ];
+	{	[myController remove:self];
 	}
 }
 
@@ -831,7 +831,7 @@
            }
        }
        var frame = [tableView frameOfDataViewAtColumn:[[tableView tableColumns] indexOfObject:column] row:row];
-       [datePickerPopover showRelativeToRect:frame ofView:tableView preferredEdge: nil];
+       [datePickerPopover showRelativeToRect:frame ofView:tableView preferredEdge:nil];
        [[tableView window] makeKeyAndOrderFront:self];
        return YES;
    }
@@ -840,8 +840,8 @@
 
 -(void) _commitDateValue:(id)sender
 {
+    [[sender._table window] makeKeyAndOrderFront:self];  // this has to come first (otherwise FF breaks)
     [datePickerPopover close];
-    [[sender._table window] makeKeyAndOrderFront:self]
     [sender._table _commitDataViewObjectValue:sender];
     [sender._table setNeedsDisplay:YES];
 }

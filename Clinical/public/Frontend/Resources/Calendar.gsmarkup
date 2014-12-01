@@ -3,7 +3,7 @@
 <gsmarkup>
 
 <objects>
-  <window title="Calendar"  x="10" y="50" id="calendarwindow" minWidth="1106" width="1106" height="650">
+  <window title="Calendar"  x="10" y="50" id="calendarwindow" minWidth="1106" width="1106" height="750">
 	<vbox>
 	<hbox>
 		<popUpButton width="100" valueBinding="#CPOwner.month">

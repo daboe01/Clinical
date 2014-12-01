@@ -137,6 +137,7 @@
     {
       var textRect = [[platformObject contentView] frame];
       var tv = [platformObject documentView];
+      
       [tv setFrame: textRect];
       [tv setHorizontallyResizable: NO];
       [tv setVerticallyResizable: YES];

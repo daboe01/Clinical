@@ -35,10 +35,12 @@
 	CPString	_pk @accessors(property=pk);
 	CPSet		_columns @accessors(property=columns);
 	CPSet		_relations;
+	CPSet		_numerics;
 	FSStore		_store @accessors(property=store);
 	CPMutableArray _pkcache;
 	CPMutableDictionary _formatters;
 }
+
 -(CPArray) relationshipsWithTargetProperty: aKey
 {	var ret=[];
 	var rels=[_relations allObjects];
@@ -104,18 +106,18 @@
 	return r;
 }
 
--(FSObject) insertObject:  someObj
+-(FSObject) insertObject:(id)someObj
 {	if([someObj isKindOfClass: [CPDictionary class]])
 	{	someObj=[self createObjectWithDictionary: someObj];
 	} else if(![someObj isKindOfClass: [FSObject class]])
 	{	//<!> fixme warn or raise...
 	}
-	
-	[[self store] insertObject: someObj];
+	[_store insertObject: someObj];
 	return someObj;
 }
--(void) deleteObject:  someObj
-{	[[self store] deleteObject: someObj];
+-(void) deleteObject:(id)someObj
+{
+	[_store deleteObject: someObj];
 }
 
 -(void) setFormatter: (CPFormatter) aFormatter forColumnName:(CPString) aName
@@ -152,6 +154,13 @@
 -(void) addRelationship:(FSRelationship) someRel
 {	if(!_relations) _relations=[CPSet setWithObject:someRel];
 	else [_relations addObject: someRel];
+}
+-(void) addNumericColumn:(CPString) aCol
+{	if(!_numerics) _numerics =[CPSet setWithObject:aCol];
+	else [_numerics addObject: aCol];
+}
+-(BOOL) isNumericColumn:(CPString) aCol
+{	return [_numerics containsObject: aCol];
 }
 
 -(CPArray) allObjects
@@ -304,11 +313,15 @@ var _allRelationships;
 	return [_formatters objectForKey: aName];
 }
 
-- (id)description
+- (id)dictionary
 {	var o=[_data copy];
 	if(!o) o=[CPMutableDictionary new];
 	if(_changes) [o addEntriesFromDictionary: _changes];
-	return [o description];
+	return o;
+}
+- (id)description
+{
+	return [[self dictionary] description];
 }
 
 -(int) typeOfKey:(CPString)aKey
@@ -326,14 +339,15 @@ var _allRelationships;
 		}
 	
 		var  o= [([_changes containsKey: aKey]? _changes:_data) objectForKey: aKey];
-		if  (o)
+		var peek=[self formatterForColumnName:aKey];
+		if(peek || (peek=[_entity formatterForColumnName:aKey]))
+		{   return [peek objectValueForString: o error: nil];	//<!> fixme handle errors somehow
+		} else if([_entity  isNumericColumn:aKey]) return [CPNumber numberWithInt:parseInt(o, 10)];
+        else if (o)
 		{	if(![o isKindOfClass:[CPString class]])	// cast numbers to strings in order to make predicate filtering work
 				 o=[o stringValue];
 		}
-		var peek=[self formatterForColumnName:aKey];
-		if(peek || (peek=[_entity formatterForColumnName:aKey]))
-		{	return [peek stringForObjectValue: o];
-		} else return o;
+		return o;
 	} else if(type == 1)	// a relationship is accessed
 	{	var rel=[_entity relationOfName: aKey];
 		var bindingColumn=[rel bindingColumn];
@@ -359,7 +373,6 @@ var _allRelationships;
 		if (propSEL && [self respondsToSelector: propSEL ]) return [self performSelector:propSEL];
 		else [CPException raise:CPInvalidArgumentException reason:@"Key "+aKey+" is not a column in entity "+[_entity name]];
 	}
-	
 }
 - (id)valueForKey:(CPString)aKey
 {	return [self valueForKey: aKey synchronous: NO];
@@ -369,12 +382,13 @@ var _allRelationships;
 	var oldval=[self valueForKey: aKey];
 
 	if(oldval === someval) return;	// we are not interested in side effects, so ignore identity-updates
+
 	if(type == 0)
 	{	if(!_changes) _changes = [CPMutableDictionary dictionary];
 		[self willChangeValueForKey:aKey];
 		var peek=[self formatterForColumnName: aKey];
 		if(peek || (peek=[_entity formatterForColumnName: aKey]))
-		{	someval= [peek objectValueForString: someval error: nil];	//<!> fixme handle errors somehow
+		{   someval= [peek stringForObjectValue:someval];
 		}
 		[_changes setObject: someval forKey: aKey];
 		[self didChangeValueForKey:aKey];
@@ -494,11 +508,11 @@ var _allRelationships;
 		if(peek=[someEntity _registeredObjectForPK: someval]) return [CPArray arrayWithObject: peek];
 	}
 	var request;
-	if(myOptions && parseInt([myOptions objectForKey: "FSFuzzySearch"]))
+	if(myOptions && parseInt([myOptions objectForKey: "FSFuzzySearch"], 10))
 		 request=[self requestForFuzzilyAddressingObjectsWithKey: aKey equallingValue: someval inEntity: someEntity];
 	else request=[self requestForAddressingObjectsWithKey: aKey equallingValue: someval inEntity: someEntity];
 	var a=nil;
-	if(!(myOptions && parseInt([myOptions objectForKey:"FSSynchronous"])))
+	if(!(myOptions && parseInt([myOptions objectForKey:"FSSynchronous"], 10)))
 	{	a=[[FSMutableArray alloc] initWithArray: [] ofEntity: someEntity];
 		if(someEntity.__ACForSpinner && someEntity.__ACForSpinner.__tableViewForSpinner)
 			[someEntity.__ACForSpinner.__tableViewForSpinner _startAnimation: self];
@@ -521,8 +535,7 @@ var _allRelationships;
     }
 	if(err && err['err'])
     {   alert(err['err']);
-        obj._changes=nil;
-        [obj reload];
+        obj._changes=nil;  // discard changes that weren't accepted by the backend
     }
 
 	[obj reload];
@@ -532,7 +545,7 @@ var _allRelationships;
 {	var entity=[someObj entity];
 	var request= [CPURLRequest requestWithURL: [self baseURL]+"/"+[entity name]+"/"+[entity pk] ];	// pk is necessary to get id after inserting
     [request setHTTPMethod:"POST"];
-	[request setHTTPBody: [someObj._changes toJSON] ];
+	[request setHTTPBody:[someObj._changes toJSON] ];
 	var data=[CPURLConnection sendSynchronousRequest: request returningResponse: nil];
 	var j = JSON.parse( [data rawString]);	// this is necessary for retrieving the PK
 	var pk=j["pk"];
@@ -543,7 +556,8 @@ var _allRelationships;
 }
 
 -(id) deleteObject: obj
-{	var request=[self requestForAddressingObjectsWithKey: [[obj entity] pk] equallingValue: [obj valueForKey: [[obj entity] pk]] inEntity:[obj entity]];
+{
+	var request=[self requestForAddressingObjectsWithKey: [[obj entity] pk] equallingValue: [obj valueForKey: [[obj entity] pk]] inEntity:[obj entity]];
     [request setHTTPMethod:"DELETE"];
 	[CPURLConnection sendSynchronousRequest:request returningResponse: nil];
 }

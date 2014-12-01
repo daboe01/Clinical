@@ -25,6 +25,7 @@ use Mojo::UserAgent::Proxy;
 use Date::ICal;
 use Data::ICal;
 use Data::ICal::Entry::Event;
+use Data::ICal::Entry::TimeZone;
 
 # enable receiving uploads up to 1GB
 $ENV{MOJO_MAX_MESSAGE_SIZE} = 1_073_741_824;
@@ -693,7 +694,7 @@ get '/CT/CAL/:date'=> [date =>qr/[-\d]+/] => sub
     my  %session;
     tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
     my $dbh=$self->db;
-    my $sql="SELECT * from event_overview where event_date::date=? and ".($personal?"ldap":"ldap_unfiltered")."=?";
+    my $sql="SELECT distinct name, event_date, type,piz,tooltip from event_overview where event_date::date=? and ".($personal?"ldap":"ldap_unfiltered")."=?";
     my $sth = $dbh->prepare( $sql );
     $sth->execute(($date, $session{username}));
     my @a;
@@ -1038,6 +1039,11 @@ get '/CT/iCAL/:ldap'=> [ldap =>qr/[a-z_0-9]+/i] => sub
 	$sth->execute(($ldap));
   	my $rowarrref;
 	my $calendar = Data::ICal->new();
+    
+    my $vtimezone = Data::ICal::Entry::TimeZone->new();
+    $vtimezone->add_properties( tzid => 'Europe/Berlin', tzname=>'CEST');
+    $calendar->add_entry($vtimezone);
+    
     my $i;
 	while($rowarrref=$sth->fetchrow_arrayref() )
 	{
@@ -1048,7 +1054,7 @@ get '/CT/iCAL/:ldap'=> [ldap =>qr/[a-z_0-9]+/i] => sub
         summary => ucfirst $rowarrref->[0].' '.$rowarrref->[2],
         uid=> 'iclinical_'. DateTime->now->epoch.'_'.$i++,
         description => $piz? "http://augimageserver/Viewer/?$piz":$rowarrref->[2],
-        dtstart   =>  Date::ICal->new( year => $year, month => $month, day => $day, hour => ($hour), min => $min, sec => 1, offset => "-000" )->ical);
+        dtstart   =>  Date::ICal->new( year => $year, month => $month, day => $day, hour => ($hour), min => $min, sec => 1, offset => "-000")->ical);
 		$calendar->add_entry($vevent);
 	}
     $self->render( text=> $calendar->as_string );

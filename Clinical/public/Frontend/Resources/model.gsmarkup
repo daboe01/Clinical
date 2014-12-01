@@ -101,6 +101,7 @@
 		<column name="tel"/>
 		<column name="level"/>
 		<column name="abrechnungsname"/>
+		<column name="password"/>
 		<relationship type="toMany" name="groups" targetColumn="idpersonnel" target="group_assignments"/>
 		<relationship type="toMany" name="props" targetColumn="idpersonnel" target="personnel_properties"/>
 		<relationship type="toMany" name="costs" targetColumn="idpersonnel" target="personnel_costs"/>
