@@ -1056,7 +1056,7 @@ get '/CT/iCAL/:ldap'=> [ldap =>qr/[a-z_0-9]+/i] => sub
         summary => ucfirst $rowarrref->[0].' '.$rowarrref->[2],
         uid=> 'iclinical_'. DateTime->now->epoch.'_'.$i++,
         description => $piz? "http://augimageserver/Viewer/?$piz":$rowarrref->[2],
-        dtstart   =>  Date::ICal->new( year => $year, month => $month, day => $day, hour => ($hour), min => $min, sec => 1, offset => "-000")->ical);
+        dtstart   =>  Date::ICal->new( year => $year, month => $month, day => $day, hour => ($hour), min => $min, sec => 1)->ical);
 		$calendar->add_entry($vevent);
 	}
     $self->render( text=> $calendar->as_string );
