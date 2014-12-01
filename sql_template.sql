@@ -1108,7 +1108,8 @@ CREATE TABLE personnel_catalogue (
     function text,
     tel text,
     level integer,
-    abrechnungsname text
+    abrechnungsname text,
+    password text
 );
 
 
@@ -2836,9 +2837,8 @@ SELECT pg_catalog.setval('account_transaction_id_seq', 610, true);
 COPY all_trials (id, idgroup, name, codename, infotext) FROM stdin;
 195	100	New trial 2	\N	\N
 196	19	New trial 3	\N	\N
-25	1	Demo 11001X	\N	\N
-197	1	Demo 11002X	\N	\N
-194	1	Demo 11003X	\N	\N
+197	1	Demo 11002Xa	\N	\N
+25	1	Demo 11001Xxx	\N	\N
 \.
 
 
@@ -2846,7 +2846,7 @@ COPY all_trials (id, idgroup, name, codename, infotext) FROM stdin;
 -- Name: all_trials_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('all_trials_id_seq', 197, true);
+SELECT pg_catalog.setval('all_trials_id_seq', 200, true);
 
 
 --
@@ -2854,8 +2854,6 @@ SELECT pg_catalog.setval('all_trials_id_seq', 197, true);
 --
 
 COPY bic_catalogue ("row.names", blz, name, bic) FROM stdin;
-1	39020000	Aachener Bauspk Aachen	AABSDE31XXX
-18885	87096214	Volksbank Chemnitz	
 \.
 
 
@@ -2864,7 +2862,7 @@ COPY bic_catalogue ("row.names", blz, name, bic) FROM stdin;
 --
 
 COPY billings (id, idtrial, creation_date, start_date, end_date, comment, visit_ids, amount, visit_ids_travel_costs) FROM stdin;
-208	25	2014-11-03 00:00:00	2015-02-04 00:00:00	2014-11-05 00:00:00	699.72 EUR	3782, 	699.720000000000027	\N
+220	25	2014-11-29 19:12:06.60125	2015-02-28 19:12:06.60125	\N	\N	\N	\N	\N
 \.
 
 
@@ -2872,7 +2870,7 @@ COPY billings (id, idtrial, creation_date, start_date, end_date, comment, visit_
 -- Name: billings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('billings_id_seq', 208, true);
+SELECT pg_catalog.setval('billings_id_seq', 220, true);
 
 
 --
@@ -2915,16 +2913,7 @@ SELECT pg_catalog.setval('groups_catalogue_id_seq', 19, true);
 --
 
 COPY patient_visits (id, idpatient, idvisit, visit_date, state, travel_costs, date_reimbursed, travel_comment, travel_additional_costs, actual_costs) FROM stdin;
-3784	608	6	\N	\N	\N	\N	\N	\N	\N
-3785	608	9	\N	\N	\N	\N	\N	\N	\N
-3786	608	10	\N	\N	\N	\N	\N	\N	\N
 3787	609	\N	2014-11-05 00:00:00	\N	\N	\N	\N	\N	\N
-3792	610	10	\N	\N	\N	\N	\N	\N	\N
-3793	611	7	2014-11-17 00:00:00	\N	\N	\N	\N	\N	\N
-3794	611	5	\N	\N	\N	\N	\N	\N	\N
-3795	611	6	\N	\N	\N	\N	\N	\N	\N
-3796	611	9	\N	\N	\N	\N	\N	\N	\N
-3797	611	10	\N	\N	\N	\N	\N	\N	\N
 3798	612	7	2014-11-17 00:00:00	\N	\N	\N	\N	\N	\N
 3800	612	6	\N	\N	\N	\N	\N	\N	\N
 3801	612	9	\N	\N	\N	\N	\N	\N	\N
@@ -2940,11 +2929,6 @@ COPY patient_visits (id, idpatient, idvisit, visit_date, state, travel_costs, da
 3811	614	9	\N	\N	\N	\N	\N	\N	\N
 3812	614	10	\N	\N	\N	\N	\N	\N	\N
 3799	612	5	2014-11-18 00:00:00	\N	\N	\N	\N	\N	\N
-3790	610	6	2014-12-11 00:00:00	\N	\N	\N	\N	\N	\N
-3788	610	7	2014-11-03 00:00:00	\N	\N	\N	\N	\N	\N
-3783	608	5	2014-11-11 00:00:00	\N	\N	\N	\N	\N	0
-3789	610	5	2014-11-12 00:00:00	\N	\N	\N	\N	\N	\N
-3791	610	9	2014-12-27 00:00:00	\N	\N	\N	\N	\N	\N
 \.
 
 
@@ -2961,12 +2945,12 @@ SELECT pg_catalog.setval('patient_visits_id_seq', 3812, true);
 
 COPY patients (id, idtrial, piz, code1, code2, comment, state, name, givenname, birthdate, street, zip, town, telephone, insertion_date, female, iban, bic, bank, travel_distance) FROM stdin;
 609	197	\N	\N	\N	\N	\N	xxx	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
-610	25	2	\N	\N	\N	\N	test2	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
-611	25	3	\N	\N	\N	\N	test3	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
 612	25	4	\N	\N	\N	\N	test43	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
 613	25	5	\N	\N	\N	\N	test5	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
 614	25	6	\N	\N	\N	\N	test6	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
 608	25	1	\N	\N	\N	\N	Test	\N	\N	\N	\N	\N	\N	2014-11-13	\N	\N	\N	\N	10
+610	25	2	\N	\N	\N	\N	test2	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
+611	25	3	\N	\N	\N	\N	test3	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
 \.
 
 
@@ -2981,10 +2965,10 @@ SELECT pg_catalog.setval('patients_id_seq', 614, true);
 -- Data for Name: personnel_catalogue; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY personnel_catalogue (id, name, ldap, email, function, tel, level, abrechnungsname) FROM stdin;
-36	Mickey Mouse	mm	\N	\N	\N	\N	\N
-37	Icaljoe	ics	\N	\N	\N	\N	\N
-1	I am the PI	pi	my.email@xx.com	Pruefarzt	\N	3	\N
+COPY personnel_catalogue (id, name, ldap, email, function, tel, level, abrechnungsname, password) FROM stdin;
+36	Mickey Mouse	mm	\N	\N	\N	\N	\N	\N
+37	Icaljoe	ics	\N	\N	\N	\N	\N	\N
+1	I am the PI	pi	my.email@xx.com	Pruefarzt	\N	3	\N	\N
 \.
 
 
@@ -3255,9 +3239,6 @@ SELECT pg_catalog.setval('shadow_accounts_id_seq', 91, true);
 --
 
 COPY status_catalogue (id, idtrial, name, alerting) FROM stdin;
-495	194	Screen fail	1
-496	194	Screen	1
-497	194	Randomized	1
 498	195	Screen fail	1
 499	195	Screen	1
 500	195	Randomized	1
@@ -3277,7 +3258,7 @@ COPY status_catalogue (id, idtrial, name, alerting) FROM stdin;
 -- Name: status_catalogue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('status_catalogue_id_seq', 506, true);
+SELECT pg_catalog.setval('status_catalogue_id_seq', 515, true);
 
 
 --
@@ -3303,7 +3284,6 @@ COPY trial_process_step (id, idtrial, type, start_date, end_date, deadline, idpe
 417	25	7	2013-09-01	2014-02-28	\N	\N	
 749	25	11	2014-09-01	2014-07-31	\N	\N	\N
 465	25	12	2014-02-25	\N	\N	2	\N
-849	194	11	2014-11-16	\N	\N	\N	\N
 850	195	11	2014-11-16	\N	\N	\N	\N
 851	196	11	2014-11-16	\N	\N	\N	\N
 852	197	11	2014-11-17	\N	\N	\N	\N
@@ -3316,7 +3296,7 @@ COPY trial_process_step (id, idtrial, type, start_date, end_date, deadline, idpe
 -- Name: trial_process_step_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('trial_process_step_id_seq', 852, true);
+SELECT pg_catalog.setval('trial_process_step_id_seq', 855, true);
 
 
 --
@@ -3324,14 +3304,7 @@ SELECT pg_catalog.setval('trial_process_step_id_seq', 852, true);
 --
 
 COPY trial_properties (id, idtrial, idproperty, value) FROM stdin;
-227	25	12	Prof. XX
-228	25	1	2012-XXX
-219	25	3	ZVSXX
-233	25	18	12501d s ds dfdfff fffdsfdsfds ds dsdf sf ds dfs dsffs dfsfs d dfsds fdsf dsf 
-232	25	16	https://www.xxx.com
-778	25	27	NCT0XXX
-230	25	14	2408,00 (overhead included!)
-5394	194	8	
+5509	25	23	indoka
 5398	195	25	\N
 5399	195	26	\N
 5400	195	27	\N
@@ -3340,7 +3313,6 @@ COPY trial_properties (id, idtrial, idproperty, value) FROM stdin;
 5403	195	33	\N
 5404	195	31	\N
 5405	195	34	\N
-231	25	15	10
 5406	195	12	\N
 5407	195	18	\N
 5408	195	2	\N
@@ -3354,7 +3326,6 @@ COPY trial_properties (id, idtrial, idproperty, value) FROM stdin;
 5417	195	28	\N
 5418	195	30	\N
 5419	195	29	\N
-5385	194	16	
 5420	195	16	\N
 5421	195	4	\N
 5422	195	23	\N
@@ -3365,27 +3336,9 @@ COPY trial_properties (id, idtrial, idproperty, value) FROM stdin;
 5427	195	63	\N
 5428	195	7	\N
 5414	195	24	
-5377	194	11	
-5470	194	4	
-5471	194	65	
-5472	194	61	
-5389	194	1	
-5372	194	32	dsdffsd
-5379	194	33	dsffdssdffdsfsd
-5376	194	27	dsssss
-5380	194	17	lll
-5382	194	34	
-5368	194	13	
-5369	194	21	
-5392	194	63	
-5388	194	22	
-5373	194	38	
-5370	194	37	dssd
 5476	197	18	\N
 5477	197	34	\N
 5478	197	12	\N
-234	25	17	http://www.ccc.com
-1440	25	33	J
 5430	196	17	\N
 5431	196	33	\N
 5432	196	11	\N
@@ -3400,7 +3353,6 @@ COPY trial_properties (id, idtrial, idproperty, value) FROM stdin;
 5449	196	30	\N
 5455	196	23	\N
 5457	196	16	\N
-5479	197	31	\N
 5442	196	24	fdffddf
 5456	196	4	
 5480	197	33	\N
@@ -3429,9 +3381,6 @@ COPY trial_properties (id, idtrial, idproperty, value) FROM stdin;
 5500	197	3	\N
 5501	197	22	\N
 5502	197	1	\N
-5503	197	23	\N
-5487	197	24	
-5494	197	30	
 5475	197	2	
 5489	197	37	
 5505	197	16	
@@ -3442,11 +3391,15 @@ COPY trial_properties (id, idtrial, idproperty, value) FROM stdin;
 5485	197	25	dfdfdf
 5495	197	28	
 5481	197	17	fdfdsfsgd
-782	25	31	12345
-5466	194	62	
-5467	194	24	
-783	25	32	J
-1899	25	37	XXX
+5507	25	62	
+5487	197	24	2134aaa
+5503	197	23	
+5508	25	24	
+5513	25	25	
+5562	25	42	
+5563	25	43	\\documentclass{scrreprt}\r\\usepackage[ngerman]{babel}\r\\usepackage[utf8]{inputenc}\r\\usepackage[T1]{fontenc}\r\\usepackage{graphicx}\r\\usepackage{wallpaper}\r\\usepackage{tabularx}\r\r\r\\renewcommand{\\familydefault}{\\sfdefault}\r\\usepackage{helvet}\r\r\\pagenumbering{none}\r\r\r\\begin{document}\r\\baselineskip15pt\r\\setlength{\\headheight}{7\\baselineskip}\r\\setlength{\\oddsidemargin}{-3mm}\r\\addtolength{\\textwidth}{2cm}\r\r<foreach:patients>\r\r\\ThisCenterWallPaper{1}{<copytex:briefkopfAdresszeile3.pdf>}\r\r\\noindent <anrede1>\\\\\r\\noindent <givenname> <name>\\\\\r\\noindent <street> \\\\\r\\noindent <zip> <town> \\\\\r\\\\ \\\\\r\\hspace*{11.0cm}  Freiburg, <today>\\\\\r\r\\noindent Datenschutzerkl"arung in der klinischen Studie {\\it <Voller Titel>}\\\\\r\r\\noindent  Sehr geehrte<anrede2>, <name>,\\\\\r\r\\noindent hiermit m"ochten wir Sie dar"uber informieren, dass ....\\\\\\\\\r\r\\noindent Mit freundlichen Gr"u"sen, \\\\ \\\\\r\r\\hspace*{-7mm}  \\begin{tabularx}{20cm}{XX}\r<_Loginname_>\\\\\r<_Loginrole_> \\\\\r\\end{tabularx}\r\r\\newpage\r\r</foreach:patients>\r\r\r\\end{document}\r
+5479	197	31	
+5515	25	29	sdjfklnsdf xx yy
 \.
 
 
@@ -3526,7 +3479,7 @@ SELECT pg_catalog.setval('trial_properties_catalogue_id_seq', 65, true);
 -- Name: trial_properties_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('trial_properties_id_seq', 5505, true);
+SELECT pg_catalog.setval('trial_properties_id_seq', 5656, true);
 
 
 --
@@ -3551,6 +3504,7 @@ SELECT pg_catalog.setval('trial_property_annotations_id_seq', 48, true);
 COPY trial_visits (id, name, idtrial, idreference_visit, visit_interval, lower_margin, upper_margin, reimbursement, additional_docscal_booking_name, ordering, comment) FROM stdin;
 299	\N	196	\N	\N	\N	\N	\N	\N	\N	\N
 5	Visit 1	25	7	7 days	3 days	3 days	448	\N	\N	\N
+300	\N	197	\N	4 days	\N	\N	12	\N	\N	\N
 7	Baseline	25	\N	00:00:00	00:00:00	00:00:00	588	\N	\N	\N
 8	Unschelduled	25	\N	00:00:00	-2 years	2 years	154	\N	\N	\N
 6	Visit 2	25	7	30 days	7 days	7 days	448	\N	\N	\N
@@ -3563,7 +3517,7 @@ COPY trial_visits (id, name, idtrial, idreference_visit, visit_interval, lower_m
 -- Name: trial_visits_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('trial_visits_id_seq', 299, true);
+SELECT pg_catalog.setval('trial_visits_id_seq', 300, true);
 
 
 --
