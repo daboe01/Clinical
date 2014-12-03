@@ -4,10 +4,10 @@ Clinical
 Clinical trials administration system
 
 Features include:
- * 100% browser based
  * Structured trials database
+ * 100% browser based
+ * Desktop class GUI with keyboard navigation and undo / redo
  * Full text search in realtime
- * Full undo in the GUI
  * Document repository
  * Visit management
  * Cost calculation
