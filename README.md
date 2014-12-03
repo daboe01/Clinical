@@ -13,7 +13,7 @@ Features include:
  * Cost calculation
  * Billing / Accounting / Reimbusement
  * Human ressources management / Holiday planning
- * Team calendar GUI + ICS feed
+ * Team calendar GUI + iCAL feed
  * Password manager
  * Document generator
  * Archive management
