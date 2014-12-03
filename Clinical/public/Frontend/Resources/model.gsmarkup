@@ -354,6 +354,7 @@
 		<column name="name"/>
 		<column name="type"/>
 		<column name="base_cost"/>
+		<column name="ecrf_xml"/>
 	</entity>
 	<entity id="visit_procedures" store="#CPOwner.store">
 		<column name="id" primaryKey="YES"/>

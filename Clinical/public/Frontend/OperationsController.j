@@ -603,6 +603,9 @@
 -(void)createUnbilledList: sender
 {	document.location='/CT/unbilledlist?session='+ window.G_SESSION;
 }
+-(void)createConflictList: sender
+{	document.location='/CT/conflictlist?session='+ window.G_SESSION;
+}
 -(void) runDCV: sender
 {
 	window.open("http://augimageserver/Viewer/?"+ [[[CPApp delegate].patientsController selectedObject] valueForKeyPath:"piz"], 'docscal_window');

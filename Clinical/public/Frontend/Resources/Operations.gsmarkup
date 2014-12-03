@@ -17,8 +17,9 @@
     </menu>
     <menu title="Controlling">
         <menuItem title="Download Unbilled list" target="#myadmincontroller" action="createUnbilledList:"/>
-        <menuItem title="Download Todolist" target="#myadmincontroller" action="createTodoListGlobal:"/>
-        <menuItem title="Download Inkassolist" target="#myadmincontroller" action="downloadInkassoList:"/>
+        <menuItem title="Download Visitconflict list" target="#myadmincontroller" action="createConflictList:"/>
+        <menuItem title="Download Todol ist" target="#myadmincontroller" action="createTodoListGlobal:"/>
+        <menuItem title="Download Inkasso list" target="#myadmincontroller" action="downloadInkassoList:"/>
         <menuItem title="Accounts..." action="runAccounts:"/>
     </menu>
     <menu title="Special">

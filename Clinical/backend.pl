@@ -560,6 +560,19 @@ get '/CT/unbilledlist' =>  sub
     my $outR=$sth->fetchall_arrayref();
     $self->render_file('data' => $self->get_XLS_for_arr($outR, $sth->{NAME}), 'format'   => 'xls', 'filename' => 'unbilled_visits.xls');
 };
+get '/CT/conflictlist' =>  sub
+{   my $self=shift;
+    my $idtrial=$self->param('idtrial');
+    my $sessionid=$self->param('session');
+    my  %session;
+    tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
+    my $dbh=$self->db;
+    my $sql=qq{SELECT visit_date, ldap, name as visit, piz from visit_conflicts_overview where ldap_filtering=?};
+    my $sth = $dbh->prepare( $sql );
+    $sth->execute(($session{username}));
+    my $outR=$sth->fetchall_arrayref();
+    $self->render_file('data' => $self->get_XLS_for_arr($outR, $sth->{NAME}), 'format'   => 'xls', 'filename' => 'absent_conflicts.xls');
+};
 
 get '/CT/duelist' => sub
 {   my $self=shift;
@@ -1036,7 +1049,7 @@ get '/CT/iCAL/:ldap'=> [ldap =>qr/[a-z_0-9]+/i] => sub
     my $self=shift;
     my $personal=$self->param('personal');
     my $ldap = $self->param('ldap');
-	my $sql="SELECT  distinct name, event_date, tooltip || ' (' || piz ||')' as description  from event_overview where ".($personal?"ldap":"ldap_unfiltered")."=?";
+	my $sql="SELECT  distinct name, event_date, tooltip || ' (' || piz ||')' as description  from event_overview where ".($personal?"ldap":"ldap_unfiltered")."=? and not name~*'^dummy '";
 	my $sth = $self->db->prepare( $sql );
 	$sth->execute(($ldap));
   	my $rowarrref;
@@ -1046,17 +1059,28 @@ get '/CT/iCAL/:ldap'=> [ldap =>qr/[a-z_0-9]+/i] => sub
     $vtimezone->add_properties( tzid => 'Europe/Berlin', tzname=>'CEST');
     $calendar->add_entry($vtimezone);
     
+    sub icalDateForDate { my ($date, $mysec)=@_;
+        my ($year,$month,$day,$hour,$min,$sec)= $date=~ /([0-9]+)-([0-9]+)-([0-9]+) ([0-9]+):([0-9]+):([0-9]+)/;
+        if($hour+$min+$sec == 0)
+        {	my $date= DateTime->new( year => $year, month => $month, day => $day, hour => $hour, minute => $min, second => 1 );
+            return $date->strftime('%Y%m%d');
+        } else
+        {	return Date::ICal->new( year => $year, month => $month, day => $day, hour => $hour, min => $min, sec => $mysec )->ical;
+        }
+    }
+    
     my $i;
 	while($rowarrref=$sth->fetchrow_arrayref() )
 	{
         my $piz=$1 if $rowarrref->[2]=~/([0-9]{8})/;
-        my ($year,$month,$day,$hour,$min)= $rowarrref->[1]=~ /([0-9]+)-([0-9]+)-([0-9]+) ([0-9]+):([0-9]+).+/;
 		my $vevent = Data::ICal::Entry::Event->new();
 		$vevent->add_properties(
-        summary => ucfirst $rowarrref->[0].' '.$rowarrref->[2],
+        summary => ucfirst $rowarrref->[2].' '.$rowarrref->[0],
         uid=> 'iclinical_'. DateTime->now->epoch.'_'.$i++,
         description => $piz? "http://augimageserver/Viewer/?$piz":$rowarrref->[2],
-        dtstart   =>  Date::ICal->new( year => $year, month => $month, day => $day, hour => ($hour), min => $min, sec => 1)->ical);
+        dtstart   =>  icalDateForDate($rowarrref->[1] , 1),
+        dtend   =>  icalDateForDate($rowarrref->[1], 2)
+        );
 		$calendar->add_entry($vevent);
 	}
     $self->render( text=> $calendar->as_string );
