@@ -1441,16 +1441,17 @@ CREATE VIEW event_overview AS
             2 AS type,
             NULL::integer AS piz,
             NULL::text AS tooltip,
-            NULL::text AS ldap
-           FROM ((trial_process_step
+            personnel_catalogue_1.ldap
+           FROM (((trial_process_step
              JOIN process_steps_catalogue ON ((trial_process_step.type = process_steps_catalogue.id)))
              JOIN all_trials all_trials_1 ON ((all_trials_1.id = trial_process_step.idtrial)))
+             LEFT JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = trial_process_step.idpersonnel)))
         UNION
          SELECT ( SELECT min(all_trials_1.id) AS min
                    FROM (all_trials all_trials_1
                      JOIN group_assignments group_assignments_1 ON ((group_assignments_1.idgroup = all_trials_1.idgroup)))
                   WHERE (group_assignments_1.idpersonnel = personnel_catalogue_1.id)) AS idtrial,
-            ('Urlaub: '::text || personnel_catalogue_1.ldap),
+            ('Abwesend: '::text || personnel_catalogue_1.ldap),
             a_1.day AS event_date,
             3 AS type,
             NULL::integer AS piz,
@@ -1460,7 +1461,6 @@ CREATE VIEW event_overview AS
              JOIN ( SELECT day.day
                    FROM generate_series(((now())::date - '1 year'::interval), ((now())::date + '1 year'::interval), '1 day'::interval) day(day)) a_1 ON (((a_1.day >= (personnel_event.start_time)::date) AND (a_1.day <= (personnel_event.end_time)::date))))
              JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = personnel_event.idpersonnel)))
-          WHERE (personnel_event.type = 1)
         UNION
          SELECT trial_process_step.idtrial,
             (((('Ende: '::text || (COALESCE(process_steps_catalogue.name, ''::text) || ' '::text)) || COALESCE(trial_process_step.title, ''::text)) || ' '::text) || all_trials_1.name),
@@ -1468,9 +1468,10 @@ CREATE VIEW event_overview AS
             2 AS type,
             NULL::integer AS piz,
             NULL::text AS tooltip,
-            NULL::text AS ldap
-           FROM ((trial_process_step
+            personnel_catalogue_1.ldap
+           FROM (((trial_process_step
              JOIN process_steps_catalogue ON ((trial_process_step.type = process_steps_catalogue.id)))
+             LEFT JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = trial_process_step.idpersonnel)))
              JOIN all_trials all_trials_1 ON ((all_trials_1.id = trial_process_step.idtrial)))) a
      LEFT JOIN all_trials ON ((a.idtrial = all_trials.id)))
      LEFT JOIN group_assignments ON ((group_assignments.idgroup = all_trials.idgroup)))
@@ -2061,7 +2062,8 @@ CREATE TABLE procedures_catalogue (
     id integer NOT NULL,
     name text,
     type integer,
-    base_cost double precision
+    base_cost double precision,
+    ecrf_xml text
 );
 
 
@@ -2533,6 +2535,46 @@ CREATE VIEW unbilled_visits AS
 
 
 ALTER TABLE public.unbilled_visits OWNER TO root;
+
+--
+-- Name: visit_conflicts_overview; Type: VIEW; Schema: public; Owner: root
+--
+
+CREATE VIEW visit_conflicts_overview AS
+ WITH absent_dates AS (
+         SELECT ( SELECT min(all_trials_1.id) AS min
+                   FROM (all_trials all_trials_1
+                     JOIN group_assignments group_assignments_1 ON ((group_assignments_1.idgroup = all_trials_1.idgroup)))
+                  WHERE (group_assignments_1.idpersonnel = personnel_catalogue_1_1.id)) AS idtrial,
+            personnel_catalogue_1_1.ldap,
+            a_1.day AS absent_date,
+            personnel_event.comment AS tooltip
+           FROM ((personnel_event
+             JOIN ( SELECT day.day
+                   FROM generate_series(((now())::date - '1 year'::interval), ((now())::date + '1 year'::interval), '1 day'::interval) day(day)) a_1 ON (((a_1.day >= (personnel_event.start_time)::date) AND (a_1.day <= (personnel_event.end_time)::date))))
+             JOIN personnel_catalogue personnel_catalogue_1_1 ON ((personnel_catalogue_1_1.id = personnel_event.idpersonnel)))
+        )
+ SELECT DISTINCT all_trials.idgroup,
+    patient_visits_rich.visit_date,
+    personnel_catalogue_1.ldap,
+    trial_visits.name,
+    patients.piz,
+    personnel_catalogue_2.ldap AS ldap_filtering
+   FROM (((((((((patient_visits_rich
+     JOIN absent_dates ON (((patient_visits_rich.visit_date)::date = (absent_dates.absent_date)::date)))
+     JOIN visit_procedures ON ((visit_procedures.idvisit = patient_visits_rich.idvisit)))
+     JOIN procedures_personnel_responsible procedures_personnel ON ((procedures_personnel.idprocedure = visit_procedures.id)))
+     JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = procedures_personnel.idpersonnel)))
+     JOIN all_trials ON ((all_trials.id = absent_dates.idtrial)))
+     JOIN trial_visits ON ((patient_visits_rich.idvisit = trial_visits.id)))
+     JOIN patients ON ((patients.id = patient_visits_rich.idpatient)))
+     JOIN group_assignments ON ((group_assignments.idgroup = all_trials.idgroup)))
+     JOIN personnel_catalogue personnel_catalogue_2 ON ((personnel_catalogue_2.id = group_assignments.idpersonnel)))
+  WHERE ((patient_visits_rich.visit_date > now()) AND (personnel_catalogue_1.ldap = absent_dates.ldap))
+  ORDER BY personnel_catalogue_1.ldap;
+
+
+ALTER TABLE public.visit_conflicts_overview OWNER TO root;
 
 --
 -- Name: visit_dates; Type: VIEW; Schema: public; Owner: root
@@ -3077,69 +3119,69 @@ SELECT pg_catalog.setval('personnel_properties_id_seq', 128, true);
 -- Data for Name: procedures_catalogue; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-COPY procedures_catalogue (id, name, type, base_cost) FROM stdin;
-11	Subjektive Refraktionsbestimmung mit sphärischen Gläsern	1	7.91000000000000014
-1	BCVA ETDRS 4M 2 eyes	\N	25
-12	Subjektive Refraktionsbestimmung mit sphärisch-zylindrischen Gläsern	1	11.9399999999999995
-163	IOLMaster biomerty	\N	50
-13	Objektive Refraktionsbestimmung mittels Skiaskopie oder Anwendung eines Refraktometers	1	9.91000000000000014
-14	Messung der Maximal- oder Gebrauchsakkommodation mittels Akkommodometer oder Optometer	1	8.05000000000000071
-15	Messung der Hornhautkrümmungsradien	1	6.03000000000000025
-16	Prüfung von Mehrstärken- oder Prismenbrillen mit Bestimmung der Fern- und Nahpunkte bei subjektiver Brillenunverträglichkeit	1	9.38000000000000078
-150	BCVA standard near binocular	\N	15
-148	BCVA standard near 2 eyes	\N	18
-17	Nachweis der Tränensekretionsmenge (z. B. Schirmer-Test)	1	2.68999999999999995
-146	BCVA standard 4M 2 eyes	\N	18
-2	BCVA ETDRS 4M binocular	\N	25
-143	BCVA standard 1M 2 eyes	\N	18
-164	eCRF-Pauschale 30min	\N	50
-147	BCVA standard 4M binocular	\N	15
-151	BCVA  1M binocular	\N	15
-153	UCVA standard 1M 2 eyes	\N	18
-23	Untersuchung auf Heterophorie bzw. Strabismus gegebenenfalls einschließlich qualitativer Untersuchung des binokularen Sehaktes	1	12.1899999999999995
-24	Qualitative und quantitative Untersuchung des binokularen Sehaktes	1	32.4500000000000028
-25	Differenzierende Analyse und graphische Darstellung des Bewegungsablaufs beider Augen bei Augenmuskelstörungen, mindestens 36 Blickrichtungen pro Auge	1	93.8400000000000034
-26	Kampimetrie (z. B. Bjerrum) auch Perimetrie nach Förster	1	16.2199999999999989
-27	Projektionsperimetrie mit Marken verschiedener Reizwerte	1	24.3999999999999986
-28	Quantitativ abgestufte (statische) Profilperimetrie	1	33.259999999999998
-29	Farbsinnprüfung mit Pigmentproben (z. B. Farbtafeln)	1	8.1899999999999995
-30	Farbsinnprüfung mit Anomaloskop	1	24.3999999999999986
-31	Vollständige Untersuchung des zeitlichen Ablaufs der Adaptation	1	64.8799999999999955
-32	Untersuchung des Dämmerungssehens ohne Blendung	1	12.1899999999999995
-33	Untersuchung des Dämmerungssehens während der Blendung	1	12.1899999999999995
-34	Untersuchung des Dämmerungssehens nach der Blendung (Readaptation)	1	12.1899999999999995
-35	Elektroretinographische Untersuchung (ERG) und/oder elektrookulographische Untersuchung (EOG)	1	80.4300000000000068
-36	Spaltlampenmikroskopie der vorderen und mittleren Augenabschnitte gegebenenfalls einschließlich der binokularen Untersuchung des hinteren Poles (z. B. Hruby-Linse)	1	9.91000000000000014
-37	Gonioskopie	1	20.379999999999999
-38	Binokulare Untersuchung des Augenhintergrundes einschließlich der äußeren Peripherie (z. B. Dreispiegelkontaktglas, Schaepens) gegebenenfalls einschließlich der Spaltlampenmikroskopie der vorderen und mittleren Augenabschnitte und/oder diasklerale Durchleuchtung	1	20.379999999999999
-39	Diasklerale Durchleuchtung	1	8.1899999999999995
-40	Exophthalmometrie	1	6.69000000000000039
-41	Fluoreszenzuntersuchung der terminalen Strombahn am Augenhintergrund einschließlich Applikation des Teststoffes	1	32.4500000000000028
-42	Fluoreszenzangiographische Untersuchung der terminalen Strombahn am Augenhintergrund einschließlich Aufnahmen und Applikation des Teststoffes	1	64.8799999999999955
-155	UCVA standard 1M binocular	\N	15
-152	UCVA standard 4M binocular	\N	15
-45	Fotographische Verlaufskontrolle intraokularer Veränderungen mittels Spaltlampenfotographie	1	13.4100000000000001
-46	Fotographische Verlaufskontrolle von Veränderungen des Augenhintergrunds mittels Fundusfotographie	1	20.1000000000000014
-47	Tonometrische Untersuchung mit Anwendung des Impressionstonometers	1	7.33999999999999986
-48	Tonometrische Untersuchung mit Anwendung des Applanationstonometers	1	10.4900000000000002
-49	Tonometrische Untersuchung (mehrfach in zeitlichem Zusammenhang zur Anfertigung tonometrischer Kurven, mindestens vier Messungen) auch fortlaufende Tonometrie zur Ermittlung des Abflußwiderstandes	1	25.3999999999999986
-50	Pupillographie	1	25.3999999999999986
-51	Elektromyographie der äußeren Augenmuskeln	1	58.75
-52	Ophthalmodynamometrie gegebenenfalls einschließlich Tonometrie, erste Messung	1	25.3999999999999986
-154	UCVA standard near binocular	\N	15
-145	UCVA ETDRS 4M binocular	\N	20
-158	Contrast vision 2 eyes	\N	25
-3	UCVA ETDRS 4M 2 eyes	\N	25
-161	Specular microscopy 2 eyes	\N	40
-162	AE Interview	\N	20
-156	UCVA standard 4M 2 eyes	\N	18
-157	UCVA standard near 2 eyes	\N	18
-165	eCRF-Pauschale 10min	\N	10
-144	UCVA ETDRS near 2 eyes	\N	25
-159	Questionnaire interview 5-10 items	\N	50
-160	Defocus refraction	\N	120
-166	Reticam	\N	15
-167	Blutentnahme	\N	15
+COPY procedures_catalogue (id, name, type, base_cost, ecrf_xml) FROM stdin;
+11	Subjektive Refraktionsbestimmung mit sphärischen Gläsern	1	7.91000000000000014	\N
+1	BCVA ETDRS 4M 2 eyes	\N	25	\N
+12	Subjektive Refraktionsbestimmung mit sphärisch-zylindrischen Gläsern	1	11.9399999999999995	\N
+163	IOLMaster biomerty	\N	50	\N
+13	Objektive Refraktionsbestimmung mittels Skiaskopie oder Anwendung eines Refraktometers	1	9.91000000000000014	\N
+14	Messung der Maximal- oder Gebrauchsakkommodation mittels Akkommodometer oder Optometer	1	8.05000000000000071	\N
+15	Messung der Hornhautkrümmungsradien	1	6.03000000000000025	\N
+16	Prüfung von Mehrstärken- oder Prismenbrillen mit Bestimmung der Fern- und Nahpunkte bei subjektiver Brillenunverträglichkeit	1	9.38000000000000078	\N
+150	BCVA standard near binocular	\N	15	\N
+148	BCVA standard near 2 eyes	\N	18	\N
+17	Nachweis der Tränensekretionsmenge (z. B. Schirmer-Test)	1	2.68999999999999995	\N
+146	BCVA standard 4M 2 eyes	\N	18	\N
+2	BCVA ETDRS 4M binocular	\N	25	\N
+143	BCVA standard 1M 2 eyes	\N	18	\N
+164	eCRF-Pauschale 30min	\N	50	\N
+147	BCVA standard 4M binocular	\N	15	\N
+151	BCVA  1M binocular	\N	15	\N
+153	UCVA standard 1M 2 eyes	\N	18	\N
+23	Untersuchung auf Heterophorie bzw. Strabismus gegebenenfalls einschließlich qualitativer Untersuchung des binokularen Sehaktes	1	12.1899999999999995	\N
+24	Qualitative und quantitative Untersuchung des binokularen Sehaktes	1	32.4500000000000028	\N
+25	Differenzierende Analyse und graphische Darstellung des Bewegungsablaufs beider Augen bei Augenmuskelstörungen, mindestens 36 Blickrichtungen pro Auge	1	93.8400000000000034	\N
+26	Kampimetrie (z. B. Bjerrum) auch Perimetrie nach Förster	1	16.2199999999999989	\N
+27	Projektionsperimetrie mit Marken verschiedener Reizwerte	1	24.3999999999999986	\N
+28	Quantitativ abgestufte (statische) Profilperimetrie	1	33.259999999999998	\N
+29	Farbsinnprüfung mit Pigmentproben (z. B. Farbtafeln)	1	8.1899999999999995	\N
+30	Farbsinnprüfung mit Anomaloskop	1	24.3999999999999986	\N
+31	Vollständige Untersuchung des zeitlichen Ablaufs der Adaptation	1	64.8799999999999955	\N
+32	Untersuchung des Dämmerungssehens ohne Blendung	1	12.1899999999999995	\N
+33	Untersuchung des Dämmerungssehens während der Blendung	1	12.1899999999999995	\N
+34	Untersuchung des Dämmerungssehens nach der Blendung (Readaptation)	1	12.1899999999999995	\N
+35	Elektroretinographische Untersuchung (ERG) und/oder elektrookulographische Untersuchung (EOG)	1	80.4300000000000068	\N
+36	Spaltlampenmikroskopie der vorderen und mittleren Augenabschnitte gegebenenfalls einschließlich der binokularen Untersuchung des hinteren Poles (z. B. Hruby-Linse)	1	9.91000000000000014	\N
+37	Gonioskopie	1	20.379999999999999	\N
+38	Binokulare Untersuchung des Augenhintergrundes einschließlich der äußeren Peripherie (z. B. Dreispiegelkontaktglas, Schaepens) gegebenenfalls einschließlich der Spaltlampenmikroskopie der vorderen und mittleren Augenabschnitte und/oder diasklerale Durchleuchtung	1	20.379999999999999	\N
+39	Diasklerale Durchleuchtung	1	8.1899999999999995	\N
+40	Exophthalmometrie	1	6.69000000000000039	\N
+41	Fluoreszenzuntersuchung der terminalen Strombahn am Augenhintergrund einschließlich Applikation des Teststoffes	1	32.4500000000000028	\N
+42	Fluoreszenzangiographische Untersuchung der terminalen Strombahn am Augenhintergrund einschließlich Aufnahmen und Applikation des Teststoffes	1	64.8799999999999955	\N
+155	UCVA standard 1M binocular	\N	15	\N
+152	UCVA standard 4M binocular	\N	15	\N
+45	Fotographische Verlaufskontrolle intraokularer Veränderungen mittels Spaltlampenfotographie	1	13.4100000000000001	\N
+46	Fotographische Verlaufskontrolle von Veränderungen des Augenhintergrunds mittels Fundusfotographie	1	20.1000000000000014	\N
+47	Tonometrische Untersuchung mit Anwendung des Impressionstonometers	1	7.33999999999999986	\N
+48	Tonometrische Untersuchung mit Anwendung des Applanationstonometers	1	10.4900000000000002	\N
+49	Tonometrische Untersuchung (mehrfach in zeitlichem Zusammenhang zur Anfertigung tonometrischer Kurven, mindestens vier Messungen) auch fortlaufende Tonometrie zur Ermittlung des Abflußwiderstandes	1	25.3999999999999986	\N
+50	Pupillographie	1	25.3999999999999986	\N
+51	Elektromyographie der äußeren Augenmuskeln	1	58.75	\N
+52	Ophthalmodynamometrie gegebenenfalls einschließlich Tonometrie, erste Messung	1	25.3999999999999986	\N
+154	UCVA standard near binocular	\N	15	\N
+145	UCVA ETDRS 4M binocular	\N	20	\N
+158	Contrast vision 2 eyes	\N	25	\N
+3	UCVA ETDRS 4M 2 eyes	\N	25	\N
+161	Specular microscopy 2 eyes	\N	40	\N
+162	AE Interview	\N	20	\N
+156	UCVA standard 4M 2 eyes	\N	18	\N
+157	UCVA standard near 2 eyes	\N	18	\N
+165	eCRF-Pauschale 10min	\N	10	\N
+144	UCVA ETDRS near 2 eyes	\N	25	\N
+159	Questionnaire interview 5-10 items	\N	50	\N
+160	Defocus refraction	\N	120	\N
+166	Reticam	\N	15	\N
+167	Blutentnahme	\N	15	\N
 \.
 
 
