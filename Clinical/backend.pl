@@ -709,7 +709,7 @@ get '/CT/CAL/:date'=> [date =>qr/[-\d]+/] => sub
     my  %session;
     tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
     my $dbh=$self->db;
-    my $sql="SELECT distinct name, event_date, type,piz,tooltip from event_overview where event_date::date=? and ".($personal?"ldap":"ldap_unfiltered")."=?";
+    my $sql="SELECT distinct name, event_date, type,piz,tooltip from event_overview where event_date::date=? and ".($personal?"ldap":"ldap_unfiltered")."=? order by 2";
     my $sth = $dbh->prepare( $sql );
     $sth->execute(($date, $session{username}));
     my @a;

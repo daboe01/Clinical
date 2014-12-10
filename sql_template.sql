@@ -1461,6 +1461,23 @@ CREATE VIEW event_overview AS
              JOIN ( SELECT day.day
                    FROM generate_series(((now())::date - '1 year'::interval), ((now())::date + '1 year'::interval), '1 day'::interval) day(day)) a_1 ON (((a_1.day >= (personnel_event.start_time)::date) AND (a_1.day <= (personnel_event.end_time)::date))))
              JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = personnel_event.idpersonnel)))
+          WHERE (personnel_event.type <> 4)
+        UNION
+         SELECT ( SELECT min(all_trials_1.id) AS min
+                   FROM (all_trials all_trials_1
+                     JOIN group_assignments group_assignments_1 ON ((group_assignments_1.idgroup = all_trials_1.idgroup)))
+                  WHERE (group_assignments_1.idpersonnel = personnel_catalogue_1.id)) AS idtrial,
+            ('Abwesend: '::text || personnel_catalogue_1.ldap),
+            a_1.day AS event_date,
+            3 AS type,
+            NULL::integer AS piz,
+            personnel_event.comment AS tooltip,
+            NULL::text AS ldap
+           FROM ((personnel_event
+             JOIN ( SELECT day.day
+                   FROM generate_series(((now())::date - '1 year'::interval), ((now())::date + '1 year'::interval), '1 day'::interval) day(day)) a_1 ON ((((a_1.day >= (personnel_event.start_time)::date) AND (a_1.day <= (personnel_event.end_time)::date)) AND (date_part('dow'::text, a_1.day) = ((personnel_event.comment)::integer)::double precision))))
+             JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = personnel_event.idpersonnel)))
+          WHERE (personnel_event.type = 4)
         UNION
          SELECT trial_process_step.idtrial,
             (((('Ende: '::text || (COALESCE(process_steps_catalogue.name, ''::text) || ' '::text)) || COALESCE(trial_process_step.title, ''::text)) || ' '::text) || all_trials_1.name),
@@ -2600,8 +2617,19 @@ CREATE VIEW visit_dates AS
                             personnel_event.end_time,
                             personnel_event.comment
                            FROM personnel_event
-                          WHERE (personnel_event.type = 1)) a_2 ON ((personnel_catalogue_1.id = a_2.idpersonnel)))
+                          WHERE (personnel_event.type = ANY (ARRAY[1, 3]))) a_2 ON ((personnel_catalogue_1.id = a_2.idpersonnel)))
                   WHERE (((a_2.start_time >= visit_calculator.lower_margin) AND (a_2.start_time <= visit_calculator.upper_margin)) OR ((a_2.end_time >= visit_calculator.lower_margin) AND (a_2.end_time <= visit_calculator.upper_margin)))) a_1
+        UNION
+         SELECT visit_calculator.idvisit,
+            a_1.day AS start_time,
+            a_1.day AS end_time
+           FROM ((((personnel_event
+             JOIN ( SELECT day.day
+                   FROM generate_series(((now())::date - '1 year'::interval), ((now())::date + '1 year'::interval), '1 day'::interval) day(day)) a_1 ON ((((a_1.day >= (personnel_event.start_time)::date) AND (a_1.day <= (personnel_event.end_time)::date)) AND (date_part('dow'::text, a_1.day) = ((personnel_event.comment)::integer)::double precision))))
+             JOIN procedures_personnel_responsible ON ((procedures_personnel_responsible.idpersonnel = personnel_event.idpersonnel)))
+             JOIN visit_procedures ON ((visit_procedures.id = procedures_personnel_responsible.idprocedure)))
+             JOIN visit_calculator ON ((visit_calculator._idvisit = visit_procedures.idvisit)))
+          WHERE (personnel_event.type = 4)
         )
  SELECT a.idvisit,
     min(a.caldate) AS caldate,
@@ -3054,6 +3082,7 @@ COPY personnel_event_catalogue (id, description) FROM stdin;
 1	Urlaub genehmigt
 2	Urlaub geplant
 3	Audit/Monitoring
+4	Abwesenheitstage (1=Mo)
 \.
 
 
@@ -3061,7 +3090,7 @@ COPY personnel_event_catalogue (id, description) FROM stdin;
 -- Name: personnel_event_catalogue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('personnel_event_catalogue_id_seq', 3, true);
+SELECT pg_catalog.setval('personnel_event_catalogue_id_seq', 4, true);
 
 
 --
