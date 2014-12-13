@@ -41,6 +41,7 @@
   <arrayController id="patients_controller" entity="patients" sortDescriptor="by_id" valueBinding="trials_controller.selection.patients"/>
   <arrayController id="patient_visits_controller" entity="patient_visits"  valueBinding="patients_controller.selection.visits"/>
   <arrayController id="patient_visits_controller2" entity="patient_visits"  valueBinding="patients_controller.selection.visits" filterPredicate="visitdatenotnull"/>
+  <arrayController id="patient_visit_values_controller" entity="visit_procedure_values"  valueBinding="patient_visits_controller.selection.values"/>
   <arrayController id="visits_controller" entity="trial_visits" valueBinding="trials_controller.selection.visits" sortDescriptor="by_ordering"/>
   <arrayController id="visit_dates_controller" entity="visit_dates" valueBinding="patient_visits_controller.selection.date_proposals" sortDescriptor="by_caldate"/>
   <arrayController id="tagesinfos_controller" entity="tagesinfos" valueBinding="visit_dates_controller.selection.tagesinfos"/>
@@ -56,6 +57,9 @@
   <arrayController id="procedures_personnel_controller" entity="procedures_personnel" valueBinding="procedures_visit_controller.selection.personnel"/>
   <arrayController id="personnel_event_controller" entity="personnel_event" valueBinding="personnel_controller.selection.events"/>
   <arrayController id="personnel_event_catalogue_controller" entity="personnel_event_catalogue" autoFetch="YES"/>
+  <arrayController id="team_meetings_controller" entity="team_meetings" valueBinding="groups_controller.selection.meetings"/>
+  <arrayController id="meeting_attendees_controller" entity="meeting_attendees" valueBinding="team_meetings_controller.selection.attendees"/>
+
 
 </objects>
 
@@ -68,6 +72,7 @@
 		<column name="sprechstunde"/>
 		<relationship type="toMany" name="trials" targetColumn="idgroup" target="all_trials"/>
 		<relationship type="toMany" name="personnel" targetColumn="idgroup" target="group_assignments_name"/>
+		<relationship type="toMany" name="meetings" targetColumn="idgroup" target="team_meetings"/>
 	</entity>
 	<entity id="all_trials" store="#CPOwner.store">
 		<column name="id" primaryKey="YES"/>
@@ -286,6 +291,14 @@
 		<relationship type="toOne" name="patient" bindingColumn="idpatient" target="patients"/>
 		<relationship type="toOne" name="visit" bindingColumn="idvisit" target="trial_visits"/>
 		<relationship type="toMany" name="date_proposals" bindingColumn="id" targetColumn="idvisit" target="visit_dates"/>
+		<relationship type="toMany" name="values" bindingColumn="id" targetColumn="idpatient_visit" target="visit_procedure_values"/>
+	</entity>
+	<entity id="visit_procedure_values" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="idvisit_procedure"/>
+		<column name="idpatient_visit"/>
+		<column name="value_scalar"/>
+		<column name="value_full"/>
 	</entity>
 	<entity id="visit_dates" store="#CPOwner.store">
 		<column name="startdate" primaryKey="YES"/>
@@ -354,7 +367,8 @@
 		<column name="name"/>
 		<column name="type"/>
 		<column name="base_cost"/>
-		<column name="ecrf_xml"/>
+		<column name="widgetclassname"/>
+		<column name="widgetparameters"/>
 	</entity>
 	<entity id="visit_procedures" store="#CPOwner.store">
 		<column name="id" primaryKey="YES"/>
@@ -390,6 +404,26 @@
 		<column name="comment"/>
 		<relationship type="toOne" name="event_type" bindingColumn="type" target="personnel_event_catalogue"/>
 	</entity>
+	<entity id="team_meetings" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="starttime"/>
+		<column name="stoptime"/>
+		<column name="title"/>
+		<column name="idgroup"/>
+		<relationship type="toOne" name="group" bindingColumn="idgroup" target="groups_catalogue"/>
+		<relationship type="toMany" name="attendees" bindingColumn="id" targetColumn="idattendee" target="meeting_attendees"/>
+	</entity>
+	<entity id="meeting_attendees" store="#CPOwner.store">
+		<column name="id" primaryKey="YES"/>
+		<column name="start_time_proposal"/>
+		<column name="stop_time_proposal"/>
+		<column name="comment"/>
+		<column name="idattendee"/>
+		<column name="idmeeting"/>
+		<relationship type="toOne" name="person" bindingColumn="idattendee" target="personnel_controller"/>
+		<relationship type="toOne" name="meeting" bindingColumn="idmeeting" target="team_meetings"/>
+	</entity>
+
 </entities>
 
 <connectors>
@@ -432,7 +466,9 @@
 	<outlet source="#CPOwner" target="autocompletion_controller" label="autocompletionController"/>
 	<outlet source="#CPOwner" target="personnel_event_controller" label="personnelEventController"/>
 	<outlet source="#CPOwner" target="personnel_event_catalogue_controller" label="personnelEventCatController"/>
-
+	<outlet source="#CPOwner" target="team_meetings_controller" label="teamMeetingsController"/>
+	<outlet source="#CPOwner" target="meeting_attendees_controller" label="meetingAttendeesController"/>
+	<outlet source="#CPOwner" target="patient_visit_values_controller" label="patientVisitValuesController"/>
 </connectors>
 
 
