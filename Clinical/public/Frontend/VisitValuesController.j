@@ -1,6 +1,7 @@
 @import <AppKit/CPControl.j>
+@import "WidgetSimpleString.j"
 
-@implementation WidgetRoot : CPObject
+@implementation VisitValuesController : CPObject
 {
 
 }

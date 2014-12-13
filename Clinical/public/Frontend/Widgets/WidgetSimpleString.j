@@ -1,12 +1,17 @@
 @import <AppKit/CPControl.j>
 
-@implementation WidgetSimpleString : WidgetRoot
+@implementation WidgetSimpleString : CPObject
 {
     id _myView;
 }
 + viewClass
 {	return CPTextField;
 }
+-(CGRect) size
+{
+    return CGSizeMake(60,25);
+}
+
 - viewWithFrame:(CGRect) myFrame
 {
 	_myView =[[[[self class] viewClass] alloc] initWithFrame: myFrame];

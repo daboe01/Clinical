@@ -11,7 +11,7 @@
 @import <Foundation/CPObject.j>
 @import <Renaissance/Renaissance.j>
 @import "CalendarController.j"
-
+@import "VisitValuesController.j"
 
 /////////////////////////////////////////////////////////
 @implementation _CPDatePickerMonthView(DisablingExtension)
