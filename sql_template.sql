@@ -1660,6 +1660,43 @@ CREATE VIEW list_for_travelbilling AS
 ALTER TABLE public.list_for_travelbilling OWNER TO root;
 
 --
+-- Name: meeting_attendees; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE meeting_attendees (
+    id integer NOT NULL,
+    start_time_proposal timestamp without time zone,
+    stop_time_proposal timestamp without time zone,
+    comment text,
+    idattendee integer,
+    idmeeting integer
+);
+
+
+ALTER TABLE public.meeting_attendees OWNER TO postgres;
+
+--
+-- Name: meeting_attendees_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE meeting_attendees_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.meeting_attendees_id_seq OWNER TO postgres;
+
+--
+-- Name: meeting_attendees_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE meeting_attendees_id_seq OWNED BY meeting_attendees.id;
+
+
+--
 -- Name: visit_calculator; Type: VIEW; Schema: public; Owner: root
 --
 
@@ -2080,7 +2117,8 @@ CREATE TABLE procedures_catalogue (
     name text,
     type integer,
     base_cost double precision,
-    ecrf_xml text
+    widgetclassname text,
+    widgetparameters text
 );
 
 
@@ -2341,6 +2379,42 @@ CREATE VIEW tagesinfos AS
 
 
 ALTER TABLE public.tagesinfos OWNER TO root;
+
+--
+-- Name: team_meetings; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE team_meetings (
+    id integer NOT NULL,
+    starttime timestamp without time zone,
+    stoptime timestamp without time zone,
+    title text,
+    idgroup integer
+);
+
+
+ALTER TABLE public.team_meetings OWNER TO postgres;
+
+--
+-- Name: team_meetings_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE team_meetings_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.team_meetings_id_seq OWNER TO postgres;
+
+--
+-- Name: team_meetings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE team_meetings_id_seq OWNED BY team_meetings.id;
+
 
 --
 -- Name: travel_billing_print; Type: VIEW; Schema: public; Owner: root
@@ -2667,6 +2741,42 @@ CREATE VIEW visit_dates AS
 ALTER TABLE public.visit_dates OWNER TO root;
 
 --
+-- Name: visit_procedure_values; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE visit_procedure_values (
+    id integer NOT NULL,
+    idvisit_procedure integer,
+    idpatient_visit integer,
+    value_scalar text,
+    value_full text
+);
+
+
+ALTER TABLE public.visit_procedure_values OWNER TO postgres;
+
+--
+-- Name: visit_procedure_values_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE visit_procedure_values_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.visit_procedure_values_id_seq OWNER TO postgres;
+
+--
+-- Name: visit_procedure_values_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE visit_procedure_values_id_seq OWNED BY visit_procedure_values.id;
+
+
+--
 -- Name: visit_procedures_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
@@ -2736,6 +2846,13 @@ ALTER TABLE ONLY group_assignments ALTER COLUMN id SET DEFAULT nextval('group_as
 --
 
 ALTER TABLE ONLY groups_catalogue ALTER COLUMN id SET DEFAULT nextval('groups_catalogue_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY meeting_attendees ALTER COLUMN id SET DEFAULT nextval('meeting_attendees_id_seq'::regclass);
 
 
 --
@@ -2840,6 +2957,13 @@ ALTER TABLE ONLY status_catalogue ALTER COLUMN id SET DEFAULT nextval('status_ca
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
+ALTER TABLE ONLY team_meetings ALTER COLUMN id SET DEFAULT nextval('team_meetings_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
 ALTER TABLE ONLY trial_personnel ALTER COLUMN id SET DEFAULT nextval('trial_personnel_id_seq'::regclass);
 
 
@@ -2876,6 +3000,13 @@ ALTER TABLE ONLY trial_property_annotations ALTER COLUMN id SET DEFAULT nextval(
 --
 
 ALTER TABLE ONLY trial_visits ALTER COLUMN id SET DEFAULT nextval('trial_visits_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY visit_procedure_values ALTER COLUMN id SET DEFAULT nextval('visit_procedure_values_id_seq'::regclass);
 
 
 --
@@ -2976,6 +3107,21 @@ COPY groups_catalogue (id, name, sprechstunde, websitename, telephone) FROM stdi
 --
 
 SELECT pg_catalog.setval('groups_catalogue_id_seq', 19, true);
+
+
+--
+-- Data for Name: meeting_attendees; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY meeting_attendees (id, start_time_proposal, stop_time_proposal, comment, idattendee, idmeeting) FROM stdin;
+\.
+
+
+--
+-- Name: meeting_attendees_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('meeting_attendees_id_seq', 1, false);
 
 
 --
@@ -3148,69 +3294,69 @@ SELECT pg_catalog.setval('personnel_properties_id_seq', 128, true);
 -- Data for Name: procedures_catalogue; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-COPY procedures_catalogue (id, name, type, base_cost, ecrf_xml) FROM stdin;
-11	Subjektive Refraktionsbestimmung mit sphärischen Gläsern	1	7.91000000000000014	\N
-1	BCVA ETDRS 4M 2 eyes	\N	25	\N
-12	Subjektive Refraktionsbestimmung mit sphärisch-zylindrischen Gläsern	1	11.9399999999999995	\N
-163	IOLMaster biomerty	\N	50	\N
-13	Objektive Refraktionsbestimmung mittels Skiaskopie oder Anwendung eines Refraktometers	1	9.91000000000000014	\N
-14	Messung der Maximal- oder Gebrauchsakkommodation mittels Akkommodometer oder Optometer	1	8.05000000000000071	\N
-15	Messung der Hornhautkrümmungsradien	1	6.03000000000000025	\N
-16	Prüfung von Mehrstärken- oder Prismenbrillen mit Bestimmung der Fern- und Nahpunkte bei subjektiver Brillenunverträglichkeit	1	9.38000000000000078	\N
-150	BCVA standard near binocular	\N	15	\N
-148	BCVA standard near 2 eyes	\N	18	\N
-17	Nachweis der Tränensekretionsmenge (z. B. Schirmer-Test)	1	2.68999999999999995	\N
-146	BCVA standard 4M 2 eyes	\N	18	\N
-2	BCVA ETDRS 4M binocular	\N	25	\N
-143	BCVA standard 1M 2 eyes	\N	18	\N
-164	eCRF-Pauschale 30min	\N	50	\N
-147	BCVA standard 4M binocular	\N	15	\N
-151	BCVA  1M binocular	\N	15	\N
-153	UCVA standard 1M 2 eyes	\N	18	\N
-23	Untersuchung auf Heterophorie bzw. Strabismus gegebenenfalls einschließlich qualitativer Untersuchung des binokularen Sehaktes	1	12.1899999999999995	\N
-24	Qualitative und quantitative Untersuchung des binokularen Sehaktes	1	32.4500000000000028	\N
-25	Differenzierende Analyse und graphische Darstellung des Bewegungsablaufs beider Augen bei Augenmuskelstörungen, mindestens 36 Blickrichtungen pro Auge	1	93.8400000000000034	\N
-26	Kampimetrie (z. B. Bjerrum) auch Perimetrie nach Förster	1	16.2199999999999989	\N
-27	Projektionsperimetrie mit Marken verschiedener Reizwerte	1	24.3999999999999986	\N
-28	Quantitativ abgestufte (statische) Profilperimetrie	1	33.259999999999998	\N
-29	Farbsinnprüfung mit Pigmentproben (z. B. Farbtafeln)	1	8.1899999999999995	\N
-30	Farbsinnprüfung mit Anomaloskop	1	24.3999999999999986	\N
-31	Vollständige Untersuchung des zeitlichen Ablaufs der Adaptation	1	64.8799999999999955	\N
-32	Untersuchung des Dämmerungssehens ohne Blendung	1	12.1899999999999995	\N
-33	Untersuchung des Dämmerungssehens während der Blendung	1	12.1899999999999995	\N
-34	Untersuchung des Dämmerungssehens nach der Blendung (Readaptation)	1	12.1899999999999995	\N
-35	Elektroretinographische Untersuchung (ERG) und/oder elektrookulographische Untersuchung (EOG)	1	80.4300000000000068	\N
-36	Spaltlampenmikroskopie der vorderen und mittleren Augenabschnitte gegebenenfalls einschließlich der binokularen Untersuchung des hinteren Poles (z. B. Hruby-Linse)	1	9.91000000000000014	\N
-37	Gonioskopie	1	20.379999999999999	\N
-38	Binokulare Untersuchung des Augenhintergrundes einschließlich der äußeren Peripherie (z. B. Dreispiegelkontaktglas, Schaepens) gegebenenfalls einschließlich der Spaltlampenmikroskopie der vorderen und mittleren Augenabschnitte und/oder diasklerale Durchleuchtung	1	20.379999999999999	\N
-39	Diasklerale Durchleuchtung	1	8.1899999999999995	\N
-40	Exophthalmometrie	1	6.69000000000000039	\N
-41	Fluoreszenzuntersuchung der terminalen Strombahn am Augenhintergrund einschließlich Applikation des Teststoffes	1	32.4500000000000028	\N
-42	Fluoreszenzangiographische Untersuchung der terminalen Strombahn am Augenhintergrund einschließlich Aufnahmen und Applikation des Teststoffes	1	64.8799999999999955	\N
-155	UCVA standard 1M binocular	\N	15	\N
-152	UCVA standard 4M binocular	\N	15	\N
-45	Fotographische Verlaufskontrolle intraokularer Veränderungen mittels Spaltlampenfotographie	1	13.4100000000000001	\N
-46	Fotographische Verlaufskontrolle von Veränderungen des Augenhintergrunds mittels Fundusfotographie	1	20.1000000000000014	\N
-47	Tonometrische Untersuchung mit Anwendung des Impressionstonometers	1	7.33999999999999986	\N
-48	Tonometrische Untersuchung mit Anwendung des Applanationstonometers	1	10.4900000000000002	\N
-49	Tonometrische Untersuchung (mehrfach in zeitlichem Zusammenhang zur Anfertigung tonometrischer Kurven, mindestens vier Messungen) auch fortlaufende Tonometrie zur Ermittlung des Abflußwiderstandes	1	25.3999999999999986	\N
-50	Pupillographie	1	25.3999999999999986	\N
-51	Elektromyographie der äußeren Augenmuskeln	1	58.75	\N
-52	Ophthalmodynamometrie gegebenenfalls einschließlich Tonometrie, erste Messung	1	25.3999999999999986	\N
-154	UCVA standard near binocular	\N	15	\N
-145	UCVA ETDRS 4M binocular	\N	20	\N
-158	Contrast vision 2 eyes	\N	25	\N
-3	UCVA ETDRS 4M 2 eyes	\N	25	\N
-161	Specular microscopy 2 eyes	\N	40	\N
-162	AE Interview	\N	20	\N
-156	UCVA standard 4M 2 eyes	\N	18	\N
-157	UCVA standard near 2 eyes	\N	18	\N
-165	eCRF-Pauschale 10min	\N	10	\N
-144	UCVA ETDRS near 2 eyes	\N	25	\N
-159	Questionnaire interview 5-10 items	\N	50	\N
-160	Defocus refraction	\N	120	\N
-166	Reticam	\N	15	\N
-167	Blutentnahme	\N	15	\N
+COPY procedures_catalogue (id, name, type, base_cost, widgetclassname, widgetparameters) FROM stdin;
+11	Subjektive Refraktionsbestimmung mit sphärischen Gläsern	1	7.91000000000000014	\N	\N
+1	BCVA ETDRS 4M 2 eyes	\N	25	\N	\N
+12	Subjektive Refraktionsbestimmung mit sphärisch-zylindrischen Gläsern	1	11.9399999999999995	\N	\N
+163	IOLMaster biomerty	\N	50	\N	\N
+13	Objektive Refraktionsbestimmung mittels Skiaskopie oder Anwendung eines Refraktometers	1	9.91000000000000014	\N	\N
+14	Messung der Maximal- oder Gebrauchsakkommodation mittels Akkommodometer oder Optometer	1	8.05000000000000071	\N	\N
+15	Messung der Hornhautkrümmungsradien	1	6.03000000000000025	\N	\N
+16	Prüfung von Mehrstärken- oder Prismenbrillen mit Bestimmung der Fern- und Nahpunkte bei subjektiver Brillenunverträglichkeit	1	9.38000000000000078	\N	\N
+150	BCVA standard near binocular	\N	15	\N	\N
+148	BCVA standard near 2 eyes	\N	18	\N	\N
+17	Nachweis der Tränensekretionsmenge (z. B. Schirmer-Test)	1	2.68999999999999995	\N	\N
+146	BCVA standard 4M 2 eyes	\N	18	\N	\N
+2	BCVA ETDRS 4M binocular	\N	25	\N	\N
+143	BCVA standard 1M 2 eyes	\N	18	\N	\N
+164	eCRF-Pauschale 30min	\N	50	\N	\N
+147	BCVA standard 4M binocular	\N	15	\N	\N
+151	BCVA  1M binocular	\N	15	\N	\N
+153	UCVA standard 1M 2 eyes	\N	18	\N	\N
+23	Untersuchung auf Heterophorie bzw. Strabismus gegebenenfalls einschließlich qualitativer Untersuchung des binokularen Sehaktes	1	12.1899999999999995	\N	\N
+24	Qualitative und quantitative Untersuchung des binokularen Sehaktes	1	32.4500000000000028	\N	\N
+25	Differenzierende Analyse und graphische Darstellung des Bewegungsablaufs beider Augen bei Augenmuskelstörungen, mindestens 36 Blickrichtungen pro Auge	1	93.8400000000000034	\N	\N
+26	Kampimetrie (z. B. Bjerrum) auch Perimetrie nach Förster	1	16.2199999999999989	\N	\N
+27	Projektionsperimetrie mit Marken verschiedener Reizwerte	1	24.3999999999999986	\N	\N
+28	Quantitativ abgestufte (statische) Profilperimetrie	1	33.259999999999998	\N	\N
+29	Farbsinnprüfung mit Pigmentproben (z. B. Farbtafeln)	1	8.1899999999999995	\N	\N
+30	Farbsinnprüfung mit Anomaloskop	1	24.3999999999999986	\N	\N
+31	Vollständige Untersuchung des zeitlichen Ablaufs der Adaptation	1	64.8799999999999955	\N	\N
+32	Untersuchung des Dämmerungssehens ohne Blendung	1	12.1899999999999995	\N	\N
+33	Untersuchung des Dämmerungssehens während der Blendung	1	12.1899999999999995	\N	\N
+34	Untersuchung des Dämmerungssehens nach der Blendung (Readaptation)	1	12.1899999999999995	\N	\N
+35	Elektroretinographische Untersuchung (ERG) und/oder elektrookulographische Untersuchung (EOG)	1	80.4300000000000068	\N	\N
+36	Spaltlampenmikroskopie der vorderen und mittleren Augenabschnitte gegebenenfalls einschließlich der binokularen Untersuchung des hinteren Poles (z. B. Hruby-Linse)	1	9.91000000000000014	\N	\N
+37	Gonioskopie	1	20.379999999999999	\N	\N
+38	Binokulare Untersuchung des Augenhintergrundes einschließlich der äußeren Peripherie (z. B. Dreispiegelkontaktglas, Schaepens) gegebenenfalls einschließlich der Spaltlampenmikroskopie der vorderen und mittleren Augenabschnitte und/oder diasklerale Durchleuchtung	1	20.379999999999999	\N	\N
+39	Diasklerale Durchleuchtung	1	8.1899999999999995	\N	\N
+40	Exophthalmometrie	1	6.69000000000000039	\N	\N
+41	Fluoreszenzuntersuchung der terminalen Strombahn am Augenhintergrund einschließlich Applikation des Teststoffes	1	32.4500000000000028	\N	\N
+42	Fluoreszenzangiographische Untersuchung der terminalen Strombahn am Augenhintergrund einschließlich Aufnahmen und Applikation des Teststoffes	1	64.8799999999999955	\N	\N
+155	UCVA standard 1M binocular	\N	15	\N	\N
+152	UCVA standard 4M binocular	\N	15	\N	\N
+45	Fotographische Verlaufskontrolle intraokularer Veränderungen mittels Spaltlampenfotographie	1	13.4100000000000001	\N	\N
+46	Fotographische Verlaufskontrolle von Veränderungen des Augenhintergrunds mittels Fundusfotographie	1	20.1000000000000014	\N	\N
+47	Tonometrische Untersuchung mit Anwendung des Impressionstonometers	1	7.33999999999999986	\N	\N
+48	Tonometrische Untersuchung mit Anwendung des Applanationstonometers	1	10.4900000000000002	\N	\N
+49	Tonometrische Untersuchung (mehrfach in zeitlichem Zusammenhang zur Anfertigung tonometrischer Kurven, mindestens vier Messungen) auch fortlaufende Tonometrie zur Ermittlung des Abflußwiderstandes	1	25.3999999999999986	\N	\N
+50	Pupillographie	1	25.3999999999999986	\N	\N
+51	Elektromyographie der äußeren Augenmuskeln	1	58.75	\N	\N
+52	Ophthalmodynamometrie gegebenenfalls einschließlich Tonometrie, erste Messung	1	25.3999999999999986	\N	\N
+154	UCVA standard near binocular	\N	15	\N	\N
+145	UCVA ETDRS 4M binocular	\N	20	\N	\N
+158	Contrast vision 2 eyes	\N	25	\N	\N
+3	UCVA ETDRS 4M 2 eyes	\N	25	\N	\N
+161	Specular microscopy 2 eyes	\N	40	\N	\N
+162	AE Interview	\N	20	\N	\N
+156	UCVA standard 4M 2 eyes	\N	18	\N	\N
+157	UCVA standard near 2 eyes	\N	18	\N	\N
+165	eCRF-Pauschale 10min	\N	10	\N	\N
+144	UCVA ETDRS near 2 eyes	\N	25	\N	\N
+159	Questionnaire interview 5-10 items	\N	50	\N	\N
+160	Defocus refraction	\N	120	\N	\N
+166	Reticam	\N	15	\N	\N
+167	Blutentnahme	\N	15	\N	\N
 \.
 
 
@@ -3330,6 +3476,21 @@ COPY status_catalogue (id, idtrial, name, alerting) FROM stdin;
 --
 
 SELECT pg_catalog.setval('status_catalogue_id_seq', 515, true);
+
+
+--
+-- Data for Name: team_meetings; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY team_meetings (id, starttime, stoptime, title, idgroup) FROM stdin;
+\.
+
+
+--
+-- Name: team_meetings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('team_meetings_id_seq', 1, false);
 
 
 --
@@ -3592,6 +3753,21 @@ SELECT pg_catalog.setval('trial_visits_id_seq', 300, true);
 
 
 --
+-- Data for Name: visit_procedure_values; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY visit_procedure_values (id, idvisit_procedure, idpatient_visit, value_scalar, value_full) FROM stdin;
+\.
+
+
+--
+-- Name: visit_procedure_values_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('visit_procedure_values_id_seq', 1, false);
+
+
+--
 -- Data for Name: visit_procedures; Type: TABLE DATA; Schema: public; Owner: root
 --
 
@@ -3658,6 +3834,14 @@ ALTER TABLE ONLY groups_catalogue
 
 ALTER TABLE ONLY groups_catalogue
     ADD CONSTRAINT groups_catalogue_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: meeting_attendees_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY meeting_attendees
+    ADD CONSTRAINT meeting_attendees_pkey PRIMARY KEY (id);
 
 
 --
@@ -3789,6 +3973,14 @@ ALTER TABLE ONLY status_catalogue
 
 
 --
+-- Name: team_meetings_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY team_meetings
+    ADD CONSTRAINT team_meetings_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: trial_personnel_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -3834,6 +4026,14 @@ ALTER TABLE ONLY trial_property_annotations
 
 ALTER TABLE ONLY trial_visits
     ADD CONSTRAINT trial_visits_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: visit_procedure_values_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY visit_procedure_values
+    ADD CONSTRAINT visit_procedure_values_pkey PRIMARY KEY (id);
 
 
 --
@@ -3950,6 +4150,22 @@ ALTER TABLE ONLY group_assignments
 
 
 --
+-- Name: meeting_attendees_idattendee_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY meeting_attendees
+    ADD CONSTRAINT meeting_attendees_idattendee_fkey FOREIGN KEY (idattendee) REFERENCES personnel_catalogue(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: meeting_attendees_idmeeting_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY meeting_attendees
+    ADD CONSTRAINT meeting_attendees_idmeeting_fkey FOREIGN KEY (idmeeting) REFERENCES team_meetings(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: patient_visits_idpatient_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -4046,6 +4262,14 @@ ALTER TABLE ONLY status_catalogue
 
 
 --
+-- Name: team_meetings_idgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY team_meetings
+    ADD CONSTRAINT team_meetings_idgroup_fkey FOREIGN KEY (idgroup) REFERENCES groups_catalogue(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: tp_annot_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
 --
 
@@ -4099,6 +4323,22 @@ ALTER TABLE ONLY trial_properties
 
 ALTER TABLE ONLY trial_visits
     ADD CONSTRAINT trial_visits_idtrial_fkey FOREIGN KEY (idtrial) REFERENCES all_trials(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: visit_procedure_values_idpatient_visit_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY visit_procedure_values
+    ADD CONSTRAINT visit_procedure_values_idpatient_visit_fkey FOREIGN KEY (idpatient_visit) REFERENCES patient_visits(id) ON UPDATE RESTRICT ON DELETE CASCADE;
+
+
+--
+-- Name: visit_procedure_values_idvisit_procedure_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY visit_procedure_values
+    ADD CONSTRAINT visit_procedure_values_idvisit_procedure_fkey FOREIGN KEY (idvisit_procedure) REFERENCES visit_procedures(id) ON UPDATE CASCADE ON DELETE RESTRICT;
 
 
 --
