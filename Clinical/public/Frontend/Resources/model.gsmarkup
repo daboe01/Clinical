@@ -377,6 +377,7 @@
 		<column name="idprocedure"/>
 		<column name="actual_cost"/>
 		<relationship type="toOne" name="procedure" bindingColumn="idprocedure" target="procedure_statistics"/>
+		<relationship type="toOne" name="procedure_full" bindingColumn="idprocedure" target="procedures_catalogue"/>
 		<relationship type="toMany" name="personnel" bindingColumn="id" targetColumn="idprocedure" target="procedures_personnel"/>
 	</entity>
 	<entity id="procedure_statistics" store="#CPOwner.store">
