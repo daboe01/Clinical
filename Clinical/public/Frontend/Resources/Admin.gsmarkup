@@ -6,7 +6,7 @@
 
 <adminController id="mycontroller"/>
 
-<window id="personnelwindow" bridge="YES">
+<window id="personnelwindow" bridge="YES" delegate="mycontroller">
   <tabView type="topBezel">
    <tabViewItem title="Personnel">
      <splitView vertical="YES" autosaveName="vsplitter_accounts">
@@ -33,6 +33,14 @@
         <ButtonBar target="#CPOwner.groupassignmentController" plusButtonAction="insert:" minusButtonAction="remove:"/>
  
         <scrollView hasHorizontalScroller="NO">
+         <tableView zebra="yes" autosaveName="pdokus2_tv" valueBinding="#CPOwner.pdokusController">
+            <tableColumn identifier="name" title="name" editable="NO"/>
+            <tableColumn identifier="date" title="date" editable="NO"/>
+         </tableView>
+        </scrollView>
+        <ButtonBar target="#CPOwner" actionsButton="NO" id="pdocumentsbuttonbar"/>
+
+        <scrollView hasHorizontalScroller="NO">
              <tableView zebra="yes" autosaveName="pers_props_tv" delegate="#mycontroller" valueBinding="#CPOwner.personnelPropController">
                 <tableColumn identifier="property.name" title="name"/>
                 <tableColumn identifier="value" title="value" editable="YES"/>
@@ -48,7 +56,7 @@
             </tableView>
         </scrollView>
         <ButtonBar target="#CPOwner.personnelCostsController" plusButtonAction="insert:" minusButtonAction="remove:" actionsButton="YES">
-                 <popUpButtonItem title="Generate for the rest of this year" target="#myadmincontroller" action="runConfig:"/>
+             <popUpButtonItem title="Generate for the rest of this year" target="#myadmincontroller" action="runConfig:"/>
         </ButtonBar>
       </vbox>
     </splitView>
@@ -117,6 +125,7 @@
 <connectors>
         <outlet source="mycontroller" target="addpropswindow" label="addPropsWindow"/>
         <outlet source="mycontroller" target="addpropstv" label="addPropsTV"/>
+        <outlet source="mycontroller" target="pdocumentsbuttonbar" label="pDocumentsBB"/>
 </connectors>
 
 

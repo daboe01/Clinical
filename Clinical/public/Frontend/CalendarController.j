@@ -44,12 +44,18 @@ var _itemcache=[];
 	id mydocview;
 }
 -(void) connection: someConnection didReceiveData: data
-{	var arr = JSON.parse( data );
+{
+	var arr = JSON.parse( data );
 	var i,l=arr.length;
 	var mybutton;
 	for(i=0;i<l;i++)
 	{	mybutton=[CalendarItem new];
-		[mybutton setStringValue: arr[i]["name"] ];
+
+        var re = new RegExp("^[0-9]{4}-[0-9]{2}-[0-9]{2} ([0-9]{2}:[0-9]{2}).+");
+        var m = re.exec(arr[i]["event_date"]);
+        var title=arr[i]["name"];
+        if(m && m[1] !=='00:00') title=m[1]+" "+title;
+		[mybutton setStringValue: title ];
 		[mybutton setFont: [CPFont systemFontOfSize:9]];
 		[mybutton setTextColor:  arr[i]["type"]==1? [CPColor blackColor]:[CPColor darkGrayColor] ];
 		[mybutton setTarget: [[self collectionView] delegate]];

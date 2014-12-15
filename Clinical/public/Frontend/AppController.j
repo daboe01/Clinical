@@ -307,8 +307,8 @@ BaseURL=HostURL+"/";
 	[myalert addButtonWithTitle:"Delete"];
 	[myalert beginSheetModalForWindow:[CPApp mainWindow] modalDelegate:self didEndSelector:@selector(deleteDocWarningDidEnd:code:context:) contextInfo: nil];
 }
--(void) doDownload: sender
-{	var trialsController=[CPApp delegate].trialsController;
+-(void) doDownload:(id)sender
+{
 	var id=[personnelController valueForKeyPath:"selection.id"];
 	var iddoku=[pdokusController valueForKeyPath:"selection.name"];
 	window.open("/CT/pdownload/"+id+"/"+iddoku, 'download_window');

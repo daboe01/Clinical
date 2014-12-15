@@ -15,8 +15,17 @@
 	id	popover;
 	id	addPropsWindow;
 	id	addPropsTV;
+    id  pDocumentsBB;
 }
 
+-(void) _performPostLoadInit
+{
+	var button=[pDocumentsBB addButtonWithImageName:"download.png" target:[CPApp delegate] action:@selector(doDownload:)];
+    [button setToolTip:"Download/view document"];
+    [button bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"dokusController.selection.@count" options:nil];
+    [documentsButtonBar registerWithArrayController:[CPApp delegate].dokusController plusTooltip:"Upload document" minusTooltip:"Delete selected document..."];
+
+}
 
 -(void) cancelAddProperty: sender
 {	[popover close];
@@ -92,6 +101,8 @@
 {
 	id	searchTerm @accessors;
     id accountsWindow;
+    id transactionsBB;
+    id  progress;
 }
 
 -(void) setSearchTerm: aTerm
@@ -135,6 +146,27 @@
 	{   var accountsController=[CPApp delegate].accountsController;
         [accountsController remove:self];
     }
+}
+
+-(void) _performPostLoadInit
+{
+	[transactionsBB addButtonWithImageName:"reload.png" target:self action:@selector(reloadFromSAP:)];
+
+}
+
+-(void) reloadFromSAP:sender
+{
+    var idaccount=[[CPApp delegate].accountsController valueForKeyPath:"selection.id"];
+    var myreq=[CPURLRequest requestWithURL:"/CT/reload_account/"+idaccount+"?session="+ window.G_SESSION];
+    [myreq setHTTPMethod:"get"];
+    [CPURLConnection connectionWithRequest: myreq delegate:self];
+
+}
+-(void) connection: someConnection didReceiveData: data
+{
+    [[CPApp delegate].balancedController reload]
+    [progress stopAnimation: self];
+
 }
 
 @end
