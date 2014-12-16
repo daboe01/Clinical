@@ -163,6 +163,8 @@ BaseURL=HostURL+"/";
     id    popover;
 	id    addPropsWindow;
 	id    addPropsTV;
+    id	  searchProceduresTerm @accessors;
+
 }
 
 -(CPString) uploadURL
@@ -452,6 +454,12 @@ BaseURL=HostURL+"/";
 -(void) runAdmin: sender
 {
     window.open("/Frontend/index_deep.html?t=Admin.gsmarkup&session="+window.G_SESSION, 'admin_window');
+}
+
+-(void) setSearchProceduresTerm:aTerm
+{	if(aTerm && aTerm.length)
+	{	[proceduresCatController setFilterPredicate: [CPPredicate predicateWithFormat:"name CONTAINS %@", aTerm]];
+	} else [proceduresCatController setFilterPredicate: nil];
 }
 
 @end

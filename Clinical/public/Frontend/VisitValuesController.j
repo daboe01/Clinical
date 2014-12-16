@@ -1,5 +1,5 @@
 @import <AppKit/CPControl.j>
-@import "WidgetSimpleString.j"
+@import "Widgets/WidgetSimpleString.j"
 
 @implementation VisitValuesController : CPObject
 {
