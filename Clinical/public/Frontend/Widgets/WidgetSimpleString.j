@@ -7,7 +7,7 @@
 + viewClass
 {	return CPTextField;
 }
--(CGRect) size
++(CGRect) size
 {
     return CGSizeMake(60,25);
 }
@@ -15,7 +15,9 @@
 - viewWithFrame:(CGRect) myFrame
 {
 	_myView =[[[[self class] viewClass] alloc] initWithFrame: myFrame];
-	return self;
+    [_myView setEditable:YES];
+    [_myView setBezeled:YES];
+	return _myView;
 }
 
 -(void) setObjectValue:(id)aValue

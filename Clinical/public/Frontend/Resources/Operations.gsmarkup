@@ -175,6 +175,7 @@
         </scrollView>
         <ButtonBar target="#myadmincontroller" plusButtonAction="insertVisit:" minusButtonAction="removeVisit:" actionsButton="YES" id="visitsbuttonbar">
             <popUpButtonItem title="Create all visits" target="#myadmincontroller" action="addDefaultVisits:"/>
+            <popUpButtonItem title="Open eCRF..." target="#myadmincontroller" action="openECRF:"/>
         </ButtonBar>
      </vbox>
      <vbox>

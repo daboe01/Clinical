@@ -880,6 +880,13 @@
     }
 }
 
+-(void) openECRF:sender
+{
+    var vvc= [[VisitValuesController alloc] init];
+    var visit= [[CPApp delegate].patientVisitsController selectedObject];
+    [vvc orderFrontWindowForVisit:visit];
+}
+
 @end
 
 
