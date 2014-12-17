@@ -142,6 +142,7 @@ BaseURL=HostURL+"/";
     id    proceduresVisitController;
     id    proceduresPersonnelController;
     id    groupPersonnelController;
+    id    groupPersonnelController2;
     id    autocompletionController;
     id    teamMeetingsController;
     id    meetingAttendeesController;

@@ -64,8 +64,8 @@
 
 
   <tabViewItem title="Groups">
-
-   <vbox>
+     <hbox>
+      <vbox>
         <scrollView hasHorizontalScroller="NO">
          <tableView zebra="yes" autosaveName="allgroups_tv" valueBinding="#CPOwner.groupsControllerAll">
                 <tableColumn identifier="name" title="name" editable="YES"/>
@@ -75,7 +75,26 @@
          </tableView>
         </scrollView>
         <ButtonBar target="#CPOwner.groupsControllerAll" plusButtonAction="insert:" minusButtonAction="remove:"/>
-   </vbox>
+       </vbox>
+       <vbox>
+        <scrollView hasHorizontalScroller="NO">
+         <tableView zebra="yes" autosaveName="groups_meetings_tv" valueBinding="#CPOwner.teamMeetingsController">
+                <tableColumn identifier="title" title="name" editable="YES"/>
+                <tableColumn identifier="starttime" title="start" editable="YES"/>
+                <tableColumn identifier="stoptime" title="stop" editable="YES"/>
+         </tableView>
+        </scrollView>
+        <ButtonBar target="#CPOwner.teamMeetingsController" plusButtonAction="insert:" minusButtonAction="remove:"/>
+       </vbox>
+        <vbox>
+        <scrollView hasHorizontalScroller="NO">
+         <tableView zebra="yes" autosaveName="groups_meetings_attendee_tv" valueBinding="#CPOwner.meetingAttendeesController">
+                <tableColumn identifier="idattendee" dataView="#popupdataviewattendee"  title="person"/>
+         </tableView>
+        </scrollView>
+        <ButtonBar target="#CPOwner.meetingAttendeesController" plusButtonAction="insert:" minusButtonAction="remove:"/>
+       </vbox>
+    </hbox>
   </tabViewItem>
 
   <tabViewItem title="States">
@@ -98,6 +117,7 @@
  <vbox>
   <popUpButton width="200" id="popupdataviewgroup" itemsBinding="#CPOwner.groupsControllerAll.arrangedObjects.name"/>
   <popUpButton width="200" id="popupdataviewaccount" itemsBinding="#CPOwner.accountsController.arrangedObjects.name"/>
+  <tableViewPopup width="100" height="23" id="popupdataviewattendee" itemsController="#CPOwner.groupPersonnelController2" itemsValue="arrangedObjects.idpersonnel" itemsFace="arrangedObjects.name"/>
  </vbox>
 </window>
 

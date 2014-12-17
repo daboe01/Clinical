@@ -28,6 +28,7 @@
   <arrayController id="pdokus_controller2" entity="pdocuments_tag_unique" valueBinding="personnel_controller.selection.dokus2"/>
   <arrayController id="personnel_controller" entity="personnel_catalogue" autoFetch="YES"/>
   <arrayController id="group_personnel_controller" entity="personnel_catalogue" valueBinding="groups_controller.selection.personnel"/>
+  <arrayController id="group_personnel_controller2" entity="personnel_catalogue" valueBinding="groups_controller_all.selection.personnel"/>
   <arrayController id="personnel_costs_controller" entity="personnel_costs" valueBinding="personnel_controller.selection.costs"/>
   <arrayController id="trialpersonnel_controller" entity="trial_personnel" valueBinding="trials_controller.selection.personnel"/>
   <arrayController id="roles_controller" entity="roles_catalogue" autoFetch="YES"/>
@@ -57,7 +58,7 @@
   <arrayController id="procedures_personnel_controller" entity="procedures_personnel" valueBinding="procedures_visit_controller.selection.personnel"/>
   <arrayController id="personnel_event_controller" entity="personnel_event" valueBinding="personnel_controller.selection.events"/>
   <arrayController id="personnel_event_catalogue_controller" entity="personnel_event_catalogue" autoFetch="YES"/>
-  <arrayController id="team_meetings_controller" entity="team_meetings" valueBinding="groups_controller.selection.meetings"/>
+  <arrayController id="team_meetings_controller" entity="team_meetings" valueBinding="groups_controller_all.selection.meetings"/>
   <arrayController id="meeting_attendees_controller" entity="meeting_attendees" valueBinding="team_meetings_controller.selection.attendees"/>
 
 
@@ -412,7 +413,7 @@
 		<column name="title"/>
 		<column name="idgroup"/>
 		<relationship type="toOne" name="group" bindingColumn="idgroup" target="groups_catalogue"/>
-		<relationship type="toMany" name="attendees" bindingColumn="id" targetColumn="idattendee" target="meeting_attendees"/>
+		<relationship type="toMany" name="attendees" bindingColumn="id" targetColumn="idmeeting" target="meeting_attendees"/>
 	</entity>
 	<entity id="meeting_attendees" store="#CPOwner.store">
 		<column name="id" primaryKey="YES"/>
@@ -421,7 +422,7 @@
 		<column name="comment"/>
 		<column name="idattendee"/>
 		<column name="idmeeting"/>
-		<relationship type="toOne" name="person" bindingColumn="idattendee" target="personnel_controller"/>
+		<relationship type="toOne" name="person" bindingColumn="idattendee" target="personnel_catalogue"/>
 		<relationship type="toOne" name="meeting" bindingColumn="idmeeting" target="team_meetings"/>
 	</entity>
 
@@ -464,6 +465,7 @@
 	<outlet source="#CPOwner" target="procedures_visit_controller" label="proceduresVisitController"/>
 	<outlet source="#CPOwner" target="procedures_personnel_controller" label="proceduresPersonnelController"/>
 	<outlet source="#CPOwner" target="group_personnel_controller" label="groupPersonnelController"/>
+	<outlet source="#CPOwner" target="group_personnel_controller2" label="groupPersonnelController2"/>
 	<outlet source="#CPOwner" target="autocompletion_controller" label="autocompletionController"/>
 	<outlet source="#CPOwner" target="personnel_event_controller" label="personnelEventController"/>
 	<outlet source="#CPOwner" target="personnel_event_catalogue_controller" label="personnelEventCatController"/>

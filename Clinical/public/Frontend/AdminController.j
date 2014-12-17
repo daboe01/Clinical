@@ -23,7 +23,7 @@
 	var button=[pDocumentsBB addButtonWithImageName:"download.png" target:[CPApp delegate] action:@selector(doDownload:)];
     [button setToolTip:"Download/view document"];
     [button bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"dokusController.selection.@count" options:nil];
-    [documentsButtonBar registerWithArrayController:[CPApp delegate].dokusController plusTooltip:"Upload document" minusTooltip:"Delete selected document..."];
+    [pDocumentsBB registerWithArrayController:[CPApp delegate].dokusController plusTooltip:"Upload document" minusTooltip:"Delete selected document..."];
 
 }
 
