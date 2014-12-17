@@ -1360,6 +1360,22 @@ CREATE VIEW due_billings_list AS
 ALTER TABLE public.due_billings_list OWNER TO root;
 
 --
+-- Name: meeting_attendees; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE meeting_attendees (
+    id integer NOT NULL,
+    start_time_proposal timestamp without time zone,
+    stop_time_proposal timestamp without time zone,
+    comment text,
+    idattendee integer,
+    idmeeting integer
+);
+
+
+ALTER TABLE public.meeting_attendees OWNER TO postgres;
+
+--
 -- Name: personnel_event; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1389,6 +1405,21 @@ CREATE TABLE procedures_personnel (
 ALTER TABLE public.procedures_personnel OWNER TO postgres;
 
 --
+-- Name: team_meetings; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE team_meetings (
+    id integer NOT NULL,
+    starttime timestamp without time zone,
+    stoptime timestamp without time zone,
+    title text,
+    idgroup integer
+);
+
+
+ALTER TABLE public.team_meetings OWNER TO postgres;
+
+--
 -- Name: visit_procedures; Type: TABLE; Schema: public; Owner: root; Tablespace: 
 --
 
@@ -1407,94 +1438,121 @@ ALTER TABLE public.visit_procedures OWNER TO root;
 --
 
 CREATE VIEW event_overview AS
- SELECT DISTINCT a.name,
-    a.event_date,
-    COALESCE(a.ldap, personnel_catalogue.ldap) AS ldap,
-    a.type,
-    a.piz,
-    a.tooltip,
-    personnel_catalogue.ldap AS ldap_unfiltered
-   FROM (((( SELECT a_1.idtrial,
-            a_1.name,
-            a_1.event_date,
-            1 AS type,
-            a_1.piz,
-            a_1.tooltip,
-            a_1.ldap
-           FROM ( SELECT patients.idtrial,
-                    ((trial_visits.name || ' '::text) || all_trials_1.name) AS name,
-                    patient_visits.visit_date AS event_date,
-                    patients.piz,
-                    ((((patients.name || ', '::text) || patients.givenname) || ', *'::text) || patients.birthdate) AS tooltip,
+ WITH collector1 AS (
+         SELECT DISTINCT a.name,
+            a.event_date,
+            COALESCE(a.ldap, personnel_catalogue.ldap) AS ldap,
+            a.type,
+            a.piz,
+            a.tooltip,
+            personnel_catalogue.ldap AS ldap_unfiltered
+           FROM (((( SELECT a_1.idtrial,
+                    a_1.name,
+                    a_1.event_date,
+                    1 AS type,
+                    a_1.piz,
+                    a_1.tooltip,
+                    a_1.ldap
+                   FROM ( SELECT patients.idtrial,
+                            ((trial_visits.name || ' '::text) || all_trials_1.name) AS name,
+                            patient_visits.visit_date AS event_date,
+                            patients.piz,
+                            ((((patients.name || ', '::text) || patients.givenname) || ', *'::text) || patients.birthdate) AS tooltip,
+                            personnel_catalogue_1.ldap
+                           FROM ((((((patient_visits
+                             JOIN patients ON ((patient_visits.idpatient = patients.id)))
+                             JOIN all_trials all_trials_1 ON ((patients.idtrial = all_trials_1.id)))
+                             JOIN trial_visits ON ((patient_visits.idvisit = trial_visits.id)))
+                             LEFT JOIN visit_procedures ON ((visit_procedures.idvisit = trial_visits.id)))
+                             LEFT JOIN procedures_personnel ON ((procedures_personnel.idprocedure = visit_procedures.id)))
+                             LEFT JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = procedures_personnel.idpersonnel)))) a_1
+                UNION
+                 SELECT trial_process_step.idtrial,
+                    ((((COALESCE(process_steps_catalogue.name, ''::text) || ' '::text) || COALESCE(trial_process_step.title, ''::text)) || ' '::text) || all_trials_1.name),
+                    trial_process_step.start_date AS event_date,
+                    2 AS type,
+                    NULL::integer AS piz,
+                    NULL::text AS tooltip,
                     personnel_catalogue_1.ldap
-                   FROM ((((((patient_visits
-                     JOIN patients ON ((patient_visits.idpatient = patients.id)))
-                     JOIN all_trials all_trials_1 ON ((patients.idtrial = all_trials_1.id)))
-                     JOIN trial_visits ON ((patient_visits.idvisit = trial_visits.id)))
-                     LEFT JOIN visit_procedures ON ((visit_procedures.idvisit = trial_visits.id)))
-                     LEFT JOIN procedures_personnel ON ((procedures_personnel.idprocedure = visit_procedures.id)))
-                     LEFT JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = procedures_personnel.idpersonnel)))) a_1
-        UNION
-         SELECT trial_process_step.idtrial,
-            ((((COALESCE(process_steps_catalogue.name, ''::text) || ' '::text) || COALESCE(trial_process_step.title, ''::text)) || ' '::text) || all_trials_1.name),
-            trial_process_step.start_date AS event_date,
-            2 AS type,
-            NULL::integer AS piz,
-            NULL::text AS tooltip,
-            personnel_catalogue_1.ldap
-           FROM (((trial_process_step
-             JOIN process_steps_catalogue ON ((trial_process_step.type = process_steps_catalogue.id)))
-             JOIN all_trials all_trials_1 ON ((all_trials_1.id = trial_process_step.idtrial)))
-             LEFT JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = trial_process_step.idpersonnel)))
-        UNION
-         SELECT ( SELECT min(all_trials_1.id) AS min
-                   FROM (all_trials all_trials_1
-                     JOIN group_assignments group_assignments_1 ON ((group_assignments_1.idgroup = all_trials_1.idgroup)))
-                  WHERE (group_assignments_1.idpersonnel = personnel_catalogue_1.id)) AS idtrial,
-            ('Abwesend: '::text || personnel_catalogue_1.ldap),
-            a_1.day AS event_date,
-            3 AS type,
-            NULL::integer AS piz,
-            personnel_event.comment AS tooltip,
-            NULL::text AS ldap
-           FROM ((personnel_event
-             JOIN ( SELECT day.day
-                   FROM generate_series(((now())::date - '1 year'::interval), ((now())::date + '1 year'::interval), '1 day'::interval) day(day)) a_1 ON (((a_1.day >= (personnel_event.start_time)::date) AND (a_1.day <= (personnel_event.end_time)::date))))
-             JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = personnel_event.idpersonnel)))
-          WHERE (personnel_event.type <> 4)
-        UNION
-         SELECT ( SELECT min(all_trials_1.id) AS min
-                   FROM (all_trials all_trials_1
-                     JOIN group_assignments group_assignments_1 ON ((group_assignments_1.idgroup = all_trials_1.idgroup)))
-                  WHERE (group_assignments_1.idpersonnel = personnel_catalogue_1.id)) AS idtrial,
-            ('Abwesend: '::text || personnel_catalogue_1.ldap),
-            a_1.day AS event_date,
-            3 AS type,
-            NULL::integer AS piz,
-            personnel_event.comment AS tooltip,
-            NULL::text AS ldap
-           FROM ((personnel_event
-             JOIN ( SELECT day.day
-                   FROM generate_series(((now())::date - '1 year'::interval), ((now())::date + '1 year'::interval), '1 day'::interval) day(day)) a_1 ON ((((a_1.day >= (personnel_event.start_time)::date) AND (a_1.day <= (personnel_event.end_time)::date)) AND (date_part('dow'::text, a_1.day) = ((personnel_event.comment)::integer)::double precision))))
-             JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = personnel_event.idpersonnel)))
-          WHERE (personnel_event.type = 4)
-        UNION
-         SELECT trial_process_step.idtrial,
-            (((('Ende: '::text || (COALESCE(process_steps_catalogue.name, ''::text) || ' '::text)) || COALESCE(trial_process_step.title, ''::text)) || ' '::text) || all_trials_1.name),
-            trial_process_step.end_date AS event_date,
-            2 AS type,
-            NULL::integer AS piz,
-            NULL::text AS tooltip,
-            personnel_catalogue_1.ldap
-           FROM (((trial_process_step
-             JOIN process_steps_catalogue ON ((trial_process_step.type = process_steps_catalogue.id)))
-             LEFT JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = trial_process_step.idpersonnel)))
-             JOIN all_trials all_trials_1 ON ((all_trials_1.id = trial_process_step.idtrial)))) a
-     LEFT JOIN all_trials ON ((a.idtrial = all_trials.id)))
-     LEFT JOIN group_assignments ON ((group_assignments.idgroup = all_trials.idgroup)))
-     LEFT JOIN personnel_catalogue ON ((personnel_catalogue.id = group_assignments.idpersonnel)))
-  WHERE ((a.name IS NOT NULL) AND (a.event_date IS NOT NULL))
-  ORDER BY a.type DESC;
+                   FROM (((trial_process_step
+                     JOIN process_steps_catalogue ON ((trial_process_step.type = process_steps_catalogue.id)))
+                     JOIN all_trials all_trials_1 ON ((all_trials_1.id = trial_process_step.idtrial)))
+                     LEFT JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = trial_process_step.idpersonnel)))
+                UNION
+                 SELECT ( SELECT min(all_trials_1.id) AS min
+                           FROM (all_trials all_trials_1
+                             JOIN group_assignments group_assignments_1 ON ((group_assignments_1.idgroup = all_trials_1.idgroup)))
+                          WHERE (group_assignments_1.idpersonnel = personnel_catalogue_1.id)) AS idtrial,
+                    ('Abwesend: '::text || personnel_catalogue_1.ldap),
+                    a_1.day AS event_date,
+                    3 AS type,
+                    NULL::integer AS piz,
+                    personnel_event.comment AS tooltip,
+                    NULL::text AS ldap
+                   FROM ((personnel_event
+                     JOIN ( SELECT day.day
+                           FROM generate_series(((now())::date - '1 year'::interval), ((now())::date + '1 year'::interval), '1 day'::interval) day(day)) a_1 ON (((a_1.day >= (personnel_event.start_time)::date) AND (a_1.day <= (personnel_event.end_time)::date))))
+                     JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = personnel_event.idpersonnel)))
+                  WHERE (personnel_event.type <> 4)
+                UNION
+                 SELECT ( SELECT min(all_trials_1.id) AS min
+                           FROM (all_trials all_trials_1
+                             JOIN group_assignments group_assignments_1 ON ((group_assignments_1.idgroup = all_trials_1.idgroup)))
+                          WHERE (group_assignments_1.idpersonnel = personnel_catalogue_1.id)) AS idtrial,
+                    ('Frei: '::text || personnel_catalogue_1.ldap),
+                    a_1.day AS event_date,
+                    3 AS type,
+                    NULL::integer AS piz,
+                    personnel_event.comment AS tooltip,
+                    NULL::text AS ldap
+                   FROM ((personnel_event
+                     JOIN ( SELECT day.day
+                           FROM generate_series(((now())::date - '1 year'::interval), ((now())::date + '1 year'::interval), '1 day'::interval) day(day)) a_1 ON ((((a_1.day >= (personnel_event.start_time)::date) AND (a_1.day <= (personnel_event.end_time)::date)) AND (date_part('dow'::text, a_1.day) = ((personnel_event.comment)::integer)::double precision))))
+                     JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = personnel_event.idpersonnel)))
+                  WHERE (personnel_event.type = 4)
+                UNION
+                 SELECT trial_process_step.idtrial,
+                    (((('Ende: '::text || (COALESCE(process_steps_catalogue.name, ''::text) || ' '::text)) || COALESCE(trial_process_step.title, ''::text)) || ' '::text) || all_trials_1.name),
+                    trial_process_step.end_date AS event_date,
+                    2 AS type,
+                    NULL::integer AS piz,
+                    NULL::text AS tooltip,
+                    personnel_catalogue_1.ldap
+                   FROM (((trial_process_step
+                     JOIN process_steps_catalogue ON ((trial_process_step.type = process_steps_catalogue.id)))
+                     LEFT JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = trial_process_step.idpersonnel)))
+                     JOIN all_trials all_trials_1 ON ((all_trials_1.id = trial_process_step.idtrial)))) a
+             LEFT JOIN all_trials ON ((a.idtrial = all_trials.id)))
+             LEFT JOIN group_assignments ON ((group_assignments.idgroup = all_trials.idgroup)))
+             LEFT JOIN personnel_catalogue ON ((personnel_catalogue.id = group_assignments.idpersonnel)))
+          WHERE ((a.name IS NOT NULL) AND (a.event_date IS NOT NULL))
+          ORDER BY a.type DESC
+        )
+ SELECT collector1.name,
+    collector1.event_date,
+    collector1.ldap,
+    collector1.type,
+    collector1.piz,
+    collector1.tooltip,
+    collector1.ldap_unfiltered
+   FROM collector1
+UNION
+ SELECT ('Meeting: '::text || a.title) AS name,
+    COALESCE(a.starttime, (now())::timestamp without time zone) AS event_date,
+    personnel_catalogue.ldap,
+    3 AS type,
+    NULL::integer AS piz,
+    NULL::text AS tooltip,
+    personnel_catalogue.ldap AS ldap_unfiltered
+   FROM (( SELECT DISTINCT team_meetings.title,
+            COALESCE(meeting_attendees.idattendee, group_assignments.idpersonnel) AS idpersonnel,
+            team_meetings.starttime,
+            team_meetings.stoptime
+           FROM ((team_meetings
+             JOIN group_assignments ON ((group_assignments.idgroup = team_meetings.idgroup)))
+             LEFT JOIN meeting_attendees ON ((meeting_attendees.idmeeting = team_meetings.id)))) a
+     JOIN personnel_catalogue ON ((personnel_catalogue.id = a.idpersonnel)))
+  ORDER BY 2;
 
 
 ALTER TABLE public.event_overview OWNER TO root;
@@ -1658,22 +1716,6 @@ CREATE VIEW list_for_travelbilling AS
 
 
 ALTER TABLE public.list_for_travelbilling OWNER TO root;
-
---
--- Name: meeting_attendees; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE meeting_attendees (
-    id integer NOT NULL,
-    start_time_proposal timestamp without time zone,
-    stop_time_proposal timestamp without time zone,
-    comment text,
-    idattendee integer,
-    idmeeting integer
-);
-
-
-ALTER TABLE public.meeting_attendees OWNER TO postgres;
 
 --
 -- Name: meeting_attendees_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -2379,21 +2421,6 @@ CREATE VIEW tagesinfos AS
 
 
 ALTER TABLE public.tagesinfos OWNER TO root;
-
---
--- Name: team_meetings; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
---
-
-CREATE TABLE team_meetings (
-    id integer NOT NULL,
-    starttime timestamp without time zone,
-    stoptime timestamp without time zone,
-    title text,
-    idgroup integer
-);
-
-
-ALTER TABLE public.team_meetings OWNER TO postgres;
 
 --
 -- Name: team_meetings_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -3145,6 +3172,7 @@ COPY patient_visits (id, idpatient, idvisit, visit_date, state, travel_costs, da
 3811	614	9	\N	\N	\N	\N	\N	\N	\N
 3812	614	10	\N	\N	\N	\N	\N	\N	\N
 3799	612	5	2014-11-18 00:00:00	\N	\N	\N	\N	\N	\N
+3813	608	7	\N	\N	\N	\N	\N	\N	\N
 \.
 
 
@@ -3152,7 +3180,7 @@ COPY patient_visits (id, idpatient, idvisit, visit_date, state, travel_costs, da
 -- Name: patient_visits_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('patient_visits_id_seq', 3812, true);
+SELECT pg_catalog.setval('patient_visits_id_seq', 3813, true);
 
 
 --
@@ -3296,22 +3324,14 @@ SELECT pg_catalog.setval('personnel_properties_id_seq', 128, true);
 
 COPY procedures_catalogue (id, name, type, base_cost, widgetclassname, widgetparameters) FROM stdin;
 11	Subjektive Refraktionsbestimmung mit sphärischen Gläsern	1	7.91000000000000014	\N	\N
-1	BCVA ETDRS 4M 2 eyes	\N	25	\N	\N
 12	Subjektive Refraktionsbestimmung mit sphärisch-zylindrischen Gläsern	1	11.9399999999999995	\N	\N
 163	IOLMaster biomerty	\N	50	\N	\N
 13	Objektive Refraktionsbestimmung mittels Skiaskopie oder Anwendung eines Refraktometers	1	9.91000000000000014	\N	\N
 14	Messung der Maximal- oder Gebrauchsakkommodation mittels Akkommodometer oder Optometer	1	8.05000000000000071	\N	\N
 15	Messung der Hornhautkrümmungsradien	1	6.03000000000000025	\N	\N
 16	Prüfung von Mehrstärken- oder Prismenbrillen mit Bestimmung der Fern- und Nahpunkte bei subjektiver Brillenunverträglichkeit	1	9.38000000000000078	\N	\N
-150	BCVA standard near binocular	\N	15	\N	\N
-148	BCVA standard near 2 eyes	\N	18	\N	\N
 17	Nachweis der Tränensekretionsmenge (z. B. Schirmer-Test)	1	2.68999999999999995	\N	\N
-146	BCVA standard 4M 2 eyes	\N	18	\N	\N
-2	BCVA ETDRS 4M binocular	\N	25	\N	\N
-143	BCVA standard 1M 2 eyes	\N	18	\N	\N
 164	eCRF-Pauschale 30min	\N	50	\N	\N
-147	BCVA standard 4M binocular	\N	15	\N	\N
-151	BCVA  1M binocular	\N	15	\N	\N
 153	UCVA standard 1M 2 eyes	\N	18	\N	\N
 23	Untersuchung auf Heterophorie bzw. Strabismus gegebenenfalls einschließlich qualitativer Untersuchung des binokularen Sehaktes	1	12.1899999999999995	\N	\N
 24	Qualitative und quantitative Untersuchung des binokularen Sehaktes	1	32.4500000000000028	\N	\N
@@ -3344,19 +3364,27 @@ COPY procedures_catalogue (id, name, type, base_cost, widgetclassname, widgetpar
 51	Elektromyographie der äußeren Augenmuskeln	1	58.75	\N	\N
 52	Ophthalmodynamometrie gegebenenfalls einschließlich Tonometrie, erste Messung	1	25.3999999999999986	\N	\N
 154	UCVA standard near binocular	\N	15	\N	\N
-145	UCVA ETDRS 4M binocular	\N	20	\N	\N
 158	Contrast vision 2 eyes	\N	25	\N	\N
-3	UCVA ETDRS 4M 2 eyes	\N	25	\N	\N
 161	Specular microscopy 2 eyes	\N	40	\N	\N
 162	AE Interview	\N	20	\N	\N
 156	UCVA standard 4M 2 eyes	\N	18	\N	\N
 157	UCVA standard near 2 eyes	\N	18	\N	\N
 165	eCRF-Pauschale 10min	\N	10	\N	\N
-144	UCVA ETDRS near 2 eyes	\N	25	\N	\N
 159	Questionnaire interview 5-10 items	\N	50	\N	\N
 160	Defocus refraction	\N	120	\N	\N
 166	Reticam	\N	15	\N	\N
 167	Blutentnahme	\N	15	\N	\N
+1	BCVA ETDRS 4M 2 eyes	\N	25	WidgetSimpleString	\N
+2	BCVA ETDRS 4M binocular	\N	25	WidgetSimpleString	\N
+3	UCVA ETDRS 4M 2 eyes	\N	25	WidgetSimpleString	\N
+151	BCVA  1M binocular	\N	15	WidgetSimpleString	\N
+150	BCVA standard near binocular	\N	15	WidgetSimpleString	\N
+148	BCVA standard near 2 eyes	\N	18	WidgetSimpleString	\N
+147	BCVA standard 4M binocular	\N	15	WidgetSimpleString	\N
+146	BCVA standard 4M 2 eyes	\N	18	WidgetSimpleString	\N
+145	UCVA ETDRS 4M binocular	\N	20	WidgetSimpleString	\N
+144	UCVA ETDRS near 2 eyes	\N	25	WidgetSimpleString	\N
+143	BCVA standard 1M 2 eyes	\N	18	WidgetSimpleString	\N
 \.
 
 
@@ -3785,7 +3813,7 @@ COPY visit_procedures (id, idvisit, idprocedure, actual_cost) FROM stdin;
 -- Name: visit_procedures_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('visit_procedures_id_seq', 141, true);
+SELECT pg_catalog.setval('visit_procedures_id_seq', 142, true);
 
 
 --
