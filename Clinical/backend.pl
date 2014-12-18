@@ -882,6 +882,20 @@ get '/CT/new_patient/:idpatient' => [idpatient =>qr/[0-9]+/] => sub
     $sth->execute(($idtrial, $idreference_visit));
     $self->render(text=>'OK');
 };
+get '/CT/new_ecrf/:idpatientvisit' => [idpatientvisit =>qr/[0-9]+/] => sub
+{   my $self = shift;
+    my $idpatientvisit = $self->param('idpatientvisit');
+    my $idvisit= $self->getObjectFromTable('patient_visits', $idpatientvisit)->{idvisit};
+    my $dbh=$self->db;
+    my $stmt = qq{INSERT INTO visit_procedure_values (idvisit_procedure, idpatient_visit) ( SELECT visit_procedures.id as idvisit_procedure, ? as idpatient_visit
+                  FROM visit_procedures
+                  join procedures_catalogue on procedures_catalogue.id=idprocedure
+                  where visit_procedures.idvisit= ? and widgetclassname is not null)};
+    my $sth = $dbh->prepare($stmt);
+    $sth->execute(($idpatientvisit, $idvisit));
+    $self->render(text=>'OK');
+};
+
 get '/CT/validate_iban/:idpatient' => [idpatient =>qr/[0-9]+/] => sub
 {   my $self = shift;
     my $idpatient = $self->param('idpatient');

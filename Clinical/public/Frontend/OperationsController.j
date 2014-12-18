@@ -884,7 +884,7 @@
 {
     var vvc= [[VisitValuesController alloc] init];
     var visit= [[CPApp delegate].patientVisitsController selectedObject];
-    [vvc orderFrontWindowForVisit:visit];
+    [vvc orderFrontWindowForPatientVisit:visit];
 }
 
 @end

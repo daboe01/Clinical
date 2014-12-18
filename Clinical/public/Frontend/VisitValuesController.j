@@ -14,13 +14,17 @@
     return ["WidgetSimpleString", "WidgetOSDI"];
 }
 
--(void) orderFrontWindowForVisit:(id) aVisit
+-(void) orderFrontWindowForPatientVisit:(id) aVisit
 {
+    var visitProcedures=[aVisit valueForKeyPath:"visit.procedures"];
+    // visitProcedureValues need to be autocreated upon visit insert in DB so we can guarantee existence for binding
+	var myreq=[CPURLRequest requestWithURL: BaseURL+"CT/new_ecrf/"+[aVisit valueForKey:"id"]];
+	[CPURLConnection sendSynchronousRequest: myreq returningResponse: nil];
+    [[CPApp delegate].patientVisitValuesController reload];
+    var visitProcedureValues=[aVisit valueForKey:"values"];
+
     _window=[[CPWindow alloc] initWithContentRect:CGRectMake(100,100, 500, 500)
                           styleMask:CPTitledWindowMask|CPClosableWindowMask|CPMiniaturizableWindowMask|CPResizableWindowMask];
-    var visitProcedures=[aVisit valueForKeyPath:"visit.procedures"];
-    var visitProcedureValues=[aVisit valueForKey:"values"];
-// <!> fixme: these need to be autocreated upon visit insert in DB so we can guarantee existence
     var i, l=[visitProcedures count];
     var cursor= CGPointMake(0, 0);
     for(i=0; i<l; i++)
