@@ -882,17 +882,91 @@ get '/CT/new_patient/:idpatient' => [idpatient =>qr/[0-9]+/] => sub
     $sth->execute(($idtrial, $idreference_visit));
     $self->render(text=>'OK');
 };
-get '/CT/new_ecrf/:idpatientvisit' => [idpatientvisit =>qr/[0-9]+/] => sub
+post '/CT/new_ecrf/:idpatientvisit' => [idpatientvisit =>qr/[0-9]+/] => sub
 {   my $self = shift;
     my $idpatientvisit = $self->param('idpatientvisit');
     my $idvisit= $self->getObjectFromTable('patient_visits', $idpatientvisit)->{idvisit};
     my $dbh=$self->db;
     my $stmt = qq{INSERT INTO visit_procedure_values (idvisit_procedure, idpatient_visit) ( SELECT visit_procedures.id as idvisit_procedure, ? as idpatient_visit
-                  FROM visit_procedures
-                  join procedures_catalogue on procedures_catalogue.id=idprocedure
-                  where visit_procedures.idvisit= ? and widgetclassname is not null)};
+        FROM visit_procedures
+        join procedures_catalogue on procedures_catalogue.id=idprocedure
+        left join visit_procedure_values on visit_procedure_values.idvisit_procedure = visit_procedures.id and visit_procedure_values.idpatient_visit=?
+        where visit_procedures.idvisit= ? and widgetclassname is not null and widgetclassname!='' and visit_procedure_values.id is null)};
     my $sth = $dbh->prepare($stmt);
-    $sth->execute(($idpatientvisit, $idvisit));
+    $sth->execute(($idpatientvisit,$idpatientvisit, $idvisit));
+    $self->render(text=>'OK');
+};
+post '/CT/invite_teammeeting/:idteammeeting' => [idteammeeting =>qr/[0-9]+/] => sub
+{   my $self = shift;
+    my $idteammeeting = $self->param('idteammeeting');
+    
+    my $sessionid=$self->param('session');
+    my  %session;
+    tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
+    my $ldap=$session{username};
+    
+    my $dbh=$self->db;
+    my $stmt = qq{ SELECT a.title, a.starttime, personnel_catalogue.email, personnel_catalogue.ldap
+        FROM ( SELECT DISTINCT team_meetings.title, COALESCE(meeting_attendees.idattendee, group_assignments.idpersonnel) AS idpersonnel, team_meetings.starttime, team_meetings.stoptime
+        FROM team_meetings
+        JOIN group_assignments ON group_assignments.idgroup = team_meetings.idgroup
+        LEFT JOIN meeting_attendees ON meeting_attendees.idmeeting = team_meetings.id) a
+        JOIN personnel_catalogue ON personnel_catalogue.id = a.idpersonnel where team_meetings.id=?) };
+    my $sth = $dbh->prepare($stmt);
+    $sth->execute(($idteammeeting));
+    while(my $c=$sth->fetchrow_hashref())
+    {
+    }
+    
+    my $calendar = Data::ICal->new();
+    $calendar->add_properties(
+    method      => "REQUEST",
+    );
+    my $event = Data::ICal::Entry::Event->new();
+    $event->add_properties(
+    summary     => "Subject",
+    description => "FreeFormText.",
+    dtstart     => Date::ICal->new( epoch => time )->ical,
+    dtend       => Date::ICal->new( epoch => time +3 )->ical,
+    dtstamp     => Date::ICal->new( epoch => time )->ical,
+    class       => "PUBLIC",
+    organizer   => "CN=Daniel:MAILTO:daboe01\@googlemail.com",
+    attendee   => "ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE;CN=daniel:MAILTO:daniel.boehringer\@uniklinik-freiburg.de",
+    location    => "Phone call",
+    priority    => 5,
+    transp      => "OPAQUE",
+    sequence    => 0,
+    uid         => "1234567",
+    );
+    $calendar->add_entry($event);
+    
+    my $data=$calendar->as_string;
+    
+    my $msg = MIME::Lite->new(
+    From    =>'daboe01@googlemail.com',
+    To      =>'daniel.boehringer@uniklinik-freiburg.de',
+    Subject =>'Wichtiges Meeting!',
+    Type    =>'multipart/mixed',
+    );
+    $msg->attach(
+    Type    => "TEXT",
+    Data    => "Wir muessen reden!\n",
+    );
+    
+    my $part = MIME::Lite->new(
+    Type	=> "text/calendar;  name=\"subject.ics\"",
+    Filename	=> "subject.ics",
+    Data        => $data,
+    Encoding	=> 'base64',
+    Disposition	=> 'attachment',
+    );
+    $msg->attr('content-class' => 'urn:content-classes:calendarmessage',
+    'content-description' => "subject.ics",
+    );
+    $msg->attach($part);
+    
+    # $msg->send;
+    
     $self->render(text=>'OK');
 };
 
