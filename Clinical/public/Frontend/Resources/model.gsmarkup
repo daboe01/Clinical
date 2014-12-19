@@ -16,7 +16,6 @@
   <sortDescriptor id="by_account_number" key="account_number"/>
   <sortDescriptor id="by_ordering" key="ordering" numeric="YES"/>
 
-
   <arrayController id="groups_controller" entity="groups_catalogue" valueBinding="trials_controller.selection.group" sortDescriptor="by_name"/>
   <arrayController id="groups_controller_all" entity="groups_catalogue" autoFetch="YES" sortDescriptor="by_name"/>
   <arrayController id="trials_controller" entity="all_trials" autoFetch="YES" sortDescriptor="by_name"/>
@@ -26,7 +25,7 @@
   <arrayController id="dokus_controller2" entity="documents_tag_unique" valueBinding="trials_controller.selection.dokus2"/>
   <arrayController id="pdokus_controller" entity="pdocuments" valueBinding="personnel_controller.selection.dokus"/>
   <arrayController id="pdokus_controller2" entity="pdocuments_tag_unique" valueBinding="personnel_controller.selection.dokus2"/>
-  <arrayController id="personnel_controller" entity="personnel_catalogue" autoFetch="YES"/>
+  <arrayController id="personnel_controller" entity="personnel_catalogue" autoFetch="YES" sortDescriptor="by_name"/>
   <arrayController id="group_personnel_controller" entity="personnel_catalogue" valueBinding="groups_controller.selection.personnel"/>
   <arrayController id="group_personnel_controller2" entity="personnel_catalogue" valueBinding="groups_controller_all.selection.personnel"/>
   <arrayController id="personnel_costs_controller" entity="personnel_costs" valueBinding="personnel_controller.selection.costs"/>
@@ -39,10 +38,11 @@
   <arrayController id="perso_properties_cat_controller" entity="personnel_properties_catalogue" autoFetch="YES" sortDescriptor="by_order"/>
   <arrayController id="perso_properties_controller" entity="personnel_properties" valueBinding="personnel_controller.selection.props" sortDescriptor="by_proporder"/>
   <arrayController id="group_assignment_controller" entity="group_assignments" valueBinding="personnel_controller.selection.groups" sortDescriptor="by_id"/>
+  <arrayController id="group_assignment_controller2" entity="group_assignments" valueBinding="groups_controller_all.selection.personnel2" sortDescriptor="by_id"/>
   <arrayController id="patients_controller" entity="patients" sortDescriptor="by_id" valueBinding="trials_controller.selection.patients"/>
   <arrayController id="patient_visits_controller" entity="patient_visits"  valueBinding="patients_controller.selection.visits"/>
   <arrayController id="patient_visits_controller2" entity="patient_visits"  valueBinding="patients_controller.selection.visits" filterPredicate="visitdatenotnull"/>
-  <arrayController id="patient_visit_values_controller" entity="visit_procedure_values"  valueBinding="patient_visits_controller.selection.values"/>
+  <arrayController id="patient_visit_values_controller" entity="visit_procedure_values"  valueBinding="patient_visits_controller.selection.visitvalues"/>
   <arrayController id="visits_controller" entity="trial_visits" valueBinding="trials_controller.selection.visits" sortDescriptor="by_ordering"/>
   <arrayController id="visit_dates_controller" entity="visit_dates" valueBinding="patient_visits_controller.selection.date_proposals" sortDescriptor="by_caldate"/>
   <arrayController id="tagesinfos_controller" entity="tagesinfos" valueBinding="visit_dates_controller.selection.tagesinfos"/>
@@ -60,8 +60,6 @@
   <arrayController id="personnel_event_catalogue_controller" entity="personnel_event_catalogue" autoFetch="YES"/>
   <arrayController id="team_meetings_controller" entity="team_meetings" valueBinding="groups_controller_all.selection.meetings"/>
   <arrayController id="meeting_attendees_controller" entity="meeting_attendees" valueBinding="team_meetings_controller.selection.attendees"/>
-
-
 </objects>
 
 <entities>
@@ -73,6 +71,7 @@
 		<column name="sprechstunde"/>
 		<relationship type="toMany" name="trials" targetColumn="idgroup" target="all_trials"/>
 		<relationship type="toMany" name="personnel" targetColumn="idgroup" target="group_assignments_name"/>
+		<relationship type="toMany" name="personnel2" targetColumn="idgroup" target="group_assignments"/>
 		<relationship type="toMany" name="meetings" targetColumn="idgroup" target="team_meetings"/>
 	</entity>
 	<entity id="all_trials" store="#CPOwner.store">
@@ -292,7 +291,7 @@
 		<relationship type="toOne" name="patient" bindingColumn="idpatient" target="patients"/>
 		<relationship type="toOne" name="visit" bindingColumn="idvisit" target="trial_visits"/>
 		<relationship type="toMany" name="date_proposals" bindingColumn="id" targetColumn="idvisit" target="visit_dates"/>
-		<relationship type="toMany" name="values" bindingColumn="id" targetColumn="idpatient_visit" target="visit_procedure_values"/>
+		<relationship type="toMany" name="visitvalues" bindingColumn="id" targetColumn="idpatient_visit" target="visit_procedure_values"/>
 	</entity>
 	<entity id="visit_procedure_values" store="#CPOwner.store">
 		<column name="id" primaryKey="YES"/>
@@ -300,6 +299,7 @@
 		<column name="idpatient_visit"/>
 		<column name="value_scalar"/>
 		<column name="value_full"/>
+		<relationship type="toOne" name="visit_procedure" bindingColumn="idvisit_procedure" target="visit_procedures"/>
 	</entity>
 	<entity id="visit_dates" store="#CPOwner.store">
 		<column name="startdate" primaryKey="YES"/>
@@ -446,6 +446,7 @@
 	<outlet source="#CPOwner" target="pdoctags_controller" label="pdoctagsController"/>
 	<outlet source="#CPOwner" target="properties_controller" label="propertiesCatController"/>
 	<outlet source="#CPOwner" target="group_assignment_controller" label="groupassignmentController"/>
+	<outlet source="#CPOwner" target="group_assignment_controller2" label="groupassignmentController2"/>
 	<outlet source="#CPOwner" target="perso_properties_cat_controller" label="personnelPropCatController"/>
 	<outlet source="#CPOwner" target="perso_properties_controller" label="personnelPropController"/>
 	<outlet source="#CPOwner" target="patients_controller" label="patientsController"/>

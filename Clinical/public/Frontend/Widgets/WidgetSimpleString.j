@@ -3,6 +3,7 @@
 @implementation WidgetSimpleString : CPObject
 {
     id _myView;
+    id _myVisitValue;
 }
 + viewClass
 {	return CPTextField;
@@ -12,11 +13,19 @@
     return CGSizeMake(60,25);
 }
 
+-(id) initWithVisitValue:(id)currentProcedureValue
+{
+    if( self = [super init])
+    {    _myVisitValue = currentProcedureValue;
+    }
+    return self;
+}
 - viewWithFrame:(CGRect) myFrame
 {
 	_myView =[[[[self class] viewClass] alloc] initWithFrame: myFrame];
     [_myView setEditable:YES];
     [_myView setBezeled:YES];
+    [_myView bind:CPValueBinding toObject:_myVisitValue withKeyPath:"value_full" options:nil];
 	return _myView;
 }
 

@@ -9,6 +9,8 @@
 <window id="personnelwindow" bridge="YES" delegate="mycontroller">
   <tabView type="topBezel">
    <tabViewItem title="Personnel">
+    <vbox>
+     <vspace height="10" valign="min"/>
      <splitView vertical="YES" autosaveName="vsplitter_accounts">
        <vbox>
         <scrollView hasHorizontalScroller="NO">
@@ -25,6 +27,7 @@
        </vbox>
        <vbox>
 
+        <label>Member in groups</label>
         <scrollView hasHorizontalScroller="NO">
            <tableView zebra="yes" autosaveName="trialpersonnel2_tv" valueBinding="#CPOwner.groupassignmentController">
                 <tableColumn identifier="idgroup" dataView="#popupdataviewgroup"  title="group"/>
@@ -32,6 +35,7 @@
         </scrollView>
         <ButtonBar target="#CPOwner.groupassignmentController" plusButtonAction="insert:" minusButtonAction="remove:"/>
  
+        <label>Personal documents</label>
         <scrollView hasHorizontalScroller="NO">
          <tableView zebra="yes" autosaveName="pdokus2_tv" valueBinding="#CPOwner.pdokusController">
             <tableColumn identifier="name" title="name" editable="NO"/>
@@ -40,6 +44,7 @@
         </scrollView>
         <ButtonBar target="#CPOwner" actionsButton="NO" id="pdocumentsbuttonbar"/>
 
+        <label>Personal properties</label>
         <scrollView hasHorizontalScroller="NO">
              <tableView zebra="yes" autosaveName="pers_props_tv" delegate="#mycontroller" valueBinding="#CPOwner.personnelPropController">
                 <tableColumn identifier="property.name" title="name"/>
@@ -48,6 +53,7 @@
         </scrollView>
         <ButtonBar target="#mycontroller" plusButtonAction="addProperty:" minusButtonAction="removeProperty:"/>
 
+         <label>Controlling information (level 3 exclusively)</label>
          <scrollView hasHorizontalScroller="NO">
             <tableView zebra="yes" autosaveName="pers_costs_tv" delegate="#mycontroller" valueBinding="#CPOwner.personnelCostsController">
                 <tableColumn identifier="idaccount" dataView="#popupdataviewaccount"  title="account" editable="YES"/>
@@ -60,10 +66,13 @@
         </ButtonBar>
       </vbox>
     </splitView>
+   </vbox>
   </tabViewItem>
 
 
   <tabViewItem title="Groups">
+   <vbox>
+     <vspace height="10" valign="min"/>
      <hbox>
       <vbox>
         <scrollView hasHorizontalScroller="NO">
@@ -77,24 +86,41 @@
         <ButtonBar target="#CPOwner.groupsControllerAll" plusButtonAction="insert:" minusButtonAction="remove:"/>
        </vbox>
        <vbox>
+        <label>Members</label>
         <scrollView hasHorizontalScroller="NO">
-         <tableView zebra="yes" autosaveName="groups_meetings_tv" valueBinding="#CPOwner.teamMeetingsController">
+         <tableView zebra="yes" autosaveName="groups_members_tv" valueBinding="#CPOwner.groupassignmentController2">
+                <tableColumn identifier="idpersonnel" dataView="#popupdataviewgroupmember"  title="person"/>
+         </tableView>
+        </scrollView>
+        <ButtonBar target="#CPOwner.groupassignmentController2" plusButtonAction="insert:" minusButtonAction="remove:"/>
+        <hbox>
+
+         <vbox>
+           <label>Meetings</label>
+           <scrollView hasHorizontalScroller="NO">
+             <tableView zebra="yes" autosaveName="groups_meetings_tv" valueBinding="#CPOwner.teamMeetingsController">
                 <tableColumn identifier="title" title="name" editable="YES"/>
                 <tableColumn identifier="starttime" title="start" editable="YES"/>
                 <tableColumn identifier="stoptime" title="stop" editable="YES"/>
-         </tableView>
-        </scrollView>
-        <ButtonBar target="#CPOwner.teamMeetingsController" plusButtonAction="insert:" minusButtonAction="remove:"/>
-       </vbox>
+             </tableView>
+           </scrollView>
+           <ButtonBar target="#CPOwner.teamMeetingsController" plusButtonAction="insert:" minusButtonAction="remove:" actionsButton="YES">
+             <popUpButtonItem title="Send invitations" target="#myadmincontroller" action="sendMeetingInvitations:"/>
+          </ButtonBar>
+        </vbox>
         <vbox>
-        <scrollView hasHorizontalScroller="NO">
-         <tableView zebra="yes" autosaveName="groups_meetings_attendee_tv" valueBinding="#CPOwner.meetingAttendeesController">
+          <label>Meeting attendees</label>
+          <scrollView hasHorizontalScroller="NO">
+            <tableView zebra="yes" autosaveName="groups_meetings_attendee_tv" valueBinding="#CPOwner.meetingAttendeesController">
                 <tableColumn identifier="idattendee" dataView="#popupdataviewattendee"  title="person"/>
-         </tableView>
-        </scrollView>
-        <ButtonBar target="#CPOwner.meetingAttendeesController" plusButtonAction="insert:" minusButtonAction="remove:"/>
+            </tableView>
+          </scrollView>
+          <ButtonBar target="#CPOwner.meetingAttendeesController" plusButtonAction="insert:" minusButtonAction="remove:"/>
        </vbox>
+      </hbox>
+     </vbox>
     </hbox>
+   </vbox>
   </tabViewItem>
 
   <tabViewItem title="States">
@@ -118,6 +144,7 @@
   <popUpButton width="200" id="popupdataviewgroup" itemsBinding="#CPOwner.groupsControllerAll.arrangedObjects.name"/>
   <popUpButton width="200" id="popupdataviewaccount" itemsBinding="#CPOwner.accountsController.arrangedObjects.name"/>
   <tableViewPopup width="100" height="23" id="popupdataviewattendee" itemsController="#CPOwner.groupPersonnelController2" itemsValue="arrangedObjects.idpersonnel" itemsFace="arrangedObjects.name"/>
+  <tableViewPopup width="100" height="23" id="popupdataviewgroupmember" itemsController="#CPOwner.personnelController" itemsValue="arrangedObjects.id" itemsFace="arrangedObjects.name"/>
  </vbox>
 </window>
 

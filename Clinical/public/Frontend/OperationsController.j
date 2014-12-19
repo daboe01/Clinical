@@ -810,7 +810,7 @@
        datePickerPopover =[CPPopover new];
        [datePickerPopover setDelegate:self];
        [datePickerPopover setAnimates:NO];
-       [datePickerPopover setBehavior: CPPopoverBehaviorTransient ];
+       [datePickerPopover setBehavior: CPPopoverBehaviorTransient];
        [datePickerPopover setAppearance: CPPopoverAppearanceMinimal];
        var myViewController=[CPViewController new];
        [datePickerPopover setContentViewController:myViewController];
@@ -829,7 +829,7 @@
            var lower=[[CPApp delegate].patientVisitsController valueForKeyPath:"selection.lower_margin"];
            var upper=[[CPApp delegate].patientVisitsController valueForKeyPath:"selection.upper_margin"];
 
-           if (lower !== CPNullMarker && upper !== CPNullMarker){
+           if (lower !== CPNullMarker && upper !== CPNullMarker) {
                [graphicalPicker setMinDate: [CPDate dateWithShortString:lower]];
                [graphicalPicker setMaxDate: [CPDate dateWithShortString:upper]];
            }

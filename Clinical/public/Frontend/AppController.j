@@ -122,6 +122,7 @@ BaseURL=HostURL+"/";
     id    pdoctagsController;
     id    propertiesCatController;
     id    groupassignmentController;
+    id    groupassignmentController2;
     id    personnelPropCatController;
     id    personnelPropController;
     id    patientsController;

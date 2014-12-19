@@ -71,6 +71,15 @@
 	[addPropsTV editColumn:0 row:[addPropsTV selectedRow] withEvent:nil  select:YES];
 }
 
+-(void) sendMeetingInvitations:sender
+{
+    var idmeeting = [[CPApp delegate].teamMeetingsController valueForKeyPath:"selection.id"]
+	var myreq=[CPURLRequest requestWithURL:"/CT/invite_teammeeting/"+idmeeting+'?session='+ window.G_SESSION];
+	[myreq setHTTPMethod:"POST"];
+	[CPURLConnection sendSynchronousRequest: myreq returningResponse: nil];
+
+}
+
 @end
 
 
@@ -158,7 +167,7 @@
 {
     var idaccount=[[CPApp delegate].accountsController valueForKeyPath:"selection.id"];
     var myreq=[CPURLRequest requestWithURL:"/CT/reload_account/"+idaccount+"?session="+ window.G_SESSION];
-    [myreq setHTTPMethod:"get"];
+    [myreq setHTTPMethod:"GET"];
     [CPURLConnection connectionWithRequest: myreq delegate:self];
 
 }
@@ -168,7 +177,6 @@
     [progress stopAnimation: self];
 
 }
-
 @end
 
 
