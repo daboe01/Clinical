@@ -32,9 +32,9 @@
 {
     if (value1 !== aValue)
     {
+		[self willChangeValueForKey:"objectValue"];
         value1 = aValue;
-debugger
-        [self setObjectValue:[self objectValue]];
+		[self didChangeValueForKey:"objectValue"];
     }
 }
 -(void) setObjectValue:(id)aValue
