@@ -10,26 +10,30 @@
 
 @implementation WidgetCappusance : WidgetSimpleString 
 {
-    id value1;
-    id value2;
-    id value3;
+    id value1 @accessors;
+    id value2 @accessors;
+    id value3 @accessors;
 }
 
-- (id)viewAtPosition:(CGPoint) myPoint
+- (id)view
 {
     var parameter=[_myVisitValue valueForKeyPath:"visit_procedure.procedure_full.widgetparameters"];
 	[CPBundle loadGSMarkupData:parameter externalNameTable:[CPDictionary dictionaryWithObject:self forKey:"CPOwner"] localizableStringsTable:nil inBundle:nil tagMapping:nil];
-    var
 	return _myView;
 }
-
+-(void) setValue1
+{
+    [self setObjectValue:[self objectValue]]
+}
 -(void) setObjectValue:(id)aValue
 {
-    [_myView setStringValue:aValue];
+    [self setValue1:[aValue objectForKey:"value1"]];
+    [self setValue2:[aValue objectForKey:"value2"]];
+    [self setValue3:[aValue objectForKey:"value3"]];
 }
 -(id) objectValue
 {
-    return [_myView stringValue];
+    return @{"value1": value1, "value2": value2, "value3": value3};
 }
 
 @end

@@ -10,7 +10,7 @@
 }
 +(CGRect) size
 {
-    return CGSizeMake(120, 27);
+    return CGSizeMake(120, 28);
 }
 
 -(id) initWithVisitValue:(id)currentProcedureValue
@@ -20,10 +20,10 @@
     }
     return self;
 }
-- viewAtPosition:(CGPoint) myPoint
+- view
 {
     var mySize=[[self class] size];
-	_myView =[[[[self class] viewClass] alloc] initWithFrame:CGRectMake(myPoint.x, myPoint.y, mySize.width, mySize.height)];
+	_myView =[[[[self class] viewClass] alloc] initWithFrame:CGRectMake(0, 0, mySize.width, mySize.height)];
     [_myView setEditable:YES];
     [_myView setBezeled:YES];
     [_myView bind:CPValueBinding toObject:_myVisitValue withKeyPath:"value_full" options:nil];

@@ -34,6 +34,16 @@ var INTERITEM_SPACE =  20;
                           styleMask:CPTitledWindowMask|CPClosableWindowMask|CPMiniaturizableWindowMask|CPResizableWindowMask];
     [_window setTitle:"eCRF for "+[aVisit valueForKeyPath:"patient.name"]+" visit: "+[aVisit valueForKeyPath:"visit.name"]];
 
+    
+
+    var scrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(0, 0, 500, 500)];
+    [scrollView setAutoresizingMask: CPViewWidthSizable | CPViewHeightSizable];
+    [_window setContentView:scrollView];
+    var contentView = [[CPBox alloc] initWithFrame:CGRectMake(0, 0, 500, 500)];
+    [scrollView setDocumentView: contentView]
+
+
+
 // <!> fixme: add scrollview(s) inside a tabview
     var i, l=[visitProcedureValues count];
     var cursor_values= CGPointMake(LABEL_WIDTH, INTERITEM_SPACE);
@@ -45,14 +55,18 @@ var INTERITEM_SPACE =  20;
          if (!className) continue;
          var newWidgetClass=[CPClassFromString(className) class];
          var newWidget=[[newWidgetClass alloc] initWithVisitValue:currentProcedureValue];
-         [[_window contentView] addSubview:[newWidget viewAtPosition:cursor_values]];
+         var newView= [newWidget view];
+         [contentView addSubview:newView];
+         [newView setFrameOrigin:cursor_values];
+
          var widgetSize=[newWidget size];
          var newLabel=[[CPTextField alloc] initWithFrame:CGRectMake(cursor_labels.x, cursor_labels.y+ (widgetSize.height-LABEL_HEIGHT)/2, LABEL_WIDTH, LABEL_HEIGHT)];
          [newLabel setStringValue: [currentProcedureValue valueForKeyPath:"visit_procedure.procedure_full.name"] ];
-         [[_window contentView] addSubview:newLabel];
+         [contentView addSubview:newLabel];
          cursor_values.y+= widgetSize.height + INTERITEM_SPACE;
          cursor_labels.y+= widgetSize.height + INTERITEM_SPACE;
     }
+//fixme: resize contentView accordingly
     [_window makeKeyAndOrderFront:self]
 }
 
