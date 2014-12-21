@@ -285,7 +285,7 @@ helper fetchFromTable => sub { my ($self, $table, $sessionid, $where)=@_;
             $where->{1}=0 if $level < 3;
         } elsif($table eq 'visit_procedures')
         {   $table = 'visit_procedures_name';
-            @cols=qw/id idvisit idprocedure actual_cost procedure_name/;
+            @cols=qw/id idvisit idprocedure actual_cost procedure_name ordering parameter/;
         }
         
         $where->{$_}= $where->{$_} eq 'NULL'? undef : $where->{$_} for keys %$where;
@@ -381,7 +381,9 @@ put '/DBI/:table/:pk/:key'=> [key=>qr/\d+/] => sub
             }
         }
     }
-    $table = 'visit_procedures_name' if $table eq 'visit_procedures';
+    $table = 'visit_procedures_name' if $table eq 'visit_procedures' && exists $jsonR->{procedure_name};
+warn Dumper $jsonR;
+warn $table;
     my($stmt, @bind) = $sql->update($table, $jsonR, {$pk=>$key});
     my $sth = $self->db->prepare($stmt);
     $sth->execute(@bind);

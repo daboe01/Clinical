@@ -54,6 +54,8 @@
                <tableColumn width="50" identifier="procedure.min_cost" title="min" editable="NO"/>
                <tableColumn width="50" identifier="procedure.avg_cost" title="avg" editable="NO"/>
                <tableColumn width="50" identifier="procedure.max_cost" title="max" editable="NO"/>
+               <tableColumn width="50" identifier="ordering" title="ordering" editable="YES"/>
+               <tableColumn width="50" identifier="parameter" title="parameter" editable="YES"/>
             </tableView>
           </scrollView>
           <ButtonBar target="#CPOwner" plusButtonAction="insertVisitProcedure:" minusButtonAction="removeVisitProcedure:" id="visitproc_bb" actionsButton="YES">

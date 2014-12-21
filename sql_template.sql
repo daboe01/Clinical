@@ -2835,7 +2835,9 @@ CREATE VIEW visit_procedures_name AS
     visit_procedures.idvisit,
     visit_procedures.idprocedure,
     visit_procedures.actual_cost,
-    procedures_catalogue.name AS procedure_name
+    procedures_catalogue.name AS procedure_name,
+    visit_procedures.ordering,
+    visit_procedures.parameter
    FROM (visit_procedures
      LEFT JOIN procedures_catalogue ON ((procedures_catalogue.id = visit_procedures.idprocedure)));
 
@@ -3194,9 +3196,9 @@ COPY patients (id, idtrial, piz, code1, code2, comment, state, name, givenname, 
 612	25	4	\N	\N	\N	\N	test43	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
 613	25	5	\N	\N	\N	\N	test5	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
 614	25	6	\N	\N	\N	\N	test6	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
-608	25	1	\N	\N	\N	\N	Test	\N	\N	\N	\N	\N	\N	2014-11-13	\N	\N	\N	\N	10
 610	25	2	\N	\N	\N	\N	test2	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
 611	25	3	\N	\N	\N	\N	test3	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
+608	25	1	\N	\N	\N	4	Test	\N	\N	\N	\N	\N	\N	2014-11-13	\N	\N	\N	\N	10
 \.
 
 
@@ -3803,12 +3805,12 @@ SELECT pg_catalog.setval('visit_procedure_values_id_seq', 2, true);
 --
 
 COPY visit_procedures (id, idvisit, idprocedure, actual_cost, ordering, parameter) FROM stdin;
+141	7	51	\N	2	\N
+133	7	151	\N	1	\N
 120	\N	\N	\N	\N	\N
 136	299	162	\N	\N	\N
 139	5	15	\N	\N	\N
 140	5	162	\N	\N	\N
-133	7	151	\N	\N	\N
-141	7	51	\N	\N	\N
 \.
 
 

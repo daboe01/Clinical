@@ -3,6 +3,8 @@
 
 // todo:
 // unbind upon window close
+// groups by tabs
+// zwischenueberschriften
 
 @implementation VisitValuesController : CPObject  // shouldn't this be a windowcontroller?
 {
@@ -14,9 +16,10 @@
     return ["WidgetSimpleString", "WidgetOSDI"];
 }
 
-var LABEL_WIDTH = 200;
-var LABEL_HEIGHT = 23;
-var INTERITEM_SPACE = 20;
+var LABEL_WIDTH     = 200;
+var LABEL_HEIGHT    =  23;
+var INTERITEM_SPACE =  20;
+
 -(void) orderFrontWindowForPatientVisit:(id) aVisit
 {
     // visitProcedureValues need to be autocreated upon visit insert in DB so we can guarantee existence for binding
@@ -28,10 +31,12 @@ var INTERITEM_SPACE = 20;
 
     _window=[[CPWindow alloc] initWithContentRect:CGRectMake(100,100, 500, 500)
                           styleMask:CPTitledWindowMask|CPClosableWindowMask|CPMiniaturizableWindowMask|CPResizableWindowMask];
-    [_window setTitle:"eCRF for "+[aVisit valueForKeyPath:"patient.name"]+" visit: "+[aVisit valueForKeyPath:"visit.name"]]
+    [_window setTitle:"eCRF for "+[aVisit valueForKeyPath:"patient.name"]+" visit: "+[aVisit valueForKeyPath:"visit.name"]];
+
+// <!> fixme: add scrollview(s) inside a tabview
     var i, l=[visitProcedureValues count];
-    var cursor_values= CGPointMake(LABEL_WIDTH, 0);
-    var cursor_labels= CGPointMake( INTERITEM_SPACE, 0);
+    var cursor_values= CGPointMake(LABEL_WIDTH, INTERITEM_SPACE);
+    var cursor_labels= CGPointMake( INTERITEM_SPACE, INTERITEM_SPACE);
     for(i=0; i<l; i++)
     {
          var currentProcedureValue=[visitProcedureValues objectAtIndex:i];
@@ -41,7 +46,7 @@ var INTERITEM_SPACE = 20;
          var widgetSize=[newWidgetClass size];
          var newWidget=[[newWidgetClass alloc] initWithVisitValue:currentProcedureValue];
          [[_window contentView] addSubview:[newWidget viewWithFrame:CGRectMake(cursor_values.x, cursor_values.y, widgetSize.width, widgetSize.height)]];
-         var newLabel=[[CPTextField alloc] initWithFrame: CGRectMake(cursor_labels.x, cursor_labels.y+ (widgetSize.height-LABEL_HEIGHT)/2, LABEL_WIDTH, LABEL_HEIGHT)];
+         var newLabel=[[CPTextField alloc] initWithFrame:CGRectMake(cursor_labels.x, cursor_labels.y+ (widgetSize.height-LABEL_HEIGHT)/2, LABEL_WIDTH, LABEL_HEIGHT)];
          [newLabel setStringValue: [currentProcedureValue valueForKeyPath:"visit_procedure.procedure_full.name"] ];
          [[_window contentView] addSubview:newLabel];
          cursor_values.y+= widgetSize.height + INTERITEM_SPACE;
