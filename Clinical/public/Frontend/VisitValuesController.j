@@ -44,9 +44,8 @@ var INTERITEM_SPACE =  20;
 
 
 
-// <!> fixme: add scrollview(s) inside a tabview
     var i, l=[visitProcedureValues count];
-    var cursor_values= CGPointMake(LABEL_WIDTH, INTERITEM_SPACE);
+    var cursor_values= CGPointMake(LABEL_WIDTH + INTERITEM_SPACE, INTERITEM_SPACE);
     var cursor_labels= CGPointMake( INTERITEM_SPACE, INTERITEM_SPACE);
     for(i=0; i<l; i++)
     {
@@ -66,7 +65,7 @@ var INTERITEM_SPACE =  20;
          cursor_values.y+= widgetSize.height + INTERITEM_SPACE;
          cursor_labels.y+= widgetSize.height + INTERITEM_SPACE;
     }
-//fixme: resize contentView accordingly
+//fixme: resize contentView to fit makeup
     [_window makeKeyAndOrderFront:self]
 }
 

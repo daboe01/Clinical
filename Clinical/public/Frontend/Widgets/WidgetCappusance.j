@@ -8,6 +8,7 @@
 }
 @end
 
+// fixme: use runtime interception of unimplemented method to support infinite number of properties
 @implementation WidgetCappusance : WidgetSimpleString 
 {
     id value1 @accessors;
@@ -19,21 +20,30 @@
 {
     var parameter=[_myVisitValue valueForKeyPath:"visit_procedure.procedure_full.widgetparameters"];
 	[CPBundle loadGSMarkupData:parameter externalNameTable:[CPDictionary dictionaryWithObject:self forKey:"CPOwner"] localizableStringsTable:nil inBundle:nil tagMapping:nil];
+    [self bind:"dataDict" toObject:_myVisitValue withKeyPath:"value_full" options:nil];
 	return _myView;
 }
--(void) setValue1
+-(void) setValue1:(id)aValue
 {
-    [self setObjectValue:[self objectValue]]
+    if (value1 !== aValue)
+    {
+        value1 = aValue;
+        [self setDataDict:[self dataDict]];
+    }
 }
--(void) setObjectValue:(id)aValue
+-(void) setDataDict:(id)aValue
 {
-    [self setValue1:[aValue objectForKey:"value1"]];
-    [self setValue2:[aValue objectForKey:"value2"]];
-    [self setValue3:[aValue objectForKey:"value3"]];
+    var o= JSON.parse(aValue);
+    if (o){
+        _value1=o["value1"];
+        _value2=o["value2"];
+        _value3=o["value3"];
+    }
 }
--(id) objectValue
+-(id) dataDict
 {
-    return @{"value1": value1, "value2": value2, "value3": value3};
+debugger
+    return [@{"value1": value1, "value2": value2, "value3": value3} toJSON];
 }
 
 @end
