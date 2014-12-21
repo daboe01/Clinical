@@ -24,7 +24,7 @@
         </vbox>
         <vbox>
           <label> Visits </label>
-          <scrollView hasHorizontalScroller="NO">
+          <scrollView hasHorizontalScroller="YES">
              <tableView zebra="yes" autosaveName="allvisits_tv" valueBinding="#CPOwner.visitsController" target="#CPOwner">
                 <tableColumn identifier="ordering" title="order" editable="YES" width="50"/>
                 <tableColumn identifier="name" title="name" editable="YES"/>
@@ -46,7 +46,7 @@
      </hbox>
      <vbox>
         <label> Procedures </label>
-        <scrollView hasHorizontalScroller="NO">
+        <scrollView hasHorizontalScroller="YES">
            <tableView zebra="yes" id="visitprocs_tv" autosaveName="visitprocs_tv" valueBinding="#CPOwner.proceduresVisitController" delegate="#CPOwner">
                <tableColumn identifier="procedure_name" title="procedure" editable="YES"/>
                <tableColumn width="50" identifier="actual_cost" title="acatual costs" editable="YES"/>
@@ -79,12 +79,13 @@
 <window id="procedureswindow" delegate="#CPOwner" x="1000" y="600" width="400" height="400" visible="NO">
   <vbox>
     <searchField valueBinding="#CPOwner.searchProceduresTerm"/>
-    <scrollView hasHorizontalScroller="NO">
+    <scrollView hasHorizontalScroller="YES">
      <tableView zebra="yes" autosaveName="allprocedures_tv" id="allprocedures_tv" valueBinding="#CPOwner.proceduresCatController" target="#CPOwner">
         <tableColumn identifier="name" title="name" editable="YES"/>
         <tableColumn identifier="base_cost" title="hauskatalog EUR" editable="YES"/>
         <tableColumn identifier="widgetclassname" title="widgetclass" editable="YES"/>
         <tableColumn identifier="widgetparameters" title="widgetparam" editable="YES"/>
+        <tableColumn identifier="latex_representation" title="widgetparam" editable="YES"/>
      </tableView>
     </scrollView>
     <ButtonBar target="#CPOwner.proceduresCatController" plusButtonAction="insert:" minusButtonAction="remove:"/>

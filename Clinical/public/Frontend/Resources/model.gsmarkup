@@ -370,6 +370,7 @@
 		<column name="base_cost"/>
 		<column name="widgetclassname"/>
 		<column name="widgetparameters"/>
+		<column name="latex_representation"/>
 	</entity>
 	<entity id="visit_procedures" store="#CPOwner.store">
 		<column name="id" primaryKey="YES"/>

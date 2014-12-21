@@ -1,6 +1,13 @@
 @import <AppKit/CPControl.j>
 @import "WidgetSimpleString.j"
 
+@implementation CPString(CappusanceFix)
+-(id) rawString
+{
+    return self;
+}
+@end
+
 @implementation WidgetCappusance : WidgetSimpleString 
 {
     id value1;
@@ -12,7 +19,7 @@
 {
     var parameter=[_myVisitValue valueForKeyPath:"visit_procedure.procedure_full.widgetparameters"];
 	[CPBundle loadGSMarkupData:parameter externalNameTable:[CPDictionary dictionaryWithObject:self forKey:"CPOwner"] localizableStringsTable:nil inBundle:nil tagMapping:nil];
-
+    var
 	return _myView;
 }
 
