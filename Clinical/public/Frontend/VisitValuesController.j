@@ -1,7 +1,10 @@
 @import <AppKit/CPControl.j>
 @import "Widgets/WidgetSimpleString.j"
 
-@implementation VisitValuesController : CPObject
+// todo:
+// unbind upon window close
+
+@implementation VisitValuesController : CPObject  // shouldn't this be a windowcontroller?
 {
     CPWindow _window;
 
@@ -11,6 +14,9 @@
     return ["WidgetSimpleString", "WidgetOSDI"];
 }
 
+var LABEL_WIDTH = 200;
+var LABEL_HEIGHT = 23;
+var INTERITEM_SPACE = 20;
 -(void) orderFrontWindowForPatientVisit:(id) aVisit
 {
     // visitProcedureValues need to be autocreated upon visit insert in DB so we can guarantee existence for binding
@@ -22,23 +28,24 @@
 
     _window=[[CPWindow alloc] initWithContentRect:CGRectMake(100,100, 500, 500)
                           styleMask:CPTitledWindowMask|CPClosableWindowMask|CPMiniaturizableWindowMask|CPResizableWindowMask];
+    [_window setTitle:"eCRF for "+[aVisit valueForKeyPath:"patient.name"]+" visit: "+[aVisit valueForKeyPath:"visit.name"]]
     var i, l=[visitProcedureValues count];
-    var cursor_values= CGPointMake(100, 0);
-    var cursor_labels= CGPointMake(  1, 0);
+    var cursor_values= CGPointMake(LABEL_WIDTH, 0);
+    var cursor_labels= CGPointMake( INTERITEM_SPACE, 0);
     for(i=0; i<l; i++)
     {
          var currentProcedureValue=[visitProcedureValues objectAtIndex:i];
          var className=[currentProcedureValue valueForKeyPath:"visit_procedure.procedure_full.widgetclassname"];
          if (!className) continue;
          var newWidgetClass=[CPClassFromString(className) class];
-         var newLabel=[[CPTextField alloc] initWithFrame: CGRectMake(cursor_labels.x, cursor_labels.y, 100, 23)];
-         [newLabel setStringValue: [currentProcedureValue valueForKeyPath:"visit_procedure.procedure_full.name"] ];
-         [[_window contentView] addSubview:newLabel];
          var widgetSize=[newWidgetClass size];
          var newWidget=[[newWidgetClass alloc] initWithVisitValue:currentProcedureValue];
          [[_window contentView] addSubview:[newWidget viewWithFrame:CGRectMake(cursor_values.x, cursor_values.y, widgetSize.width, widgetSize.height)]];
-         cursor_values.y+= widgetSize.height + 20; //<!> fixme: make symbolic constant
-         cursor_labels.y+= widgetSize.height + 20; //<!> fixme: make symbolic constant
+         var newLabel=[[CPTextField alloc] initWithFrame: CGRectMake(cursor_labels.x, cursor_labels.y+ (widgetSize.height-LABEL_HEIGHT)/2, LABEL_WIDTH, LABEL_HEIGHT)];
+         [newLabel setStringValue: [currentProcedureValue valueForKeyPath:"visit_procedure.procedure_full.name"] ];
+         [[_window contentView] addSubview:newLabel];
+         cursor_values.y+= widgetSize.height + INTERITEM_SPACE;
+         cursor_labels.y+= widgetSize.height + INTERITEM_SPACE;
     }
     [_window makeKeyAndOrderFront:self]
 }

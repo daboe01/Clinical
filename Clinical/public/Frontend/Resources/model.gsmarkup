@@ -53,7 +53,7 @@
   <arrayController id="transactions_controller" entity="account_transaction" valueBinding="accounts_controller.selection.transactions" sortDescriptor="by_date_transaction"/>
   <arrayController id="balanced_controller" entity="accounts_balanced" valueBinding="accounts_controller.selection.balanced" sortDescriptor="by_date_transaction"/>
   <arrayController id="procedures_catalogue_controller" entity="procedures_catalogue" autoFetch="YES" sortDescriptor="by_name"/>
-  <arrayController id="procedures_visit_controller" entity="visit_procedures" valueBinding="visits_controller.selection.procedures"/>
+  <arrayController id="procedures_visit_controller" entity="visit_procedures" valueBinding="visits_controller.selection.procedures" sortDescriptor="by_ordering"/>
   <arrayController id="autocompletion_controller" entity="trial_properties_distinct" valueBinding="trial_properties_controller.selection.autocompletition"/>
   <arrayController id="procedures_personnel_controller" entity="procedures_personnel" valueBinding="procedures_visit_controller.selection.personnel"/>
   <arrayController id="personnel_event_controller" entity="personnel_event" valueBinding="personnel_controller.selection.events"/>
@@ -377,6 +377,8 @@
 		<column name="procedure_name"/>
 		<column name="idprocedure"/>
 		<column name="actual_cost"/>
+		<column name="ordering"/>
+		<column name="parameter"/>
 		<relationship type="toOne" name="procedure" bindingColumn="idprocedure" target="procedure_statistics"/>
 		<relationship type="toOne" name="procedure_full" bindingColumn="idprocedure" target="procedures_catalogue"/>
 		<relationship type="toMany" name="personnel" bindingColumn="id" targetColumn="idprocedure" target="procedures_personnel"/>

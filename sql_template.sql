@@ -1427,7 +1427,9 @@ CREATE TABLE visit_procedures (
     id integer NOT NULL,
     idvisit integer,
     idprocedure integer,
-    actual_cost double precision
+    actual_cost double precision,
+    ordering integer,
+    parameter text
 );
 
 
@@ -3785,6 +3787,7 @@ SELECT pg_catalog.setval('trial_visits_id_seq', 300, true);
 --
 
 COPY visit_procedure_values (id, idvisit_procedure, idpatient_visit, value_scalar, value_full) FROM stdin;
+2	133	3813	\N	\N
 \.
 
 
@@ -3792,20 +3795,20 @@ COPY visit_procedure_values (id, idvisit_procedure, idpatient_visit, value_scala
 -- Name: visit_procedure_values_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('visit_procedure_values_id_seq', 1, false);
+SELECT pg_catalog.setval('visit_procedure_values_id_seq', 2, true);
 
 
 --
 -- Data for Name: visit_procedures; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-COPY visit_procedures (id, idvisit, idprocedure, actual_cost) FROM stdin;
-120	\N	\N	\N
-136	299	162	\N
-139	5	15	\N
-140	5	162	\N
-133	7	151	\N
-141	7	51	\N
+COPY visit_procedures (id, idvisit, idprocedure, actual_cost, ordering, parameter) FROM stdin;
+120	\N	\N	\N	\N	\N
+136	299	162	\N	\N	\N
+139	5	15	\N	\N	\N
+140	5	162	\N	\N	\N
+133	7	151	\N	\N	\N
+141	7	51	\N	\N	\N
 \.
 
 

@@ -1,6 +1,6 @@
 @import <AppKit/CPControl.j>
 
-@implementation WidgetSimpleString : CPObject
+@implementation WidgetSimpleString : CPObject // shouldn't this be a viewontroller?
 {
     id _myView;
     id _myVisitValue;
