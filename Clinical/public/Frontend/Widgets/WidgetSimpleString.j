@@ -34,14 +34,5 @@
     return [_myView frame].size;
 }
 
--(void) setObjectValue:(id)aValue
-{
-    [_myView setStringValue:aValue];
-}
--(id) objectValue
-{
-    return [_myView stringValue];
-}
-
 @end
 

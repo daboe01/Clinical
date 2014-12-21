@@ -16,11 +16,16 @@
     id value3 @accessors;
 }
 
++ (Class)_binderClassForBinding:(CPString)aBinding
+{
+    return [_CPValueBinder class];
+}
+
 - (id)view
 {
     var parameter=[_myVisitValue valueForKeyPath:"visit_procedure.procedure_full.widgetparameters"];
 	[CPBundle loadGSMarkupData:parameter externalNameTable:[CPDictionary dictionaryWithObject:self forKey:"CPOwner"] localizableStringsTable:nil inBundle:nil tagMapping:nil];
-    [self bind:"dataDict" toObject:_myVisitValue withKeyPath:"value_full" options:nil];
+    [self bind:CPValueBinding toObject:_myVisitValue withKeyPath:"value_full" options:nil];
 	return _myView;
 }
 -(void) setValue1:(id)aValue
@@ -28,10 +33,11 @@
     if (value1 !== aValue)
     {
         value1 = aValue;
-        [self setDataDict:[self dataDict]];
+debugger
+        [self setObjectValue:[self objectValue]];
     }
 }
--(void) setDataDict:(id)aValue
+-(void) setObjectValue:(id)aValue
 {
     var o= JSON.parse(aValue);
     if (o){
@@ -40,9 +46,8 @@
         _value3=o["value3"];
     }
 }
--(id) dataDict
+-(id) objectValue
 {
-debugger
     return [@{"value1": value1, "value2": value2, "value3": value3} toJSON];
 }
 
