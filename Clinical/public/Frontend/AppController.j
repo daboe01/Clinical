@@ -182,13 +182,13 @@ BaseURL=HostURL+"/";
 
 - (void) applicationDidFinishLaunching:(CPNotification)aNotification
 {    store=[[SessionStore alloc] initWithBaseURL: HostURL+"/DBI"];
-    [CPBundle loadRessourceNamed: "model.gsmarkup" owner:self];
+    [CPBundle loadRessourceNamed:"model.gsmarkup" owner:self];
     var mainFile="Operations.gsmarkup";
     var re = new RegExp("t=([^&#]+)");
     var m = re.exec(document.location);
     if (m) mainFile=m[1];
     document.title=mainFile;
-    [CPBundle loadRessourceNamed: mainFile owner: self];
+    [CPBundle loadRessourceNamed:mainFile owner: self];
 
 // fixme: this restriction should be enforced in session and backend
     var o=[personnelController._entity._store  fetchObjectsWithKey:"ldap" equallingValue:window.G_USERNAME inEntity:personnelController._entity options:@{"FSSynchronous": 1}];
@@ -263,7 +263,7 @@ BaseURL=HostURL+"/";
 
 -(void) runPersonnel: sender
 {
-    [CPBundle loadRessourceNamed: "Personnel.gsmarkup" owner:self];
+    [CPBundle loadRessourceNamed:"Personnel.gsmarkup" owner:self];
 
 	[pdokusController2 addObserver:self forKeyPath:"selection" options: nil context: nil];
 	[pdokusController addObserver:self forKeyPath:"selection.tag" options: nil context: nil];

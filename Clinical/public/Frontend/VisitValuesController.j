@@ -1,5 +1,6 @@
 @import <AppKit/CPControl.j>
 @import "Widgets/WidgetSimpleString.j"
+@import "Widgets/WidgetCappusance.j"
 
 // todo:
 // unbind upon window close
@@ -43,9 +44,9 @@ var INTERITEM_SPACE =  20;
          var className=[currentProcedureValue valueForKeyPath:"visit_procedure.procedure_full.widgetclassname"];
          if (!className) continue;
          var newWidgetClass=[CPClassFromString(className) class];
-         var widgetSize=[newWidgetClass size];
          var newWidget=[[newWidgetClass alloc] initWithVisitValue:currentProcedureValue];
-         [[_window contentView] addSubview:[newWidget viewWithFrame:CGRectMake(cursor_values.x, cursor_values.y, widgetSize.width, widgetSize.height)]];
+         [[_window contentView] addSubview:[newWidget viewAtPosition:cursor_values]];
+         var widgetSize=[newWidget size];
          var newLabel=[[CPTextField alloc] initWithFrame:CGRectMake(cursor_labels.x, cursor_labels.y+ (widgetSize.height-LABEL_HEIGHT)/2, LABEL_WIDTH, LABEL_HEIGHT)];
          [newLabel setStringValue: [currentProcedureValue valueForKeyPath:"visit_procedure.procedure_full.name"] ];
          [[_window contentView] addSubview:newLabel];
