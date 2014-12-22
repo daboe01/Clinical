@@ -2807,6 +2807,23 @@ ALTER SEQUENCE visit_procedure_values_id_seq OWNED BY visit_procedure_values.id;
 
 
 --
+-- Name: visit_procedure_values_ordered; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW visit_procedure_values_ordered AS
+ SELECT visit_procedure_values.id,
+    visit_procedure_values.idvisit_procedure,
+    visit_procedure_values.idpatient_visit,
+    visit_procedure_values.value_scalar,
+    visit_procedure_values.value_full
+   FROM (visit_procedure_values
+     JOIN visit_procedures ON ((visit_procedures.id = visit_procedure_values.idvisit_procedure)))
+  ORDER BY visit_procedures.ordering;
+
+
+ALTER TABLE public.visit_procedure_values_ordered OWNER TO postgres;
+
+--
 -- Name: visit_procedures_id_seq; Type: SEQUENCE; Schema: public; Owner: root
 --
 
@@ -3795,7 +3812,7 @@ SELECT pg_catalog.setval('trial_visits_id_seq', 300, true);
 
 COPY visit_procedure_values (id, idvisit_procedure, idpatient_visit, value_scalar, value_full) FROM stdin;
 4	141	3813	\N	\N
-5	133	3813	\N	123
+5	133	3813	\N	123a
 \.
 
 

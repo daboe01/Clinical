@@ -286,8 +286,9 @@ helper fetchFromTable => sub { my ($self, $table, $sessionid, $where)=@_;
         } elsif($table eq 'visit_procedures')
         {   $table = 'visit_procedures_name';
             @cols=qw/id idvisit idprocedure actual_cost procedure_name ordering parameter/;
-        }
-        
+        } elsif($table eq 'visit_procedure_values')
+        {   $table = 'visit_procedure_values_ordered';
+        }        
         $where->{$_}= $where->{$_} eq 'NULL'? undef : $where->{$_} for keys %$where;
         #    support table-specific autosorting via hash
         my $autosorting={
