@@ -3,18 +3,15 @@
 @import "Widgets/WidgetCappusance.j"
 
 // todo:
-// unbind upon window close
-// groups by tabs
-// zwischenueberschriften
+// make this a popup instead of a window
+// unbind upon window/popup close
+// groups by tabs (write -numberOfTabItems and itemsForTabIndex:)
+// (zwischenueberschriften)
 
 @implementation VisitValuesController : CPObject  // shouldn't this be a windowcontroller?
 {
     CPWindow _window;
 
-}
-+(CPArray) listOfViewClasses
-{
-    return ["WidgetSimpleString", "WidgetOSDI"];
 }
 
 var LABEL_WIDTH     = 200;
@@ -34,19 +31,16 @@ var INTERITEM_SPACE =  20;
                           styleMask:CPTitledWindowMask|CPClosableWindowMask|CPMiniaturizableWindowMask|CPResizableWindowMask];
     [_window setTitle:"eCRF for "+[aVisit valueForKeyPath:"patient.name"]+" visit: "+[aVisit valueForKeyPath:"visit.name"]];
 
-    
-
     var scrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(0, 0, 500, 500)];
     [scrollView setAutoresizingMask: CPViewWidthSizable | CPViewHeightSizable];
     [_window setContentView:scrollView];
-    var contentView = [[CPBox alloc] initWithFrame:CGRectMake(0, 0, 500, 500)];
+    var contentView = [[CPBox alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
     [scrollView setDocumentView: contentView]
 
-
-
     var i, l=[visitProcedureValues count];
-    var cursor_values= CGPointMake(LABEL_WIDTH + INTERITEM_SPACE, INTERITEM_SPACE);
-    var cursor_labels= CGPointMake( INTERITEM_SPACE, INTERITEM_SPACE);
+    var valueCursor= CGPointMake(LABEL_WIDTH + INTERITEM_SPACE, INTERITEM_SPACE);
+    var labelCursor= CGPointMake( INTERITEM_SPACE, INTERITEM_SPACE);
+    var contentRect= [contentView frame]
     for(i=0; i<l; i++)
     {
          var currentProcedureValue=[visitProcedureValues objectAtIndex:i];
@@ -56,17 +50,19 @@ var INTERITEM_SPACE =  20;
          var newWidget=[[newWidgetClass alloc] initWithVisitValue:currentProcedureValue];
          var newView= [newWidget view];
          [contentView addSubview:newView];
-         [newView setFrameOrigin:cursor_values];
+         [newView setFrameOrigin:valueCursor];
 
          var widgetSize=[newWidget size];
-         var newLabel=[[CPTextField alloc] initWithFrame:CGRectMake(cursor_labels.x, cursor_labels.y+ (widgetSize.height-LABEL_HEIGHT)/2, LABEL_WIDTH, LABEL_HEIGHT)];
-         [newLabel setStringValue: [currentProcedureValue valueForKeyPath:"visit_procedure.procedure_full.name"] ];
+         var newLabel=[[CPTextField alloc] initWithFrame:CGRectMake(labelCursor.x, labelCursor.y+ (widgetSize.height-LABEL_HEIGHT)/2, LABEL_WIDTH, LABEL_HEIGHT)];
+         [newLabel setStringValue: [currentProcedureValue valueForKeyPath:"visit_procedure.procedure_full.name"]];
          [contentView addSubview:newLabel];
-         cursor_values.y+= widgetSize.height + INTERITEM_SPACE;
-         cursor_labels.y+= widgetSize.height + INTERITEM_SPACE;
+         valueCursor.y+= widgetSize.height + INTERITEM_SPACE;
+         labelCursor.y+= widgetSize.height + INTERITEM_SPACE;
+         contentRect.size.height = MAX(contentRect.size.height, valueCursor.y);
+         contentRect.size.width = MAX(contentRect.size.width, valueCursor.x + widgetSize.width + INTERITEM_SPACE);
     }
-//fixme: resize contentView to fit makeup
-    [_window makeKeyAndOrderFront:self]
+    [contentView setFrame:contentRect];
+    [_window makeKeyAndOrderFront:self];
 }
 
 @end
