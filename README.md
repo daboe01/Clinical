@@ -12,12 +12,12 @@ Features include:
  * Visit management
  * Cost calculation
  * Billing / Accounting / Reimbusement
- * Human ressources management / Holiday planning
- * Team calendar GUI + iCAL feed
- * Password manager
+ * Human ressources management
+ * Holiday planning / Team calendar GUI + iCAL feed
  * Document generator
  * Archive management
  * Reporting framework
+ * Intelligent eCRF framework
 
 INSTALL
 =====
