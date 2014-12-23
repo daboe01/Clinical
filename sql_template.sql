@@ -918,7 +918,8 @@ CREATE TABLE account_transaction (
     date_transaction date DEFAULT now(),
     type integer,
     amount_change double precision,
-    description text
+    description text,
+    receiptid integer
 );
 
 
@@ -2778,7 +2779,6 @@ CREATE TABLE visit_procedure_values (
     id integer NOT NULL,
     idvisit_procedure integer,
     idpatient_visit integer,
-    value_scalar text,
     value_full text
 );
 
@@ -2814,7 +2814,6 @@ CREATE VIEW visit_procedure_values_ordered AS
  SELECT visit_procedure_values.id,
     visit_procedure_values.idvisit_procedure,
     visit_procedure_values.idpatient_visit,
-    visit_procedure_values.value_scalar,
     visit_procedure_values.value_full
    FROM (visit_procedure_values
      JOIN visit_procedures ON ((visit_procedures.id = visit_procedure_values.idvisit_procedure)))
@@ -3069,7 +3068,7 @@ ALTER TABLE ONLY visit_procedures ALTER COLUMN id SET DEFAULT nextval('visit_pro
 -- Data for Name: account_transaction; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-COPY account_transaction (id, idaccount, date_transaction, type, amount_change, description) FROM stdin;
+COPY account_transaction (id, idaccount, date_transaction, type, amount_change, description, receiptid) FROM stdin;
 \.
 
 
@@ -3811,9 +3810,9 @@ SELECT pg_catalog.setval('trial_visits_id_seq', 300, true);
 -- Data for Name: visit_procedure_values; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY visit_procedure_values (id, idvisit_procedure, idpatient_visit, value_scalar, value_full) FROM stdin;
-4	141	3813	\N	\N
-5	133	3813	\N	123a
+COPY visit_procedure_values (id, idvisit_procedure, idpatient_visit, value_full) FROM stdin;
+4	141	3813	\N
+5	133	3813	123a
 \.
 
 
