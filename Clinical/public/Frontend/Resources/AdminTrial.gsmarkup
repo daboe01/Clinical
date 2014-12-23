@@ -84,8 +84,8 @@
         <tableColumn identifier="name" title="name" editable="YES"/>
         <tableColumn identifier="base_cost" title="hauskatalog EUR" editable="YES"/>
         <tableColumn identifier="widgetclassname" title="widgetclass" editable="YES"/>
-        <tableColumn identifier="widgetparameters" title="widgetparam" editable="YES"/>
-        <tableColumn identifier="latex_representation" title="widgetparam" editable="YES"/>
+        <tableColumn identifier="widgetparameters" title="param" editable="YES"/>
+        <tableColumn identifier="latex_representation" title="latex" editable="YES"/>
      </tableView>
     </scrollView>
     <ButtonBar target="#CPOwner.proceduresCatController" plusButtonAction="insert:" minusButtonAction="remove:"/>

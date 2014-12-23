@@ -142,7 +142,7 @@
    <splitView vertical="YES" autosaveName="vsplitter_pats0">
      <vbox>
     <scrollView hasHorizontalScroller="YES">
-     <tableView zebra="yes" id="patstv" autosaveName="patstv0"  valueBinding="#CPOwner.patientsController" allowsMultipleSelection="YES">
+     <tableView zebra="yes" id="patstv" autosaveName="patstv0"  valueBinding="#CPOwner.patientsController" allowsMultipleSelection="YES" allowsEmptySelection="NO">
         <tableColumn identifier="code1" title="code1" editable="YES"/>
         <tableColumn identifier="code2" title="code2" editable="YES"/>
         <tableColumn identifier="piz" title="piz" editable="YES"/>
