@@ -806,7 +806,6 @@
        if(identifier === 'title' || identifier === 'comment' || identifier === 'amount' || identifier === 'visit_ids')
        {   return YES;
        }
-
        datePickerPopover =[CPPopover new];
        [datePickerPopover setDelegate:self];
        [datePickerPopover setAnimates:NO];
@@ -884,7 +883,17 @@
 {
     var vvc= [[VisitValuesController alloc] init];
     var visit= [[CPApp delegate].patientVisitsController selectedObject];
-    [vvc orderFrontWindowForPatientVisit:visit];
+    [vvc setRepresentedObject:visit];
+
+    var visitValuesPopover =[CPPopover new];
+    [visitValuesPopover setDelegate:self];
+    [visitValuesPopover setAnimates:NO];
+    [visitValuesPopover setBehavior: CPPopoverBehaviorTransient];
+    [visitValuesPopover setAppearance: CPPopoverAppearanceMinimal];
+    [visitValuesPopover setContentViewController:vvc];
+    [visitValuesPopover setDelegate:vvc]
+    var frame = [visitsTV frameOfDataViewAtColumn:0 row:[[visitsTV selectedRowIndexes] firstIndex]];
+    [visitValuesPopover showRelativeToRect:frame ofView:visitsTV preferredEdge:nil];
 }
 
 @end

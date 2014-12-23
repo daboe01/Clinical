@@ -297,7 +297,6 @@
 		<column name="id" primaryKey="YES"/>
 		<column name="idvisit_procedure"/>
 		<column name="idpatient_visit"/>
-		<column name="value_scalar"/>
 		<column name="value_full"/>
 		<relationship type="toOne" name="visit_procedure" bindingColumn="idvisit_procedure" target="visit_procedures"/>
 	</entity>

@@ -1,14 +1,15 @@
 @import <AppKit/CPControl.j>
 @import "Widgets/WidgetSimpleString.j"
 @import "Widgets/WidgetCappusance.j"
+@import "Widgets/WidgetOSDI.j"
+@import "Widgets/WidgetTimestamp.j"
 
 // todo:
 // make this a popup instead of a window
 // unbind upon window/popup close
 // groups by tabs (write -numberOfTabItems and itemsForTabIndex:)
-// (zwischenueberschriften)
 
-@implementation VisitValuesController : CPObject  // shouldn't this be a windowcontroller?
+@implementation VisitValuesController : CPViewController
 {
     CPWindow _window;
 
@@ -18,28 +19,23 @@ var LABEL_WIDTH     = 200;
 var LABEL_HEIGHT    =  23;
 var INTERITEM_SPACE =  20;
 
--(void) orderFrontWindowForPatientVisit:(id) aVisit
+-(void) loadView
 {
     // visitProcedureValues need to be autocreated upon visit insert in DB so we can guarantee existence for binding
-	var myreq=[CPURLRequest requestWithURL: BaseURL+"CT/new_ecrf/"+[aVisit valueForKey:"id"]];
+	var myreq=[CPURLRequest requestWithURL: BaseURL+"CT/new_ecrf/"+[_representedObject valueForKey:"id"]];
 	[myreq setHTTPMethod:"POST"];
 	[CPURLConnection sendSynchronousRequest:myreq returningResponse: nil];
-    [[aVisit._entity relationOfName:"visitvalues"] _invalidateCache];
-    var visitProcedureValues=[aVisit valueForKey:"visitvalues" synchronous:YES];
+    [[_representedObject._entity relationOfName:"visitvalues"] _invalidateCache];
+    var visitProcedureValues=[_representedObject valueForKey:"visitvalues" synchronous:YES];
 
-    _window=[[CPWindow alloc] initWithContentRect:CGRectMake(100,100, 500, 500)
-                          styleMask:CPTitledWindowMask|CPClosableWindowMask|CPMiniaturizableWindowMask|CPResizableWindowMask];
-    [_window setTitle:"eCRF for "+[aVisit valueForKeyPath:"patient.name"]+" visit: "+[aVisit valueForKeyPath:"visit.name"]];
-
-    var scrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(0, 0, 500, 500)];
-    [scrollView setAutoresizingMask: CPViewWidthSizable | CPViewHeightSizable];
-    [_window setContentView:scrollView];
+    _view = [[CPScrollView alloc] initWithFrame:CGRectMake(0, 0, 800, 500)];
+    [_view setAutoresizingMask: CPViewWidthSizable | CPViewHeightSizable];
     var contentView = [[CPBox alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
-    [scrollView setDocumentView: contentView]
+    [_view setDocumentView:contentView]
 
     var i, l=[visitProcedureValues count];
     var valueCursor= CGPointMake(LABEL_WIDTH + INTERITEM_SPACE, INTERITEM_SPACE);
-    var labelCursor= CGPointMake( INTERITEM_SPACE, INTERITEM_SPACE);
+    var labelCursor= CGPointMake(INTERITEM_SPACE, INTERITEM_SPACE);
     var contentRect= [contentView frame]
     for(i=0; i<l; i++)
     {
@@ -62,7 +58,15 @@ var INTERITEM_SPACE =  20;
          contentRect.size.width = MAX(contentRect.size.width, valueCursor.x + widgetSize.width + INTERITEM_SPACE);
     }
     [contentView setFrame:contentRect];
-    [_window makeKeyAndOrderFront:self];
+    [_view scrollToEndOfDocument:self];
+}
+
+-(void) popoverDidClose:aPopover
+{
+    [[_view subviews] enumerateObjectsUsingBlock:(function(anObject, idx, stop) { [CPBinder unbindAllForObject:anObject]})];
+    [[_view subviews] makeObjectsPerformSelector: @selector(removeFromSuperview)]; 
+    [_view removeFromSuperview]; 
+
 }
 
 @end
