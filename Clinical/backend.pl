@@ -293,8 +293,9 @@ helper fetchFromTable => sub { my ($self, $table, $sessionid, $where)=@_;
         $where->{$_}= $where->{$_} eq 'NULL'? undef : $where->{$_} for keys %$where;
         #    support table-specific autosorting via hash
         my $autosorting={
-                trial_visits=>              [qw/+visit_interval/],
-                patient_visits_rich=>       [qw/+ordering/]
+                trial_visits=>                          [qw/+visit_interval/],
+                patient_visits_rich=>                   [qw/+ordering/],
+                visit_procedure_values_ordered =>       [qw/+ordering/]
         };
         $order_by= $autosorting->{$table} if exists $autosorting->{$table};
         my($stmt, @bind) = $sql->select( -columns  => [-distinct => @cols], -from => $table, -where=> $where, -order_by=> $order_by);
