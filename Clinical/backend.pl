@@ -4,7 +4,7 @@
 #        support multiple files of samename (as in cellfinder)
 #        support shadowtables globally (instead of only in $table eq 'all_trials'?'trials': $table)
 
-use lib qw {/Users/Shared/bin/Clinical /Users/Shared/bin /srv/www/Clinical  /Users/boehringer/src/privatePerl /Users/daboe01/src/privatePerl};
+use lib qw {/Users/daboe01/src/daboe01_Clinical/Clinical};
 use Mojolicious::Lite;
 use Mojolicious::Plugin::Database;
 use SQL::Abstract::More;
@@ -26,6 +26,7 @@ use Date::ICal;
 use Data::ICal;
 use Data::ICal::Entry::Event;
 use Data::ICal::Entry::TimeZone;
+use Mojo::JSON qw(decode_json encode_json);
 
 # enable receiving uploads up to 1GB
 $ENV{MOJO_MAX_MESSAGE_SIZE} = 1_073_741_824;
@@ -40,8 +41,8 @@ plugin 'database', {
 plugin 'RenderFile';
 
 
-use constant doku_repo_path => '/Users/daboe01/Documents/src/daboe01_Clinical/Clinical/docrepo/';
-use constant form_repo_path => '/Users/daboe01/Documents/src/daboe01_Clinical/Clinical/forms/';
+use constant doku_repo_path => '/Users/daboe01/src/daboe01_Clinical/Clinical/docrepo/';
+use constant form_repo_path => '/Users/daboe01/src/daboe01_Clinical/Clinical/forms/';
 use constant proxy_string => 'http://U:P@193.196.237.21:80/';
 
 #use constant doku_repo_path => '/Users/daboe01/src/daboe01_Clinicaltrials/Clinicaltrials/docrepo';
@@ -1292,7 +1293,7 @@ any '/CT/print_visit_ecrf/:idpatientvisit'=> [idpatientvisit =>qr/\d+/] => sub
     tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
     my $ldap=$session{username};
 
-    my $sql=qq{SELECT idtrial, patients.code1, patients.code2, visit_date, value_full, procedures_catalogue.latex_representation
+    my $sql=qq{SELECT idtrial, patients.code1, patients.code2, visit_date, value_full, procedures_catalogue.name, procedures_catalogue.latex_representation
                FROM visit_procedure_values join visit_procedures on visit_procedures.id=idvisit_procedure
                join procedures_catalogue on idprocedure=procedures_catalogue.id
                join patient_visits on patient_visits.id=visit_procedure_values.idpatient_visit
@@ -1301,14 +1302,26 @@ any '/CT/print_visit_ecrf/:idpatientvisit'=> [idpatientvisit =>qr/\d+/] => sub
                order by ordering};
     my $sth = $self->db->prepare( $sql );
     $sth->execute(($idpatientvisit));
-    my @visits;
+    my @values;
     my $sum=0;
     while(my $c=$sth->fetchrow_hashref())
     {
-        push @visits, $c;
+        if ($c->{latex_representation})
+        {   my $h = decode_json($c->{value_full});
+            $c->{value} = pdfgen::expandPDFDict($c->{latex_representation}, $h);
+        } else
+        {
+            $c->{value}= $c->{value_full};
+        }
+        push @values, $c;
     }
-    my $keyvaldict={};
-#    my $keyvaldict=$self->getPropertiesDict($idtrial, $ldap);
+    my $idtrial=$values[0]->{idtrial};
+    my $keyvaldict=$self->getPropertiesDict($idtrial, $ldap);
+    $keyvaldict->{values} = \@values;
+    $keyvaldict->{code1} =$values[0]->{code1};
+    $keyvaldict->{code2} =$values[0]->{code2};
+    $keyvaldict->{visit_date} =$values[0]->{visit_date};
+warn Dumper $keyvaldict;
     my $data= pdfgen::PDFForTemplateAndRef(TempFileNames::readFile(form_repo_path.'/ecrf_template.tex'), $keyvaldict);
     $self->render(data=> $data , format =>'pdf' );
 };

@@ -26,7 +26,6 @@ sub expandPDFForeachs { my ($block,$arr, $sepStr)=@_;
 }
 
 sub copyTexToTemp { my ($name)=@_;
-	warn $name;
 	system("cp /Users/Shared/bin/Clinical/forms/$name /tmp/$name");
 	return $name;
 }
@@ -37,7 +36,6 @@ sub PDFFilenameForTemplateAndRef { my ($str, $objc)=@_;
 	else 	{	$str = expandPDFDict($str,$objc)}
 	$str =~s/<copytex:([^>]+)>/copyTexToTemp($1)/oegs;
 	use Data::Dumper;
-warn Dumper $objc;
 	my $tmpfilename=TempFileNames::tempFileName('/tmp/clinical','');
 	TempFileNames::writeFile($tmpfilename.'.tex',$str);
 	$main::ENV{PATH} = '/usr/texbin'; 								#untaint

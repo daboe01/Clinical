@@ -16,7 +16,7 @@
 }
 
 var LABEL_WIDTH     = 200;
-var LABEL_HEIGHT    =  23;
+var LABEL_HEIGHT    =  15;
 var INTERITEM_SPACE =  20;
 
 -(void) loadView
