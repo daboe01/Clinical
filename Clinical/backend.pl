@@ -1272,14 +1272,45 @@ get '/CT/print_bill/:idbill'=> [idbill =>qr/\d+/] => sub
     $i++;
     $range='G'.($start_i+ ($overhead?0:1) ).':G'.$i;
 
-    $template->AddCell( 0,$i, 0, 'Rechnungsbetrag', $formatfooter_number);
-    $template->AddCell( 0,$i, $_, '', $formatfooter_number) for 1..5;
-    $template->AddCell( 0,$i, 6, '=SUM(' . $range . ')', $formatfooter_number2);
+    $template->AddCell( 0, $i, 0, 'Rechnungsbetrag', $formatfooter_number);
+    $template->AddCell( 0, $i, $_, '', $formatfooter_number) for 1..5;
+    $template->AddCell( 0, $i, 6, '=SUM(' . $range . ')', $formatfooter_number2);
     
     my $tmpfilename=tempFileName('/tmp/dbweb','xls');
     $template->SaveAs($tmpfilename);
     my $xls=readFile ($tmpfilename);
     $self->render_file('data' => $xls, 'format'   => 'xls', 'filename' => 'rechnung.xls');
+};
+
+
+any '/CT/print_visit_ecrf/:idpatientvisit'=> [idpatientvisit =>qr/\d+/] => sub
+{   my $self=shift;
+    my $idpatientvisit = $self->param('idpatientvisit');
+    my $sessionid=$self->param('session');
+
+    my  %session;
+    tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
+    my $ldap=$session{username};
+
+    my $sql=qq{SELECT idtrial, patients.code1, patients.code2, visit_date, value_full, procedures_catalogue.latex_representation
+               FROM visit_procedure_values join visit_procedures on visit_procedures.id=idvisit_procedure
+               join procedures_catalogue on idprocedure=procedures_catalogue.id
+               join patient_visits on patient_visits.id=visit_procedure_values.idpatient_visit
+               join patients on patients.id=idpatient
+               where patient_visits.id=?
+               order by ordering};
+    my $sth = $self->db->prepare( $sql );
+    $sth->execute(($idpatientvisit));
+    my @visits;
+    my $sum=0;
+    while(my $c=$sth->fetchrow_hashref())
+    {
+        push @visits, $c;
+    }
+    my $keyvaldict={};
+#    my $keyvaldict=$self->getPropertiesDict($idtrial, $ldap);
+    my $data= pdfgen::PDFForTemplateAndRef(TempFileNames::readFile(form_repo_path.'/ecrf_template.tex'), $keyvaldict);
+    $self->render(data=> $data , format =>'pdf' );
 };
 
 

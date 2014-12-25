@@ -163,7 +163,7 @@
      </vbox>
      <vbox>
         <scrollView hasHorizontalScroller="YES">
-             <tableView zebra="yes" id="pats2tv" autosaveName ="pats2tv0"  delegate="#myadmincontroller" valueBinding="#CPOwner.patientVisitsController">
+             <tableView zebra="yes" id="pats2tv" autosaveName ="pats2tv0"  delegate="#myadmincontroller" valueBinding="#CPOwner.patientVisitsController" allowsEmptySelection="NO">
                 <tableColumn identifier="idvisit" title="visit" dataView="#column_idvisit"/>
                 <tableColumn identifier="visit_date" title="date" editable="YES"/>
                 <tableColumn identifier="lower_margin" title="lower"/>
@@ -175,7 +175,8 @@
         </scrollView>
         <ButtonBar target="#myadmincontroller" plusButtonAction="insertVisit:" minusButtonAction="removeVisit:" actionsButton="YES" id="visitsbuttonbar">
             <popUpButtonItem title="Create all visits" target="#myadmincontroller" action="addDefaultVisits:"/>
-            <popUpButtonItem title="Open eCRF..." target="#myadmincontroller" action="openECRF:"/>
+            <popUpButtonItem title="Open worksheet" target="#myadmincontroller" action="openECRF:" enabledBinding="#CPOwner.patientVisitsController.selection.@count"/>
+            <popUpButtonItem title="Print worksheet" target="#myadmincontroller" action="printECRF:" enabledBinding="#CPOwner.patientVisitValuesController.selection.@count"/>
         </ButtonBar>
      </vbox>
      <vbox>

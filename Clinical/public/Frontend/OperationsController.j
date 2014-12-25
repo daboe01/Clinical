@@ -896,6 +896,13 @@
     [visitValuesPopover showRelativeToRect:frame ofView:visitsTV preferredEdge:nil];
 }
 
+-(void) printECRF:sender
+{
+    var idvisit= [[CPApp delegate].patientVisitsController valueForKeyPath:"selection.id"];
+    var myurl='/CT/print_visit_ecrf/'+ idvisit +'?session='+ window.G_SESSION;
+	window.open(myurl, 'download_window');
+}
+
 @end
 
 

@@ -1,0 +1,30 @@
+\documentclass{scrreprt}
+\usepackage[A4]{geometry}
+\usepackage[ngerman]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{wallpaper}
+\usepackage[absolute]{textpos}
+\usepackage{tabularx} 
+
+
+\renewcommand{\familydefault}{\sfdefault} 
+\usepackage{helvet} 
+
+\begin{document}
+
+\noindent Worksheet {\it <Voller Titel>} vom <today> f"ur <code1> <code2><PAT_piz> \\
+
+\begin{tabular}{lllllll}
+visit &  date&  lower  & center & upper & service& comment \tabularnewline
+\hline
+ <foreach:values sep=" ">
+<name> &<value>\\
+\tabularnewline
+</foreach:values>
+\hline
+\end{tabular}
+
+
+\end{document}
