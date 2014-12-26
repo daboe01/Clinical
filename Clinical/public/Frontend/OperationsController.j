@@ -899,6 +899,9 @@
 -(void) printECRF:sender
 {
     var idvisit= [[CPApp delegate].patientVisitsController valueForKeyPath:"selection.id"];
+	var myreq=[CPURLRequest requestWithURL: BaseURL+"CT/new_ecrf/"+ idvisit];
+	[myreq setHTTPMethod:"POST"];
+	[CPURLConnection sendSynchronousRequest:myreq returningResponse: nil];
     var myurl='/CT/print_visit_ecrf/'+ idvisit +'?session='+ window.G_SESSION;
 	window.open(myurl, 'download_window');
 }

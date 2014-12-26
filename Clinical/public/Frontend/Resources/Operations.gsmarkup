@@ -176,7 +176,7 @@
         <ButtonBar target="#myadmincontroller" plusButtonAction="insertVisit:" minusButtonAction="removeVisit:" actionsButton="YES" id="visitsbuttonbar">
             <popUpButtonItem title="Create all visits" target="#myadmincontroller" action="addDefaultVisits:"/>
             <popUpButtonItem title="Open worksheet" target="#myadmincontroller" action="openECRF:" enabledBinding="#CPOwner.patientVisitsController.selection.@count"/>
-            <popUpButtonItem title="Print worksheet" target="#myadmincontroller" action="printECRF:" enabledBinding="#CPOwner.patientVisitValuesController.selection.@count"/>
+            <popUpButtonItem title="Print worksheet" target="#myadmincontroller" action="printECRF:" enabledBinding="#CPOwner.patientVisitsController.selection.@count"/>
         </ButtonBar>
      </vbox>
      <vbox>
