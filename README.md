@@ -6,18 +6,16 @@ Clinical trials administration system
 Features include:
  * Structured trials database
  * 100% browser based
- * Desktop class GUI with keyboard navigation and undo / redo
- * Full text search in realtime
- * Document repository
- * Visit management
- * Cost calculation
- * Billing / Accounting / Reimbusement
- * Human ressources management
- * Holiday planning / Team calendar GUI + iCAL feed
- * Document generator
- * Archive management
- * Reporting framework
- * Intelligent eCRF framework
+ * Desktop-quality UI (keyboard navigation, undo / redo)
+ * Fulltext search in realtime
+ * Structured document repository
+ * Visit interval planning
+ * Procedures assignable to personnel
+ * Human ressources planning
+ * Calendars + iCAL feeds
+ * Billing / Accounting / Reimbusements
+ * eCRF / worksheet producer
+ * Forms / reporting framework
 
 INSTALL
 =====
@@ -30,7 +28,7 @@ cat sql_template.sql | /Applications/Postgres.app/Contents/Versions/9.3/bin/psql
 #
 # we need a current TeX distribution such as <https://tug.org/mactex/>
 # perl is already installed on linux and mac but we need quite a bunch of non-core perl modules
-sudo perl -MCPAN -e 'install ($_) for qw/Mojolicious Mojolicious::Plugin::Database Mojolicious::Plugin::RenderFile SQL::Abstract::More Apache::Session::File JSON::XS Spreadsheet::WriteExcel Spreadsheet::ParseExcel Business::IBAN DBD::Pg Date::ICal Data::ICal Data::ICal::Entry::TimeZone/'
+sudo perl -MCPAN -e 'install ($_) for qw/Mojolicious Mojolicious::Plugin::Database Mojolicious::Plugin::RenderFile SQL::Abstract::More Apache::Session::File Spreadsheet::WriteExcel Spreadsheet::ParseExcel Business::IBAN DBD::Pg Date::ICal Data::ICal Data::ICal::Entry::TimeZone/'
 # now you can either call morbo backend.pl (testing server)
 # or launch hypnotoad backend.pl during system boot
 # locate your favourite web browser to http://localhost:3000/Frontend/index.html

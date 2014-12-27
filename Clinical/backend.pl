@@ -17,7 +17,6 @@ use File::Find::Rule;
 use Apache::Session::File;
 use Net::LDAP;
 use URI::Escape;
-use JSON::XS;
 use Mojolicious::Plugin::RenderFile;
 use pdfgen;
 use DateTime;
@@ -396,7 +395,7 @@ warn $table;
         {
             my $ua = Mojo::UserAgent->new;
             my $data='{}'; # $ua->get('http://auginfo/piz/'.$jsonR->{piz})->res->body;
-            my $a=JSON::XS->new->utf8->decode( $data );
+            my $a= decode_json( $data );
             my $update_d={name=>$a->{name}, givenname=>$a->{vorname}, birthdate=>$a->{geburtsdatum}, telephone=>$a->{tel}, town=>$a->{ort}, zip=>$a->{plz}, street=>$a->{anschrift}, female=>$a->{weiblich}||'0' };
             my($stmt, @bind) = $sql->update($table, $update_d, {$pk=>$key});
             my $sth = $self->db->prepare($stmt);
