@@ -6,7 +6,7 @@
 \usepackage{graphicx}
 \usepackage{wallpaper}
 \usepackage[absolute]{textpos}
-\usepackage{tabularx} 
+\usepackage{supertabular}
 
 \renewcommand{\familydefault}{\sfdefault} 
 \usepackage{helvet} 
@@ -15,15 +15,15 @@
 
 \noindent Worksheet {\it <Voller Titel>} vom <visit_date> f"ur <code1> <code2> \\
 
-\begin{tabular}{p{5cm}p{9cm}}
-procedure &  value&   \tabularnewline
+\tablehead{\bf Item & \bf Value\\ \hline} 
+\begin{mpsupertabular}{p{5cm}p{9cm}}
 \hline
  <foreach:values sep=" ">
 <name> &<value>\\
 \tabularnewline
 </foreach:values>
 \hline
-\end{tabular}
+\end{mpsupertabular}
 ~
 \\\\ \\\\
 \noindent Datum:\\\\
