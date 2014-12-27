@@ -6,12 +6,12 @@ Clinical trials administration system
 Features include:
  * Structured trials database
  * 100% browser based
- * Desktop-quality UI (keyboard navigation, undo / redo)
+ * Desktop-quality UI (e.g. keyboard navigation, undo / redo)
  * Fulltext search in realtime
  * Structured document repository
+ * Human ressources planning
  * Visit interval planning
  * Procedures assignable to personnel
- * Human ressources planning
  * Calendars + iCAL feeds
  * Billing / Accounting / Reimbusements
  * eCRF / worksheet producer

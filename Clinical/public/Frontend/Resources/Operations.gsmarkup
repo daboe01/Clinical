@@ -35,7 +35,7 @@
     <vbox>
     <searchField valueBinding="myadmincontroller.searchTerm"/>
     <scrollView hasHorizontalScroller="YES">
-     <tableView zebra="yes" autosaveName="alltrials_tv0" id="trialstv" valueBinding="#CPOwner.trialsController" target="#myadmincontroller">
+     <tableView zebra="yes" autosaveName="alltrials_tv0" id="trialstv" valueBinding="#CPOwner.trialsController" target="#myadmincontroller" allowsEmptySelection="NO">
         <tableColumn identifier="name" title="Name" editable="YES"/>
         <tableColumn identifier="group.name" title="AG" editable="NO"/>
         <tableColumn identifier="global_state" title="State" editable="NO"/>

@@ -124,6 +124,13 @@
 
 @implementation FSPopUpButton:CPPopUpButton
 
+//<!> fixme: does not work -> _CPMenuManager.j
+- (void)deleteBackward:sender
+{
+alert("hello")
+        [self setObjectValue:[CPNull null]];
+}
+
 -(void) _consolidateItemArrayLengthToArray:(CPArray) someArray
 {	var myCurrentArr=[self itemArray];
 	var l=myCurrentArr.length;

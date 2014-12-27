@@ -204,7 +204,7 @@ BaseURL=HostURL+"/";
 
 -(void) unsetReferenceVisit:sender
 {
-    [[visitsController selectedObject] setValue: [CPNull null] forKey:"idreference_visit"];
+    [[visitsController selectedObject] setValue:[CPNull null] forKey:"idreference_visit"];
 }
 
 // Konto-stuff (hat keinen eigenen controller)

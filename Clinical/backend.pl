@@ -1300,11 +1300,9 @@ any '/CT/print_visit_ecrf/:idpatientvisit'=> [idpatientvisit =>qr/\d+/] => sub
     my $sum=0;
     while(my $c=$sth->fetchrow_hashref())
     {
-        if ($c->{latex_representation} && $c->{value_full})
-        {   my $h = decode_json($c->{value_full});
+        if ($c->{latex_representation})
+        {   my $h = $c->{value_full}? decode_json($c->{value_full}) :{};
             $c->{value} = pdfgen::expandPDFDict($c->{latex_representation}, $h);
-        } elsif($c->{latex_representation})
-        {   $c->{value} = $c->{latex_representation};
         } else
         {
             $c->{value}= $c->{value_full};
