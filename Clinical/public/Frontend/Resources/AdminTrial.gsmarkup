@@ -82,6 +82,7 @@
     <scrollView hasHorizontalScroller="YES">
      <tableView zebra="yes" autosaveName="allprocedures_tv" id="allprocedures_tv" valueBinding="#CPOwner.proceduresCatController" target="#CPOwner">
         <tableColumn identifier="name" title="name" editable="YES"/>
+        <tableColumn identifier="ecrf_name" title="worksheetname" editable="YES"/>
         <tableColumn identifier="base_cost" title="hauskatalog EUR" editable="YES"/>
         <tableColumn identifier="widgetclassname" title="widgetclass" editable="YES"/>
         <tableColumn identifier="widgetparameters" title="param" editable="YES"/>

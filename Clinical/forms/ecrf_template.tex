@@ -8,7 +8,6 @@
 \usepackage[absolute]{textpos}
 \usepackage{tabularx} 
 
-
 \renewcommand{\familydefault}{\sfdefault} 
 \usepackage{helvet} 
 
@@ -16,7 +15,7 @@
 
 \noindent Worksheet {\it <Voller Titel>} vom <visit_date> f"ur <code1> <code2> \\
 
-\begin{tabular}{lllllll}
+\begin{tabular}{p{5cm}p{9cm}}
 procedure &  value&   \tabularnewline
 \hline
  <foreach:values sep=" ">
@@ -25,6 +24,9 @@ procedure &  value&   \tabularnewline
 </foreach:values>
 \hline
 \end{tabular}
-
+~
+\\\\ \\\\
+\noindent Datum:\\\\
+\noindent Untersucher:~~~~~~~~~~~~~~~~~~~~Unterschrift:
 
 \end{document}

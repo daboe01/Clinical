@@ -2164,7 +2164,8 @@ CREATE TABLE procedures_catalogue (
     base_cost double precision,
     widgetclassname text,
     widgetparameters text,
-    latex_representation text
+    latex_representation text,
+    ecrf_name text
 );
 
 
@@ -3215,12 +3216,10 @@ SELECT pg_catalog.setval('patient_visits_id_seq', 3817, true);
 
 COPY patients (id, idtrial, piz, code1, code2, comment, state, name, givenname, birthdate, street, zip, town, telephone, insertion_date, female, iban, bic, bank, travel_distance) FROM stdin;
 609	197	\N	\N	\N	\N	\N	xxx	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
-612	25	4	\N	\N	\N	\N	test43	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
 613	25	5	\N	\N	\N	\N	test5	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
 614	25	6	\N	\N	\N	\N	test6	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
-610	25	2	\N	\N	\N	\N	test2	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
-611	25	3	\N	\N	\N	\N	test3	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
 608	25	1	0001	0001/A	\N	4	Test	\N	\N	\N	\N	\N	\N	2014-11-13	\N	\N	\N	\N	10
+612	25	\N	\N	\N	\N	\N	test43	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
 \.
 
 
@@ -3348,70 +3347,70 @@ SELECT pg_catalog.setval('personnel_properties_id_seq', 128, true);
 -- Data for Name: procedures_catalogue; Type: TABLE DATA; Schema: public; Owner: root
 --
 
-COPY procedures_catalogue (id, name, type, base_cost, widgetclassname, widgetparameters, latex_representation) FROM stdin;
-11	Subjektive Refraktionsbestimmung mit sphärischen Gläsern	1	7.91000000000000014	\N	\N	\N
-12	Subjektive Refraktionsbestimmung mit sphärisch-zylindrischen Gläsern	1	11.9399999999999995	\N	\N	\N
-163	IOLMaster biomerty	\N	50	\N	\N	\N
-13	Objektive Refraktionsbestimmung mittels Skiaskopie oder Anwendung eines Refraktometers	1	9.91000000000000014	\N	\N	\N
-14	Messung der Maximal- oder Gebrauchsakkommodation mittels Akkommodometer oder Optometer	1	8.05000000000000071	\N	\N	\N
-15	Messung der Hornhautkrümmungsradien	1	6.03000000000000025	\N	\N	\N
-16	Prüfung von Mehrstärken- oder Prismenbrillen mit Bestimmung der Fern- und Nahpunkte bei subjektiver Brillenunverträglichkeit	1	9.38000000000000078	\N	\N	\N
-17	Nachweis der Tränensekretionsmenge (z. B. Schirmer-Test)	1	2.68999999999999995	\N	\N	\N
-164	eCRF-Pauschale 30min	\N	50	\N	\N	\N
-153	UCVA standard 1M 2 eyes	\N	18	\N	\N	\N
-23	Untersuchung auf Heterophorie bzw. Strabismus gegebenenfalls einschließlich qualitativer Untersuchung des binokularen Sehaktes	1	12.1899999999999995	\N	\N	\N
-24	Qualitative und quantitative Untersuchung des binokularen Sehaktes	1	32.4500000000000028	\N	\N	\N
-25	Differenzierende Analyse und graphische Darstellung des Bewegungsablaufs beider Augen bei Augenmuskelstörungen, mindestens 36 Blickrichtungen pro Auge	1	93.8400000000000034	\N	\N	\N
-26	Kampimetrie (z. B. Bjerrum) auch Perimetrie nach Förster	1	16.2199999999999989	\N	\N	\N
-27	Projektionsperimetrie mit Marken verschiedener Reizwerte	1	24.3999999999999986	\N	\N	\N
-28	Quantitativ abgestufte (statische) Profilperimetrie	1	33.259999999999998	\N	\N	\N
-29	Farbsinnprüfung mit Pigmentproben (z. B. Farbtafeln)	1	8.1899999999999995	\N	\N	\N
-30	Farbsinnprüfung mit Anomaloskop	1	24.3999999999999986	\N	\N	\N
-31	Vollständige Untersuchung des zeitlichen Ablaufs der Adaptation	1	64.8799999999999955	\N	\N	\N
-32	Untersuchung des Dämmerungssehens ohne Blendung	1	12.1899999999999995	\N	\N	\N
-33	Untersuchung des Dämmerungssehens während der Blendung	1	12.1899999999999995	\N	\N	\N
-34	Untersuchung des Dämmerungssehens nach der Blendung (Readaptation)	1	12.1899999999999995	\N	\N	\N
-35	Elektroretinographische Untersuchung (ERG) und/oder elektrookulographische Untersuchung (EOG)	1	80.4300000000000068	\N	\N	\N
-36	Spaltlampenmikroskopie der vorderen und mittleren Augenabschnitte gegebenenfalls einschließlich der binokularen Untersuchung des hinteren Poles (z. B. Hruby-Linse)	1	9.91000000000000014	\N	\N	\N
-37	Gonioskopie	1	20.379999999999999	\N	\N	\N
-38	Binokulare Untersuchung des Augenhintergrundes einschließlich der äußeren Peripherie (z. B. Dreispiegelkontaktglas, Schaepens) gegebenenfalls einschließlich der Spaltlampenmikroskopie der vorderen und mittleren Augenabschnitte und/oder diasklerale Durchleuchtung	1	20.379999999999999	\N	\N	\N
-39	Diasklerale Durchleuchtung	1	8.1899999999999995	\N	\N	\N
-40	Exophthalmometrie	1	6.69000000000000039	\N	\N	\N
-41	Fluoreszenzuntersuchung der terminalen Strombahn am Augenhintergrund einschließlich Applikation des Teststoffes	1	32.4500000000000028	\N	\N	\N
-42	Fluoreszenzangiographische Untersuchung der terminalen Strombahn am Augenhintergrund einschließlich Aufnahmen und Applikation des Teststoffes	1	64.8799999999999955	\N	\N	\N
-155	UCVA standard 1M binocular	\N	15	\N	\N	\N
-152	UCVA standard 4M binocular	\N	15	\N	\N	\N
-45	Fotographische Verlaufskontrolle intraokularer Veränderungen mittels Spaltlampenfotographie	1	13.4100000000000001	\N	\N	\N
-46	Fotographische Verlaufskontrolle von Veränderungen des Augenhintergrunds mittels Fundusfotographie	1	20.1000000000000014	\N	\N	\N
-47	Tonometrische Untersuchung mit Anwendung des Impressionstonometers	1	7.33999999999999986	\N	\N	\N
-48	Tonometrische Untersuchung mit Anwendung des Applanationstonometers	1	10.4900000000000002	\N	\N	\N
-49	Tonometrische Untersuchung (mehrfach in zeitlichem Zusammenhang zur Anfertigung tonometrischer Kurven, mindestens vier Messungen) auch fortlaufende Tonometrie zur Ermittlung des Abflußwiderstandes	1	25.3999999999999986	\N	\N	\N
-50	Pupillographie	1	25.3999999999999986	\N	\N	\N
-52	Ophthalmodynamometrie gegebenenfalls einschließlich Tonometrie, erste Messung	1	25.3999999999999986	\N	\N	\N
-154	UCVA standard near binocular	\N	15	\N	\N	\N
-158	Contrast vision 2 eyes	\N	25	\N	\N	\N
-161	Specular microscopy 2 eyes	\N	40	\N	\N	\N
-162	AE Interview	\N	20	\N	\N	\N
-156	UCVA standard 4M 2 eyes	\N	18	\N	\N	\N
-157	UCVA standard near 2 eyes	\N	18	\N	\N	\N
-165	eCRF-Pauschale 10min	\N	10	\N	\N	\N
-159	Questionnaire interview 5-10 items	\N	50	\N	\N	\N
-160	Defocus refraction	\N	120	\N	\N	\N
-166	Reticam	\N	15	\N	\N	\N
-167	Blutentnahme	\N	15	\N	\N	\N
-1	BCVA ETDRS 4M 2 eyes	\N	25	WidgetSimpleString	\N	\N
-2	BCVA ETDRS 4M binocular	\N	25	WidgetSimpleString	\N	\N
-3	UCVA ETDRS 4M 2 eyes	\N	25	WidgetSimpleString	\N	\N
-150	BCVA standard near binocular	\N	15	WidgetSimpleString	\N	\N
-148	BCVA standard near 2 eyes	\N	18	WidgetSimpleString	\N	\N
-147	BCVA standard 4M binocular	\N	15	WidgetSimpleString	\N	\N
-146	BCVA standard 4M 2 eyes	\N	18	WidgetSimpleString	\N	\N
-145	UCVA ETDRS 4M binocular	\N	20	WidgetSimpleString	\N	\N
-144	UCVA ETDRS near 2 eyes	\N	25	WidgetSimpleString	\N	\N
-143	BCVA standard 1M 2 eyes	\N	18	WidgetSimpleString	\N	\N
-151	BCVA  1M binocular	\N	15	WidgetSimpleString		\N
-51	Elektromyographie der äußeren Augenmuskeln	1	58.75			\N
-168	OSDI Questionnaire	\N	\N	WidgetOSDI	<?xml version="1.0"?>\n<!DOCTYPE gsmarkup>\n<gsmarkup>\n<objects>\n <window visible="NO">\n   <vbox id="widgets">\n       <label> Have you experienced any of the following during the last week?</label>\n       <label> Eyes that are sensitive to light?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value1">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n       </popUpButton>\n       <label> Eyes that feel gritty?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value2">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n       </popUpButton>\n       <label> Painful or sore eyes?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value3">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n       </popUpButton>\n       <label> Blurred vision?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value4">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n       </popUpButton>\n       <label> Poor vision?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value5">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n       </popUpButton>\n\n\n\n\n\n\n\n\n       <label> Have problems with your eyes limited you in performing any of the following during the last week?</label>\n       <label> Reading?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value6">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n           <popUpButtonItem title="NA" tag="-1"/>\n       </popUpButton>\n       <label> Driving at night?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value7">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n           <popUpButtonItem title="NA" tag="-1"/>\n       </popUpButton>\n       <label> Working with a computer or bank machine (ATM)?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value8">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n           <popUpButtonItem title="NA" tag="-1"/>\n       </popUpButton>\n       <label> Watching TV?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value9">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n           <popUpButtonItem title="NA" tag="-1"/>\n       </popUpButton>\n\n\n\n\n\n\n\n\n       <label> Have your eyes felt uncomfortable in any of the following situations of the during the last week?</label>\n       <label> Windy conditions?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value10">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n           <popUpButtonItem title="NA" tag="-1"/>\n       </popUpButton>\n       <label> Places or areas with low humidity (very dry)?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value11">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n           <popUpButtonItem title="NA" tag="-1"/>\n       </popUpButton>\n       <label> Areas that are air conditioned?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value12">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n           <popUpButtonItem title="NA" tag="-1"/>\n       </popUpButton>\n\n\n\n\n       <vspace height="20" valign="min"/>\n       <label> OSDI</label>\n       <label valueBinding="#CPOwner.value13"/>\n </vbox>\n</window>\n\n\n\n\n</objects>\n<connectors>\n <outlet source="#CPOwner" target="widgets" label="_myView"/>\n</connectors>\n\n\n\n\n\n\n\n\n</gsmarkup>	{\\bf OSDI: <value13>}
+COPY procedures_catalogue (id, name, type, base_cost, widgetclassname, widgetparameters, latex_representation, ecrf_name) FROM stdin;
+11	Subjektive Refraktionsbestimmung mit sphärischen Gläsern	1	7.91000000000000014	\N	\N	\N	\N
+12	Subjektive Refraktionsbestimmung mit sphärisch-zylindrischen Gläsern	1	11.9399999999999995	\N	\N	\N	\N
+163	IOLMaster biomerty	\N	50	\N	\N	\N	\N
+13	Objektive Refraktionsbestimmung mittels Skiaskopie oder Anwendung eines Refraktometers	1	9.91000000000000014	\N	\N	\N	\N
+14	Messung der Maximal- oder Gebrauchsakkommodation mittels Akkommodometer oder Optometer	1	8.05000000000000071	\N	\N	\N	\N
+15	Messung der Hornhautkrümmungsradien	1	6.03000000000000025	\N	\N	\N	\N
+16	Prüfung von Mehrstärken- oder Prismenbrillen mit Bestimmung der Fern- und Nahpunkte bei subjektiver Brillenunverträglichkeit	1	9.38000000000000078	\N	\N	\N	\N
+17	Nachweis der Tränensekretionsmenge (z. B. Schirmer-Test)	1	2.68999999999999995	\N	\N	\N	\N
+164	eCRF-Pauschale 30min	\N	50	\N	\N	\N	\N
+153	UCVA standard 1M 2 eyes	\N	18	\N	\N	\N	\N
+23	Untersuchung auf Heterophorie bzw. Strabismus gegebenenfalls einschließlich qualitativer Untersuchung des binokularen Sehaktes	1	12.1899999999999995	\N	\N	\N	\N
+24	Qualitative und quantitative Untersuchung des binokularen Sehaktes	1	32.4500000000000028	\N	\N	\N	\N
+25	Differenzierende Analyse und graphische Darstellung des Bewegungsablaufs beider Augen bei Augenmuskelstörungen, mindestens 36 Blickrichtungen pro Auge	1	93.8400000000000034	\N	\N	\N	\N
+26	Kampimetrie (z. B. Bjerrum) auch Perimetrie nach Förster	1	16.2199999999999989	\N	\N	\N	\N
+27	Projektionsperimetrie mit Marken verschiedener Reizwerte	1	24.3999999999999986	\N	\N	\N	\N
+28	Quantitativ abgestufte (statische) Profilperimetrie	1	33.259999999999998	\N	\N	\N	\N
+29	Farbsinnprüfung mit Pigmentproben (z. B. Farbtafeln)	1	8.1899999999999995	\N	\N	\N	\N
+30	Farbsinnprüfung mit Anomaloskop	1	24.3999999999999986	\N	\N	\N	\N
+31	Vollständige Untersuchung des zeitlichen Ablaufs der Adaptation	1	64.8799999999999955	\N	\N	\N	\N
+32	Untersuchung des Dämmerungssehens ohne Blendung	1	12.1899999999999995	\N	\N	\N	\N
+33	Untersuchung des Dämmerungssehens während der Blendung	1	12.1899999999999995	\N	\N	\N	\N
+34	Untersuchung des Dämmerungssehens nach der Blendung (Readaptation)	1	12.1899999999999995	\N	\N	\N	\N
+35	Elektroretinographische Untersuchung (ERG) und/oder elektrookulographische Untersuchung (EOG)	1	80.4300000000000068	\N	\N	\N	\N
+36	Spaltlampenmikroskopie der vorderen und mittleren Augenabschnitte gegebenenfalls einschließlich der binokularen Untersuchung des hinteren Poles (z. B. Hruby-Linse)	1	9.91000000000000014	\N	\N	\N	\N
+37	Gonioskopie	1	20.379999999999999	\N	\N	\N	\N
+38	Binokulare Untersuchung des Augenhintergrundes einschließlich der äußeren Peripherie (z. B. Dreispiegelkontaktglas, Schaepens) gegebenenfalls einschließlich der Spaltlampenmikroskopie der vorderen und mittleren Augenabschnitte und/oder diasklerale Durchleuchtung	1	20.379999999999999	\N	\N	\N	\N
+39	Diasklerale Durchleuchtung	1	8.1899999999999995	\N	\N	\N	\N
+40	Exophthalmometrie	1	6.69000000000000039	\N	\N	\N	\N
+41	Fluoreszenzuntersuchung der terminalen Strombahn am Augenhintergrund einschließlich Applikation des Teststoffes	1	32.4500000000000028	\N	\N	\N	\N
+42	Fluoreszenzangiographische Untersuchung der terminalen Strombahn am Augenhintergrund einschließlich Aufnahmen und Applikation des Teststoffes	1	64.8799999999999955	\N	\N	\N	\N
+155	UCVA standard 1M binocular	\N	15	\N	\N	\N	\N
+152	UCVA standard 4M binocular	\N	15	\N	\N	\N	\N
+45	Fotographische Verlaufskontrolle intraokularer Veränderungen mittels Spaltlampenfotographie	1	13.4100000000000001	\N	\N	\N	\N
+46	Fotographische Verlaufskontrolle von Veränderungen des Augenhintergrunds mittels Fundusfotographie	1	20.1000000000000014	\N	\N	\N	\N
+47	Tonometrische Untersuchung mit Anwendung des Impressionstonometers	1	7.33999999999999986	\N	\N	\N	\N
+48	Tonometrische Untersuchung mit Anwendung des Applanationstonometers	1	10.4900000000000002	\N	\N	\N	\N
+49	Tonometrische Untersuchung (mehrfach in zeitlichem Zusammenhang zur Anfertigung tonometrischer Kurven, mindestens vier Messungen) auch fortlaufende Tonometrie zur Ermittlung des Abflußwiderstandes	1	25.3999999999999986	\N	\N	\N	\N
+50	Pupillographie	1	25.3999999999999986	\N	\N	\N	\N
+52	Ophthalmodynamometrie gegebenenfalls einschließlich Tonometrie, erste Messung	1	25.3999999999999986	\N	\N	\N	\N
+154	UCVA standard near binocular	\N	15	\N	\N	\N	\N
+158	Contrast vision 2 eyes	\N	25	\N	\N	\N	\N
+161	Specular microscopy 2 eyes	\N	40	\N	\N	\N	\N
+156	UCVA standard 4M 2 eyes	\N	18	\N	\N	\N	\N
+157	UCVA standard near 2 eyes	\N	18	\N	\N	\N	\N
+165	eCRF-Pauschale 10min	\N	10	\N	\N	\N	\N
+159	Questionnaire interview 5-10 items	\N	50	\N	\N	\N	\N
+160	Defocus refraction	\N	120	\N	\N	\N	\N
+166	Reticam	\N	15	\N	\N	\N	\N
+167	Blutentnahme	\N	15	\N	\N	\N	\N
+1	BCVA ETDRS 4M 2 eyes	\N	25	WidgetSimpleString	\N	\N	\N
+2	BCVA ETDRS 4M binocular	\N	25	WidgetSimpleString	\N	\N	\N
+3	UCVA ETDRS 4M 2 eyes	\N	25	WidgetSimpleString	\N	\N	\N
+150	BCVA standard near binocular	\N	15	WidgetSimpleString	\N	\N	\N
+148	BCVA standard near 2 eyes	\N	18	WidgetSimpleString	\N	\N	\N
+147	BCVA standard 4M binocular	\N	15	WidgetSimpleString	\N	\N	\N
+146	BCVA standard 4M 2 eyes	\N	18	WidgetSimpleString	\N	\N	\N
+145	UCVA ETDRS 4M binocular	\N	20	WidgetSimpleString	\N	\N	\N
+144	UCVA ETDRS near 2 eyes	\N	25	WidgetSimpleString	\N	\N	\N
+143	BCVA standard 1M 2 eyes	\N	18	WidgetSimpleString	\N	\N	\N
+151	BCVA  1M binocular	\N	15	WidgetSimpleString		\N	\N
+51	Elektromyographie der äußeren Augenmuskeln	1	58.75			\N	\N
+168	OSDI Questionnaire	\N	\N	WidgetOSDI	<?xml version="1.0"?>\n<!DOCTYPE gsmarkup>\n<gsmarkup>\n<objects>\n <window visible="NO">\n   <vbox id="widgets">\n       <label> Have you experienced any of the following during the last week?</label>\n       <label> Eyes that are sensitive to light?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value1">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n       </popUpButton>\n       <label> Eyes that feel gritty?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value2">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n       </popUpButton>\n       <label> Painful or sore eyes?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value3">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n       </popUpButton>\n       <label> Blurred vision?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value4">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n       </popUpButton>\n       <label> Poor vision?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value5">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n       </popUpButton>\n\n\n\n\n\n\n\n\n       <label> Have problems with your eyes limited you in performing any of the following during the last week?</label>\n       <label> Reading?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value6">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n           <popUpButtonItem title="NA" tag="-1"/>\n       </popUpButton>\n       <label> Driving at night?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value7">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n           <popUpButtonItem title="NA" tag="-1"/>\n       </popUpButton>\n       <label> Working with a computer or bank machine (ATM)?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value8">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n           <popUpButtonItem title="NA" tag="-1"/>\n       </popUpButton>\n       <label> Watching TV?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value9">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n           <popUpButtonItem title="NA" tag="-1"/>\n       </popUpButton>\n\n\n\n\n\n\n\n\n       <label> Have your eyes felt uncomfortable in any of the following situations of the during the last week?</label>\n       <label> Windy conditions?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value10">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n           <popUpButtonItem title="NA" tag="-1"/>\n       </popUpButton>\n       <label> Places or areas with low humidity (very dry)?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value11">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n           <popUpButtonItem title="NA" tag="-1"/>\n       </popUpButton>\n       <label> Areas that are air conditioned?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value12">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n           <popUpButtonItem title="NA" tag="-1"/>\n       </popUpButton>\n\n\n\n\n       <vspace height="20" valign="min"/>\n       <label> OSDI</label>\n       <label valueBinding="#CPOwner.value13"/>\n </vbox>\n</window>\n\n\n\n\n</objects>\n<connectors>\n <outlet source="#CPOwner" target="widgets" label="_myView"/>\n</connectors>\n\n\n\n\n\n\n\n\n</gsmarkup>	{\\bf OSDI: <value13>}	\N
+162	AE Interview	\N	20	WidgetTimestamp	<?xml version="1.0"?>\n<!DOCTYPE gsmarkup>\n<gsmarkup>\n<objects>\n <window visible="NO">\n   <vbox id="widgets">\n       <hbox>\n           <label valign="center"> Haben sich SAEs ereignet?</label>\n           <popUpButton width="100" valueBinding="#CPOwner.value2">\n                <popUpButtonItem title="Ja" tag="1"/>\n                <popUpButtonItem title="Nein" tag="0"/>\n           </popUpButton>\n       </hbox>\n       <vspace height="20" valign="min"/>\n       <hbox>\n          <label valign="center"> Datum der Frage </label>\n          <textField valueBinding="#CPOwner.value1" width="120" halign="min"/>\n          <button title="Zeit notieren" target="#CPOwner" action="takeTime:"/>\n       </hbox>\n </vbox>\n</window>\n\n\n\n\n</objects>\n<connectors>\n   <outlet source="#CPOwner" target="widgets" label="_myView"/>\n</connectors>\n\n\n\n\n</gsmarkup>	Beantwortet am: {\\bf<value1>}, Angabe: {\\bf<value2>} (0=Nein, 1=Ja)	\N
 \.
 
 
@@ -3813,8 +3812,9 @@ SELECT pg_catalog.setval('trial_visits_id_seq', 300, true);
 
 COPY visit_procedure_values (id, idvisit_procedure, idpatient_visit, value_full) FROM stdin;
 4	141	3813	\N
-5	133	3813	123a
-6	143	3813	{"value1":3,"value2":2,"value3":3,"value4":4,"value5":3,"value6":3,"value7":3,"value8":4,"value9":2,"value10":2,"value11":3,"value12":3,"value13":75,"value14":null,"value15":null,"value16":null,"value17":null,"value18":null,"value19":null,"value20":null,"value21":null,"value22":null,"value23":null,"value24":null,"value25":null}
+6	143	3813	{"value1":0,"value2":2,"value3":2,"value4":4,"value5":3,"value6":3,"value7":3,"value8":4,"value9":2,"value10":2,"value11":3,"value12":0,"value13":58,"value14":null,"value15":null,"value16":null,"value17":null,"value18":null,"value19":null,"value20":null,"value21":null,"value22":null,"value23":null,"value24":null,"value25":null}
+7	144	3813	{"value1":"2014-12-27 12:29","value2":1,"value3":null,"value4":null,"value5":null,"value6":null,"value7":null,"value8":null,"value9":null,"value10":null,"value11":null,"value12":null,"value13":null,"value14":null,"value15":null,"value16":null,"value17":null,"value18":null,"value19":null,"value20":null,"value21":null,"value22":null,"value23":null,"value24":null,"value25":null}
+5	133	3813	123abc
 \.
 
 
@@ -3822,7 +3822,7 @@ COPY visit_procedure_values (id, idvisit_procedure, idpatient_visit, value_full)
 -- Name: visit_procedure_values_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('visit_procedure_values_id_seq', 6, true);
+SELECT pg_catalog.setval('visit_procedure_values_id_seq', 7, true);
 
 
 --
@@ -3833,7 +3833,8 @@ COPY visit_procedures (id, idvisit, idprocedure, actual_cost, ordering, paramete
 141	7	51	\N	2	\N
 133	7	151	\N	1	\N
 120	\N	\N	\N	\N	\N
-143	7	168	\N	0	\N
+143	7	168	\N	3	\N
+144	7	162	\N	0	\N
 136	299	162	\N	\N	\N
 139	5	15	\N	\N	\N
 140	5	162	\N	\N	\N
@@ -3844,7 +3845,7 @@ COPY visit_procedures (id, idvisit, idprocedure, actual_cost, ordering, paramete
 -- Name: visit_procedures_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('visit_procedures_id_seq', 143, true);
+SELECT pg_catalog.setval('visit_procedures_id_seq', 144, true);
 
 
 --
