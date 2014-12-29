@@ -58,9 +58,7 @@
                <tableColumn width="50" identifier="parameter" title="parameter" editable="YES"/>
             </tableView>
           </scrollView>
-          <ButtonBar target="#CPOwner" plusButtonAction="insertVisitProcedure:" minusButtonAction="removeVisitProcedure:" id="visitproc_bb" actionsButton="YES">
-            <popUpButtonItem title="Config..." target="#procedureswindow" action="makeKeyAndOrderFront:"/>
-          </ButtonBar>
+          <ButtonBar target="#CPOwner" plusButtonAction="insertVisitProcedure:" minusButtonAction="removeVisitProcedure:" id="visitproc_bb" actionsButton="NO"/>
         </vbox>
      <vbox>
         <label> Personnel </label>
@@ -75,24 +73,6 @@
    </hbox>
  </vbox>
 </window>
-
-<window id="procedureswindow" delegate="#CPOwner" x="1000" y="600" width="400" height="400" visible="NO">
-  <vbox>
-    <searchField valueBinding="#CPOwner.searchProceduresTerm"/>
-    <scrollView hasHorizontalScroller="YES">
-     <tableView zebra="yes" autosaveName="allprocedures_tv" id="allprocedures_tv" valueBinding="#CPOwner.proceduresCatController" target="#CPOwner">
-        <tableColumn identifier="name" title="name" editable="YES"/>
-        <tableColumn identifier="ecrf_name" title="worksheetname" editable="YES"/>
-        <tableColumn identifier="base_cost" title="hauskatalog EUR" editable="YES"/>
-        <tableColumn identifier="widgetclassname" title="widgetclass" editable="YES"/>
-        <tableColumn identifier="widgetparameters" title="param" editable="YES"/>
-        <tableColumn identifier="latex_representation" title="latex" editable="YES"/>
-     </tableView>
-    </scrollView>
-    <ButtonBar target="#CPOwner.proceduresCatController" plusButtonAction="insert:" minusButtonAction="remove:"/>
-  </vbox>
-</window>
-
 
 <window visible="NO">
   <tableViewPopup width="100" height="23" id="column_idvisit" itemsController="#CPOwner.visitsController" itemsValue="arrangedObjects.id" itemsFace="arrangedObjects.name"/>

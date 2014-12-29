@@ -124,7 +124,6 @@
   </tabViewItem>
 
   <tabViewItem title="States">
-
    <vbox>
 	<scrollView hasHorizontalScroller="NO">
 	 <tableView zebra="yes" autosaveName="allstates_tv" valueBinding="#CPOwner.statesController" target="#CPOwner">
@@ -134,6 +133,32 @@
 	</scrollView>
 	<ButtonBar target="#CPOwner.statesController" plusButtonAction="insert:" minusButtonAction="remove:"/>
    </vbox>
+  </tabViewItem>
+  <tabViewItem title="Procedures">
+   <hbox>
+     <vbox>
+      <searchField valueBinding="#CPOwner.searchProceduresTerm"/>
+      <scrollView hasHorizontalScroller="YES">
+       <tableView zebra="yes" autosaveName="allprocedures_tv" id="allprocedures_tv" valueBinding="#CPOwner.proceduresCatController" target="#CPOwner">
+          <tableColumn identifier="name" title="name" editable="YES"/>
+          <tableColumn identifier="ecrf_name" title="worksheetname" editable="YES"/>
+          <tableColumn identifier="base_cost" title="hauskatalog EUR" editable="YES"/>
+          <tableColumn identifier="widgetclassname" title="widgetclass" editable="YES"/>
+       </tableView>
+      </scrollView>
+      <ButtonBar target="#CPOwner.proceduresCatController" plusButtonAction="insert:" minusButtonAction="remove:"/>
+     </vbox>
+     <vbox>
+        <label>Widget markup</label>
+        <scrollView>
+            <textView editable="YES" valueBinding="#CPOwner.proceduresCatController.selection.widgetparameters"/>
+        </scrollView>
+        <label>Worksheet LaTeX markup</label>
+        <scrollView>
+            <textView editable="YES" valueBinding="#CPOwner.proceduresCatController.selection.latex_representation"/>
+        </scrollView>
+     </vbox>
+    </hbox>
   </tabViewItem>
  </tabView>
 
