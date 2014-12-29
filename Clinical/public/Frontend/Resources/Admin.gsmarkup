@@ -98,7 +98,7 @@
          <vbox>
            <label>Meetings</label>
            <scrollView hasHorizontalScroller="NO">
-             <tableView zebra="yes" autosaveName="groups_meetings_tv" valueBinding="#CPOwner.teamMeetingsController">
+             <tableView zebra="yes" autosaveName="groups_meetings_tv" valueBinding="#CPOwner.teamMeetingsController" delegate="#mycontroller">
                 <tableColumn identifier="title" title="name" editable="YES"/>
                 <tableColumn identifier="starttime" title="start" editable="YES"/>
                 <tableColumn identifier="stoptime" title="stop" editable="YES"/>
@@ -170,6 +170,7 @@
   <popUpButton width="200" id="popupdataviewaccount" itemsBinding="#CPOwner.accountsController.arrangedObjects.name"/>
   <tableViewPopup width="100" height="23" id="popupdataviewattendee" itemsController="#CPOwner.groupPersonnelController2" itemsValue="arrangedObjects.idpersonnel" itemsFace="arrangedObjects.name"/>
   <tableViewPopup width="100" height="23" id="popupdataviewgroupmember" itemsController="#CPOwner.personnelController" itemsValue="arrangedObjects.id" itemsFace="arrangedObjects.name"/>
+  <datePicker style="graphical" id="graphical_picker"/>
  </vbox>
 </window>
 
@@ -198,6 +199,7 @@
         <outlet source="mycontroller" target="addpropswindow" label="addPropsWindow"/>
         <outlet source="mycontroller" target="addpropstv" label="addPropsTV"/>
         <outlet source="mycontroller" target="pdocumentsbuttonbar" label="pDocumentsBB"/>
+        <outlet source="mycontroller" target="graphical_picker" label="graphicalPicker"/>
 </connectors>
 
 

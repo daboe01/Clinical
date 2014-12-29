@@ -16,6 +16,8 @@
 	id	addPropsWindow;
 	id	addPropsTV;
     id  pDocumentsBB;
+    id  graphicalPicker;
+    id  datePickerPopover;
 }
 
 -(void) _performPostLoadInit
@@ -78,6 +80,42 @@
 	[myreq setHTTPMethod:"POST"];
 	[CPURLConnection sendSynchronousRequest: myreq returningResponse: nil];
 
+}
+
+- (BOOL)tableView:(CPTableView)tableView shouldEditTableColumn:(CPTableColumn)column row:(int)row {
+	var identifier= [column identifier];
+	if(identifier === 'title')
+	{   return YES;
+	}
+	datePickerPopover =[CPPopover new];
+	[datePickerPopover setDelegate:self];
+	[datePickerPopover setAnimates:NO];
+	[datePickerPopover setBehavior: CPPopoverBehaviorTransient];
+	[datePickerPopover setAppearance: CPPopoverAppearanceMinimal];
+	var myViewController=[CPViewController new];
+	[datePickerPopover setContentViewController:myViewController];
+	[myViewController setView:graphicalPicker];
+	[graphicalPicker setLocale: [[CPLocale alloc] initWithLocaleIdentifier:@"de_DE"]];
+	graphicalPicker.tableViewEditedRowIndex = row;
+	graphicalPicker.tableViewEditedColumnObj = column;
+	graphicalPicker._table = tableView;
+	[tableView _setObjectValueForTableColumn:column row:row forView:graphicalPicker];
+	[graphicalPicker setTarget:self];
+	[graphicalPicker setAction:@selector(_commitDateValue:)];
+	[graphicalPicker setMinDate:[CPDate distantPast]];
+	[graphicalPicker setMaxDate:[CPDate distantFuture]];
+	var frame = [tableView frameOfDataViewAtColumn:[[tableView tableColumns] indexOfObject:column] row:row];
+	[datePickerPopover showRelativeToRect:frame ofView:tableView preferredEdge:nil];
+	[[tableView window] makeKeyAndOrderFront:self];
+	return YES;
+}
+
+-(void) _commitDateValue:(id)sender
+{
+    [[sender._table window] makeKeyAndOrderFront:self];  // this has to come first (otherwise FF breaks)
+    [datePickerPopover close];
+    [sender._table _commitDataViewObjectValue:sender];
+    [sender._table setNeedsDisplay:YES];
 }
 
 @end
