@@ -67,6 +67,13 @@ helper getLSPDocuments => sub { my ($self)=@_;
     File::Find::Rule->in($_docrepo);
 };
 
+helper getVVDocument => sub { my ($self, $pk)=@_;
+};
+helper delVVDocument => sub { my ($self, $pk)=@_;
+};
+helper putVVDocument => sub { my ($self, $pk, $bytes)=@_;
+};
+
 get '/CT/download/:idtrial/:name' => [idtrial=>qr/[0-9]+/, name=>qr/.+/] => sub {
     my $self=shift;
     my $idtrial=    $self->param("idtrial");
@@ -86,6 +93,31 @@ get '/CT/pdownload/:idperso/:name' => [idperso=>qr/[0-9]+/, name=>qr/.+/] => sub
     my $format;
     $format=$1 if $name=~/\.([^\.]+)$/o;
     $self->render(data => TempFileNames::readFile(doku_repo_path.'p/' . $doc[0]->{tag} .'/' . $idperso.'_'. $name), format => $format );
+};
+get '/DBI/vvdocuments/idvisitvalue/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
+{   my $self = shift;
+    my $pk  = $self->param('pk');
+    $self->render( data =>  $self->getVVDocument($pk) );
+};
+del '/DBI/vvdocuments/idvisitvalue/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
+{   my $self = shift;
+    my $pk  = $self->param('pk');
+    $self->delVVDocument($pk);
+    $self->render( text=> 'OK');
+};
+post '/DBI/vvdocuments/idvisitvalue/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
+{   my $self = shift;
+    my $pk = $self->param("pk");
+    my @uploads = $self->req->upload('files[]');
+    my $curr_upload;
+    for $curr_upload (@uploads) {
+        my $upload  = Mojo::Upload->new($curr_upload);
+        my $bytes = $upload->slurp;
+        my $filename=$upload->filename;
+        $filename=~s/[^0-9a-z\-\. ']/_/ogsi;
+        $self->putVVDocument($pk, $bytes);
+    }
+    $self->render( json => $curr_upload );
 };
 
 get '/DBI/documents'=> sub
