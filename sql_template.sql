@@ -3150,7 +3150,6 @@ SELECT pg_catalog.setval('all_trials_id_seq', 200, true);
 --
 
 COPY audittrail (id, changedate, action, writetable, newdata, whereclause, username) FROM stdin;
-1	2015-01-02 12:18:37.81255	1	trial_properties	{"value":"Teststudie 1"}	{"id":"5508"}	pi
 \.
 
 
@@ -3158,7 +3157,7 @@ COPY audittrail (id, changedate, action, writetable, newdata, whereclause, usern
 -- Name: audittrail_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('audittrail_id_seq', 1, true);
+SELECT pg_catalog.setval('audittrail_id_seq', 7, true);
 
 
 --
@@ -3653,6 +3652,7 @@ SELECT pg_catalog.setval('trial_process_step_id_seq', 855, true);
 
 COPY trial_properties (id, idtrial, idproperty, value) FROM stdin;
 5509	25	23	indoka
+5657	25	62	
 5398	195	25	\N
 5399	195	26	\N
 5400	195	27	\N
@@ -3747,7 +3747,6 @@ COPY trial_properties (id, idtrial, idproperty, value) FROM stdin;
 5562	25	42	
 5563	25	43	\\documentclass{scrreprt}\r\\usepackage[ngerman]{babel}\r\\usepackage[utf8]{inputenc}\r\\usepackage[T1]{fontenc}\r\\usepackage{graphicx}\r\\usepackage{wallpaper}\r\\usepackage{tabularx}\r\r\r\\renewcommand{\\familydefault}{\\sfdefault}\r\\usepackage{helvet}\r\r\\pagenumbering{none}\r\r\r\\begin{document}\r\\baselineskip15pt\r\\setlength{\\headheight}{7\\baselineskip}\r\\setlength{\\oddsidemargin}{-3mm}\r\\addtolength{\\textwidth}{2cm}\r\r<foreach:patients>\r\r\\ThisCenterWallPaper{1}{<copytex:briefkopfAdresszeile3.pdf>}\r\r\\noindent <anrede1>\\\\\r\\noindent <givenname> <name>\\\\\r\\noindent <street> \\\\\r\\noindent <zip> <town> \\\\\r\\\\ \\\\\r\\hspace*{11.0cm}  Freiburg, <today>\\\\\r\r\\noindent Datenschutzerkl"arung in der klinischen Studie {\\it <Voller Titel>}\\\\\r\r\\noindent  Sehr geehrte<anrede2>, <name>,\\\\\r\r\\noindent hiermit m"ochten wir Sie dar"uber informieren, dass ....\\\\\\\\\r\r\\noindent Mit freundlichen Gr"u"sen, \\\\ \\\\\r\r\\hspace*{-7mm}  \\begin{tabularx}{20cm}{XX}\r<_Loginname_>\\\\\r<_Loginrole_> \\\\\r\\end{tabularx}\r\r\\newpage\r\r</foreach:patients>\r\r\r\\end{document}\r
 5479	197	31	
-5515	25	29	sdjfklnsdf xx yy
 \.
 
 
@@ -3827,7 +3826,7 @@ SELECT pg_catalog.setval('trial_properties_catalogue_id_seq', 65, true);
 -- Name: trial_properties_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('trial_properties_id_seq', 5656, true);
+SELECT pg_catalog.setval('trial_properties_id_seq', 5658, true);
 
 
 --

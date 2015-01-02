@@ -459,10 +459,20 @@ del '/DBI/:table/:pk/:key'=> [key=>qr/\d+/] => sub
     my $key        = $self->param('key');
     my $sql = SQL::Abstract->new;
 
+    my  %session;
+    my $sessionid=$self->param('session');
+    tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
+    my $ldap = $session{username};
+
     my($stmt, @bind) = $sql->delete($table, {$pk=>$key});
     my $sth = $self->db->prepare($stmt);
     $sth->execute(@bind);
     app->log->debug("err: ".$DBI::errstr ) if $DBI::errstr;
+
+   ($stmt, @bind) = $sql->insert('audittrail', { action => 3, writetable => $table, username => $ldap, whereclause=> encode_json({$pk=>$key}) });
+    $sth = $self->db->prepare($stmt);
+    $sth->execute(@bind);
+
     $self->render( json=>{err=> $DBI::errstr} );
 };
 
