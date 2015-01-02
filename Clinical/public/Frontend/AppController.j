@@ -36,6 +36,10 @@ BaseURL=HostURL+"/";
 -(CPURLRequest) requestForAddressingAllObjectsInEntity:(FSEntity) someEntity
 {    return [CPURLRequest requestWithURL: [self baseURL]+"/"+[someEntity name]+"?session="+ window.G_SESSION ];
 }
+-(CPURLRequest) requestForInsertingObjectInEntity:(FSEntity) someEntity
+{    var request = [CPURLRequest requestWithURL: [self baseURL]+"/"+[someEntity name]+"/"+ [someEntity pk]+"?session="+ window.G_SESSION];
+    return request;
+}
 
 @end
 

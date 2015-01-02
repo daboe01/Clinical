@@ -2,7 +2,6 @@
 
 # todo: sanitize filenames upon upload
 #        support multiple files of samename (as in cellfinder)
-#        support shadowtables globally (instead of only in $table eq 'all_trials'?'trials': $table)
 
 use lib qw {/Users/daboe01/src/daboe01_Clinical/Clinical};
 use Mojolicious::Lite;
@@ -345,16 +344,19 @@ put '/DBI/:table/:pk/:key'=> [key=>qr/\d+/] => sub
     my $sql     = SQL::Abstract->new;
     my $jsonR   = decode_json( $self->req->body );
 
+   my  %session;
+   my $sessionid=$self->param('session');
+   tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
+   my $ldap = $session{username};
+
     my $types = $self->getTypeHashForTable($table);
     for (keys %$jsonR)    ## support for nullifying dates and integers with empty string or special string NULL
     {
         $jsonR->{$_}= ($jsonR->{$_} =~/(^NULL$)|(^\s*$)/o && $types->{$_} !~/text|varchar/o )? undef : $jsonR->{$_} ;
     }
     if($table eq 'personnel_catalogue')
-    {   my  %session;
-        my $sessionid=$self->param('session');
-        tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
-        my $level=$self->getUserlevel($session{username});
+    {
+        my $level=$self->getUserlevel($ldap);
         if(exists $jsonR->{level} && $jsonR->{level} > $level)
         {
             $self->render( json=> {err=>'Privilege violation'});
@@ -362,11 +364,7 @@ put '/DBI/:table/:pk/:key'=> [key=>qr/\d+/] => sub
         }
     }
     if($table eq 'group_assignments')
-    {   my  %session;
-        my $sessionid=$self->param('session');
-        tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
-        my $ldap = $session{username};
-        my $level=$self->getUserlevel($ldap);
+    {   my $level=$self->getUserlevel($ldap);
         if($level < 3)
         {   if(exists $jsonR->{idgroup})
             {
@@ -381,8 +379,6 @@ put '/DBI/:table/:pk/:key'=> [key=>qr/\d+/] => sub
         }
     }
     $table = 'visit_procedures_name' if $table eq 'visit_procedures' && exists $jsonR->{procedure_name};
-warn Dumper $jsonR;
-warn $table;
     my($stmt, @bind) = $sql->update($table, $jsonR, {$pk=>$key});
     my $sth = $self->db->prepare($stmt);
     $sth->execute(@bind);
@@ -402,6 +398,9 @@ warn $table;
             $sth->execute(@bind);
         }
     }
+   ($stmt, @bind) = $sql->insert('audittrail', { action => 1, writetable => $table, username => $ldap, newdata=> $self->req->body, whereclause=> encode_json({$pk=>$key}) });
+    $sth = $self->db->prepare($stmt);
+    $sth->execute(@bind);
     $self->render( json=> $ret);
 };
 
@@ -428,12 +427,13 @@ post '/DBI/:table/:pk'=> sub
     my $sql = SQL::Abstract->new;
     my $jsonR   = decode_json( $self->req->body );
 
-warn $self->req->body;
+    my  %session;
+    my $sessionid=$self->param('session');
+    tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
+    my $ldap = $session{username};
+
     if($table eq 'personnel_catalogue')
-    {   my  %session;
-        my $sessionid=$self->param('session');
-        tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
-        my $level=$self->getUserlevel($session{username});
+    {        my $level=$self->getUserlevel($ldap);
         $jsonR->{level}= $level if exists $jsonR->{level} && $jsonR->{level} > $level;
         $jsonR->{name}= 'New' unless exists $jsonR->{name};
     }        
@@ -443,6 +443,11 @@ warn $self->req->body;
     app->log->debug("err: ".$DBI::errstr ) if $DBI::errstr;
     my $valpk;
     $valpk = (exists $jsonR->{$pk})? $jsonR->{$pk}:$self->db->last_insert_id(undef, undef, $table, $pk);
+
+   ($stmt, @bind) = $sql->insert('audittrail', { action => 2, writetable => $table, username => $ldap, newdata=> $self->req->body });
+    $sth = $self->db->prepare($stmt);
+    $sth->execute(@bind);
+
     $self->render( json=>{err=> $DBI::errstr, pk => $valpk} );
 };
 

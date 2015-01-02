@@ -443,7 +443,10 @@ var _allRelationships;
 {	CPString _baseURL @accessors(property=baseURL);
 	unsigned _fetchLimit @accessors(property=fetchLimit);
 }
-
+-(CPURLRequest) requestForInsertingObjectInEntity:(FSEntity) someEntity
+{    var request = [CPURLRequest requestWithURL: [self baseURL]+"/"+[someEntity name]+"/"+ [someEntity pk]];
+    return request;
+}
 -(CPURLRequest) requestForAddressingObjectsWithKey: aKey equallingValue: (id) someval inEntity:(FSEntity) someEntity
 {	var request = [CPURLRequest requestWithURL: [self baseURL]+"/"+[someEntity name]+"/"+aKey+"/"+someval];
 	return request;
@@ -543,7 +546,7 @@ var _allRelationships;
 
 -(void) insertObject: someObj 
 {	var entity=[someObj entity];
-	var request= [CPURLRequest requestWithURL: [self baseURL]+"/"+[entity name]+"/"+[entity pk] ];	// pk is necessary to get id after inserting
+	var request=[self requestForInsertingObjectInEntity:entity];
     [request setHTTPMethod:"POST"];
 	[request setHTTPBody:[someObj._changes toJSON] ];
 	var data=[CPURLConnection sendSynchronousRequest: request returningResponse: nil];
@@ -557,7 +560,7 @@ var _allRelationships;
 
 -(id) deleteObject: obj
 {
-	var request=[self requestForAddressingObjectsWithKey: [[obj entity] pk] equallingValue: [obj valueForKey: [[obj entity] pk]] inEntity:[obj entity]];
+	var request=[self requestForAddressingObjectsWithKey:[[obj entity] pk] equallingValue: [obj valueForKey: [[obj entity] pk]] inEntity:[obj entity]];
     [request setHTTPMethod:"DELETE"];
 	[CPURLConnection sendSynchronousRequest:request returningResponse: nil];
 }

@@ -1160,6 +1160,44 @@ ALTER SEQUENCE all_trials_id_seq OWNED BY all_trials.id;
 
 
 --
+-- Name: audittrail; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE audittrail (
+    id integer NOT NULL,
+    changedate timestamp without time zone DEFAULT now(),
+    action integer DEFAULT 0,
+    writetable text,
+    newdata text,
+    whereclause text,
+    username text
+);
+
+
+ALTER TABLE public.audittrail OWNER TO postgres;
+
+--
+-- Name: audittrail_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE audittrail_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.audittrail_id_seq OWNER TO postgres;
+
+--
+-- Name: audittrail_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE audittrail_id_seq OWNED BY audittrail.id;
+
+
+--
 -- Name: bic_catalogue; Type: TABLE; Schema: public; Owner: root; Tablespace: 
 --
 
@@ -2878,6 +2916,13 @@ ALTER TABLE ONLY all_trials ALTER COLUMN id SET DEFAULT nextval('all_trials_id_s
 
 
 --
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY audittrail ALTER COLUMN id SET DEFAULT nextval('audittrail_id_seq'::regclass);
+
+
+--
 -- Name: id; Type: DEFAULT; Schema: public; Owner: root
 --
 
@@ -3101,6 +3146,22 @@ SELECT pg_catalog.setval('all_trials_id_seq', 200, true);
 
 
 --
+-- Data for Name: audittrail; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY audittrail (id, changedate, action, writetable, newdata, whereclause, username) FROM stdin;
+1	2015-01-02 12:18:37.81255	1	trial_properties	{"value":"Teststudie 1"}	{"id":"5508"}	pi
+\.
+
+
+--
+-- Name: audittrail_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('audittrail_id_seq', 1, true);
+
+
+--
 -- Data for Name: bic_catalogue; Type: TABLE DATA; Schema: public; Owner: root
 --
 
@@ -3179,6 +3240,7 @@ SELECT pg_catalog.setval('meeting_attendees_id_seq', 1, false);
 --
 
 COPY patient_visits (id, idpatient, idvisit, visit_date, state, travel_costs, date_reimbursed, travel_comment, travel_additional_costs, actual_costs) FROM stdin;
+3822	608	7	2014-12-27 00:00:00	\N	\N	\N	\N	\N	\N
 3787	609	\N	2014-11-05 00:00:00	\N	\N	\N	\N	\N	\N
 3798	612	7	2014-11-17 00:00:00	\N	\N	\N	\N	\N	\N
 3800	612	6	\N	\N	\N	\N	\N	\N	\N
@@ -3195,11 +3257,10 @@ COPY patient_visits (id, idpatient, idvisit, visit_date, state, travel_costs, da
 3811	614	9	\N	\N	\N	\N	\N	\N	\N
 3812	614	10	\N	\N	\N	\N	\N	\N	\N
 3799	612	5	2014-11-18 00:00:00	\N	\N	\N	\N	\N	\N
-3814	608	5	\N	\N	\N	\N	\N	\N	0
-3815	608	6	\N	\N	\N	\N	\N	\N	0
-3816	608	9	\N	\N	\N	\N	\N	\N	0
-3817	608	10	\N	\N	\N	\N	\N	\N	0
-3813	608	7	2014-12-25 00:00:00	\N	\N	\N	\N	\N	0
+3823	608	5	\N	\N	\N	\N	\N	\N	\N
+3824	608	6	\N	\N	\N	\N	\N	\N	\N
+3825	608	9	\N	\N	\N	\N	\N	\N	\N
+3826	608	10	\N	\N	\N	\N	\N	\N	\N
 \.
 
 
@@ -3207,7 +3268,7 @@ COPY patient_visits (id, idpatient, idvisit, visit_date, state, travel_costs, da
 -- Name: patient_visits_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('patient_visits_id_seq', 3817, true);
+SELECT pg_catalog.setval('patient_visits_id_seq', 3826, true);
 
 
 --
@@ -3537,6 +3598,7 @@ SELECT pg_catalog.setval('status_catalogue_id_seq', 515, true);
 --
 
 COPY team_meetings (id, starttime, stoptime, title, idgroup) FROM stdin;
+1	2014-12-30 00:00:00	2014-12-31 00:00:00	\N	19
 \.
 
 
@@ -3544,7 +3606,7 @@ COPY team_meetings (id, starttime, stoptime, title, idgroup) FROM stdin;
 -- Name: team_meetings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('team_meetings_id_seq', 1, false);
+SELECT pg_catalog.setval('team_meetings_id_seq', 1, true);
 
 
 --
@@ -3625,7 +3687,7 @@ COPY trial_properties (id, idtrial, idproperty, value) FROM stdin;
 5476	197	18	\N
 5477	197	34	\N
 5478	197	12	\N
-5508	25	24	Teststudie
+5508	25	24	Teststudie 1
 5430	196	17	\N
 5431	196	33	\N
 5432	196	11	\N
@@ -3789,8 +3851,8 @@ SELECT pg_catalog.setval('trial_property_annotations_id_seq', 48, true);
 
 COPY trial_visits (id, name, idtrial, idreference_visit, visit_interval, lower_margin, upper_margin, reimbursement, additional_docscal_booking_name, ordering, comment) FROM stdin;
 299	\N	196	\N	\N	\N	\N	\N	\N	\N	\N
-5	Visit 1	25	7	7 days	3 days	3 days	448	\N	\N	\N
 300	\N	197	\N	4 days	\N	\N	12	\N	\N	\N
+5	Visit 1	25	8	7 days	3 days	3 days	448	\N	\N	\N
 7	Baseline	25	\N	00:00:00	00:00:00	00:00:00	588	\N	\N	\N
 8	Unschelduled	25	\N	00:00:00	-2 years	2 years	154	\N	\N	\N
 6	Visit 2	25	7	30 days	7 days	7 days	448	\N	\N	\N
@@ -3811,10 +3873,6 @@ SELECT pg_catalog.setval('trial_visits_id_seq', 300, true);
 --
 
 COPY visit_procedure_values (id, idvisit_procedure, idpatient_visit, value_full) FROM stdin;
-4	141	3813	\N
-6	143	3813	{"value1":0,"value2":2,"value3":2,"value4":4,"value5":3,"value6":3,"value7":3,"value8":4,"value9":2,"value10":2,"value11":3,"value12":0,"value13":58,"value14":null,"value15":null,"value16":null,"value17":null,"value18":null,"value19":null,"value20":null,"value21":null,"value22":null,"value23":null,"value24":null,"value25":null}
-7	144	3813	{"value1":"2014-12-27 12:29","value2":1,"value3":null,"value4":null,"value5":null,"value6":null,"value7":null,"value8":null,"value9":null,"value10":null,"value11":null,"value12":null,"value13":null,"value14":null,"value15":null,"value16":null,"value17":null,"value18":null,"value19":null,"value20":null,"value21":null,"value22":null,"value23":null,"value24":null,"value25":null}
-5	133	3813	123abc
 \.
 
 
@@ -3862,6 +3920,14 @@ ALTER TABLE ONLY account_transaction
 
 ALTER TABLE ONLY all_trials
     ADD CONSTRAINT all_trials_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: audittrail_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY audittrail
+    ADD CONSTRAINT audittrail_pkey PRIMARY KEY (id);
 
 
 --
