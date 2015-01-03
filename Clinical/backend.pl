@@ -1,6 +1,6 @@
 #!/usr/local/ActivePerl-5.14/site/bin/morbo
 
-# todo: nothing to declare
+# todo: check for remaining in-query-variable-interpolations and replace with ? placeholders
 
 use lib qw {/Users/daboe01/src/daboe01_Clinical/Clinical};
 use Mojolicious::Lite;
@@ -40,6 +40,7 @@ plugin 'RenderFile';
 
 use constant doku_repo_path => '/Users/daboe01/src/daboe01_Clinical/Clinical/docrepo/';
 use constant form_repo_path => '/Users/daboe01/src/daboe01_Clinical/Clinical/forms/';
+use constant visit_repo_path => '/Users/daboe01/src/daboe01_Clinical/Clinical/visitdocs/';
 use constant proxy_string => 'http://U:P@193.196.237.21:80/';
 
 #use constant doku_repo_path => '/Users/daboe01/src/daboe01_Clinicaltrials/Clinicaltrials/docrepo';
@@ -76,6 +77,8 @@ post '/CT/logout' => sub {
 };
 
 
+helper lsVVDocuments => sub { my ($self, $pk)=@_;
+};
 helper getVVDocument => sub { my ($self, $pk)=@_;
 };
 helper delVVDocument => sub { my ($self, $pk)=@_;
@@ -103,12 +106,17 @@ get '/CT/pdownload/:idperso/:name' => [idperso=>qr/[0-9]+/, name=>qr/.+/] => sub
     $format=$1 if $name=~/\.([^\.]+)$/o;
     $self->render(data => TempFileNames::readFile(doku_repo_path.'p/' . $doc[0]->{tag} .'/' . $idperso.'_'. $name), format => $format );
 };
-get '/DBI/vvdocuments/idvisitvalue/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
+get '/DBI/vvdocuments/id/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
 {   my $self = shift;
     my $pk  = $self->param('pk');
     $self->render( data =>  $self->getVVDocument($pk) );
 };
-del '/DBI/vvdocuments/idvisitvalue/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
+get '/DBI/vvdocuments/idvisitvalue/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
+{   my $self = shift;
+    my $pk  = $self->param('pk');
+    $self->render( data =>  $self->lsVVDocuments($pk) );
+};
+del '/DBI/vvdocuments/id/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
 {   my $self = shift;
     my $pk  = $self->param('pk');
     $self->delVVDocument($pk);
@@ -124,7 +132,7 @@ post '/DBI/vvdocuments/idvisitvalue/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
         my $bytes = $upload->slurp;
         my $filename=$upload->filename;
         $filename=~s/[^0-9a-z\-\. ']/_/ogsi;
-        $self->putVVDocument($pk, $bytes);
+        $self->putVVDocument($pk, $filename, $bytes);
     }
     $self->render( json => $curr_upload );
 };
