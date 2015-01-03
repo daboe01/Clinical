@@ -83,7 +83,7 @@ helper getVVDocument => sub { my ($self, $pk)=@_;
 };
 helper delVVDocument => sub { my ($self, $pk)=@_;
 };
-helper putVVDocument => sub { my ($self, $pk, $bytes)=@_;
+helper putVVDocument => sub { my ($self, $pk, $filename, $bytes)=@_;
 };
 
 get '/CT/download/:idtrial/:name' => [idtrial=>qr/[0-9]+/, name=>qr/.+/] => sub {
@@ -235,7 +235,7 @@ put '/DBI/pdocuments/id/:key'=> [key=>qr/.+/] => sub
 # delete doc
 del '/DBI/documents/id/:key'=> [key=>qr/.+/] => sub
 {   my $self    = shift;
-    my $key        = $self->param('key');
+    my $key     = $self->param('key');
 
     my @doc=grep {$_->{id} eq $key} $self->getLSDocuments();
     my $idtrial=$doc[0]->{idtrial};
@@ -246,7 +246,7 @@ del '/DBI/documents/id/:key'=> [key=>qr/.+/] => sub
 };
 del '/DBI/pdocuments/id/:key'=> [key=>qr/.+/] => sub
 {   my $self    = shift;
-    my $key        = $self->param('key');
+    my $key     = $self->param('key');
     
     my @doc=grep {$_->{id} eq $key} $self->getLSPDocuments();
     my $idpersonnel=$doc[0]->{idpersonnel};
@@ -259,8 +259,8 @@ del '/DBI/pdocuments/id/:key'=> [key=>qr/.+/] => sub
 # POST /upload (push one or more files to app)
 post '/upload/:idtrial' => [idtrial=>qr/[0-9]+/] => sub {
     my $self    = shift;
-    my $idtrial=    $self->param("idtrial");
-    my $suffix=    $self->param("suffix");
+    my $idtrial=  $self->param("idtrial");
+    my $suffix=   $self->param("suffix");
     my @uploads = $self->req->upload('files[]');
     for my $curr_upload (@uploads) {
         my $upload  = Mojo::Upload->new($curr_upload);
@@ -367,8 +367,8 @@ get '/DBI/:table'=> sub
 get '/DBI/:table/:col/:pk' => [col=>qr/[a-z_0-9\s]+/, pk=>qr/[a-z0-9\s\-]+/i] => sub
 {   my $self = shift;
     my $table  = $self->param('table');
-    my $pk  = $self->param('pk');
-    my $col  = $self->param('col');
+    my $pk  =    $self->param('pk');
+    my $col  =   $self->param('col');
     my $sessionid  = $self->param('session');
     my $res=$self->fetchFromTable($table, $sessionid, {$col=> $pk});
     $self-> render( json => $res);
