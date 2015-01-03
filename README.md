@@ -5,7 +5,7 @@ Clinical trials administration system
 
 Features include:
  * Structured trials database
- * Human ressources management
+ * Human ressources management / Groupware
  * 100% browser based
  * Desktop-quality UI (e.g. keyboard navigation, undo / redo)
  * Fulltext search in realtime
@@ -14,17 +14,17 @@ Features include:
  * Calendars + iCAL feeds
  * Billing / Accounting / Reimbusements
  * eCRF / worksheet producer
- * Full audit trail
  * Forms / reporting framework
+ * Full audit trail
 
 INSTALL
 =====
 ```bash
 # the easiest way to get Postgres up and running on a mac is Postgres.app
-/Applications/Postgres.app/Contents/Versions/9.3/bin/createdb  aug_clinical
-/Applications/Postgres.app/Contents/Versions/9.3/bin/createuser postgres -s
-/Applications/Postgres.app/Contents/Versions/9.3/bin/createuser root -s
-cat sql_template.sql | /Applications/Postgres.app/Contents/Versions/9.3/bin/psql aug_clinical
+createdb  aug_clinical
+createuser postgres -s
+createuser root -s
+cat sql_template.sql | psql aug_clinical
 #
 # we need a current TeX distribution such as <https://tug.org/mactex/>
 # perl is already installed on linux and mac but we need quite a bunch of non-core perl modules
