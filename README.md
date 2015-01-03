@@ -7,13 +7,13 @@ Features include:
  * Structured trials database
  * Structured document repository
  * Human ressources management
- * Groupware
+ * Groupware features including calendars and iCAL feeds
  * 100% browser based
  * Desktop-quality UI (e.g. keyboard navigation, undo / redo)
  * Fulltext search in realtime
  * Patients database / visit interval planning
  * eCRF / worksheet producer
- * Calendars + iCAL feeds
+ *
  * Billing / Accounting / Reimbusements
  * Forms / reporting framework
  * Full audit trail
