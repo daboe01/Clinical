@@ -9,12 +9,12 @@ Features include:
  * Desktop-quality UI (e.g. keyboard navigation, undo / redo)
  * Fulltext search in realtime
  * Structured document repository
- * Human ressources planning
  * Visit interval planning
- * Procedures assignable to personnel
+ * Human ressources management
  * Calendars + iCAL feeds
  * Billing / Accounting / Reimbusements
  * eCRF / worksheet producer
+ * Full audit trail
  * Forms / reporting framework
 
 INSTALL
