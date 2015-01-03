@@ -67,24 +67,6 @@ helper getLSPDocuments => sub { my ($self)=@_;
     File::Find::Rule->in($_docrepo);
 };
 
-post '/CT/logout' => sub {
-   my $self=shift;
-   my   %session;
-   my   $sessionid=$self->param('session');
-   tie  %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
-   tied(%session)->delete;
-   $self->render( text=> 'OK');
-};
-
-
-helper lsVVDocuments => sub { my ($self, $pk)=@_;
-};
-helper getVVDocument => sub { my ($self, $pk)=@_;
-};
-helper delVVDocument => sub { my ($self, $pk)=@_;
-};
-helper putVVDocument => sub { my ($self, $pk, $filename, $bytes)=@_;
-};
 
 get '/CT/download/:idtrial/:name' => [idtrial=>qr/[0-9]+/, name=>qr/.+/] => sub {
     my $self=shift;
@@ -105,36 +87,6 @@ get '/CT/pdownload/:idperso/:name' => [idperso=>qr/[0-9]+/, name=>qr/.+/] => sub
     my $format;
     $format=$1 if $name=~/\.([^\.]+)$/o;
     $self->render(data => TempFileNames::readFile(doku_repo_path.'p/' . $doc[0]->{tag} .'/' . $idperso.'_'. $name), format => $format );
-};
-get '/DBI/vvdocuments/id/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
-{   my $self = shift;
-    my $pk  = $self->param('pk');
-    $self->render( data =>  $self->getVVDocument($pk) );
-};
-get '/DBI/vvdocuments/idvisitvalue/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
-{   my $self = shift;
-    my $pk  = $self->param('pk');
-    $self->render( data =>  $self->lsVVDocuments($pk) );
-};
-del '/DBI/vvdocuments/id/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
-{   my $self = shift;
-    my $pk  = $self->param('pk');
-    $self->delVVDocument($pk);
-    $self->render( text=> 'OK');
-};
-post '/DBI/vvdocuments/idvisitvalue/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
-{   my $self = shift;
-    my $pk = $self->param("pk");
-    my @uploads = $self->req->upload('files[]');
-    my $curr_upload;
-    for $curr_upload (@uploads) {
-        my $upload  = Mojo::Upload->new($curr_upload);
-        my $bytes = $upload->slurp;
-        my $filename=$upload->filename;
-        $filename=~s/[^0-9a-z\-\. ']/_/ogsi;
-        $self->putVVDocument($pk, $filename, $bytes);
-    }
-    $self->render( json => $curr_upload );
 };
 
 get '/DBI/documents'=> sub
@@ -288,6 +240,46 @@ post '/pupload/:idpersonnel' => [idpersonnel=>qr/[0-9]+/] => sub {
     $self->render( json => \@uploads );
 };
 
+# support for visitvalue BLOB storage
+helper lsVVDocuments => sub { my ($self, $pk)=@_;
+};
+helper getVVDocument => sub { my ($self, $pk)=@_;
+};
+helper delVVDocument => sub { my ($self, $pk)=@_;
+};
+helper putVVDocument => sub { my ($self, $pk, $filename, $bytes)=@_;
+};
+
+get '/DBI/vvdocuments/id/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
+{   my $self = shift;
+    my $pk  = $self->param('pk');
+    $self->render( data =>  $self->getVVDocument($pk) );
+};
+get '/DBI/vvdocuments/idvisitvalue/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
+{   my $self = shift;
+    my $pk  = $self->param('pk');
+    $self->render( data =>  $self->lsVVDocuments($pk) );
+};
+del '/DBI/vvdocuments/id/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
+{   my $self = shift;
+    my $pk  = $self->param('pk');
+    $self->delVVDocument($pk);
+    $self->render( text=> 'OK');
+};
+post '/DBI/vvdocuments/idvisitvalue/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
+{   my $self = shift;
+    my $pk = $self->param("pk");
+    my @uploads = $self->req->upload('files[]');
+    my $curr_upload;
+    for $curr_upload (@uploads) {
+        my $upload  = Mojo::Upload->new($curr_upload);
+        my $bytes = $upload->slurp;
+        my $filename=$upload->filename;
+        $filename=~s/[^0-9a-z\-\. ']/_/ogsi;
+        $self->putVVDocument($pk, $filename, $bytes);
+    }
+    $self->render( json => $curr_upload );
+};
 
 ###########################################
 # generic dbi part
@@ -557,6 +549,16 @@ helper get_XLS_for_arr => sub { my ($self, $ret, $hr)=@_;
         
 ###############
 # specific apis
+
+post '/CT/logout' => sub {
+   my $self=shift;
+   my   %session;
+   my   $sessionid=$self->param('session');
+   tie  %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
+   tied(%session)->delete;
+   $self->render( text=> 'OK');
+};
+
 get '/CT/download_list'=> sub
 {   my $self=shift;
     my $excel = $self->param('excel');
