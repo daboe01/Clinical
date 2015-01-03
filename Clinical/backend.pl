@@ -1,7 +1,6 @@
 #!/usr/local/ActivePerl-5.14/site/bin/morbo
 
-# todo: sanitize filenames upon upload
-#        support multiple files of samename (as in cellfinder)
+# todo: nothing to declare
 
 use lib qw {/Users/daboe01/src/daboe01_Clinical/Clinical};
 use Mojolicious::Lite;
@@ -66,6 +65,16 @@ helper getLSPDocuments => sub { my ($self)=@_;
     map  { s/^$_docrepo//ogs;$_}
     File::Find::Rule->in($_docrepo);
 };
+
+post '/CT/logout' => sub {
+   my $self=shift;
+   my   %session;
+   my   $sessionid=$self->param('session');
+   tie  %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
+   tied(%session)->delete;
+   $self->render( text=> 'OK');
+};
+
 
 helper getVVDocument => sub { my ($self, $pk)=@_;
 };

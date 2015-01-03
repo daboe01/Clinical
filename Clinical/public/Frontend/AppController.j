@@ -463,6 +463,13 @@ BaseURL=HostURL+"/";
     window.open("/Frontend/index_deep.html?t=Admin.gsmarkup&session="+window.G_SESSION, 'admin_window');
 }
 
+-(void) performLogout: sender
+{   var request = [CPURLRequest requestWithURL:BaseURL+"CT/logout?session="+ window.G_SESSION];
+    [request setHTTPMethod:"POST"];
+	[CPURLConnection sendSynchronousRequest:request returningResponse: nil];
+    location.reload();
+}
+
 -(void) setSearchProceduresTerm:aTerm
 {	if(aTerm && aTerm.length)
 	{	[proceduresCatController setFilterPredicate: [CPPredicate predicateWithFormat:"name CONTAINS %@", aTerm]];

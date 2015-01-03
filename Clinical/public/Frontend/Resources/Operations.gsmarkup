@@ -26,6 +26,7 @@
         <menuItem title="Calendar..." target="#myadmincontroller" action="runCalendar:"/>
         <menuItem title="My space..." action="runPersonnel:"/>
         <menuItem title="Admin..." action="runAdmin:"/>
+        <menuItem title="Logout" action="performLogout:"/>
     </menu>
    </menu>
 
