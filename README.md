@@ -1,7 +1,7 @@
 Clinical
 ========
 
-Clinical trials administration system
+Clinical trial site administration in a box
 
 Features include:
  * Structured trials database
