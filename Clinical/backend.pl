@@ -1,7 +1,7 @@
 #!/usr/local/ActivePerl-5.14/site/bin/morbo
 
 # todo: check for remaining in-query-variable-interpolations and replace with ? placeholders
-#       get rid of (proprietary) TempFileNames.pm dependency
+#       get rid of (proprietary) TempFileNames.pm dependency with e.g. File::Slurp
 
 use Mojolicious::Lite;
 use Mojolicious::Plugin::Database;
