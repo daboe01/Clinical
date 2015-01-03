@@ -1009,11 +1009,11 @@ post '/CT/invite_teammeeting/:idteammeeting' => [idteammeeting =>qr/[0-9]+/] => 
     );
     
     my $part = MIME::Lite->new(
-    Type	=> "text/calendar;  name=\"subject.ics\"",
-    Filename	=> "subject.ics",
+    Type    => "text/calendar;  name=\"subject.ics\"",
+    Filename    => "subject.ics",
     Data        => $data,
-    Encoding	=> 'base64',
-    Disposition	=> 'attachment',
+    Encoding    => 'base64',
+    Disposition => 'attachment',
     );
     $msg->attr('content-class' => 'urn:content-classes:calendarmessage',
     'content-description' => "subject.ics",
@@ -1191,11 +1191,11 @@ get '/CT/iCAL/:ldap'=> [ldap =>qr/[a-z_0-9]+/i] => sub
     my $self=shift;
     my $personal=$self->param('personal');
     my $ldap = $self->param('ldap');
-	my $sql="SELECT  distinct name, event_date, tooltip || ' (' || piz ||')' as description  from event_overview where ".($personal?"ldap":"ldap_unfiltered")."=? and not name~*'^dummy '";
-	my $sth = $self->db->prepare( $sql );
-	$sth->execute(($ldap));
-  	my $rowarrref;
-	my $calendar = Data::ICal->new();
+    my $sql="SELECT  distinct name, event_date, tooltip || ' (' || piz ||')' as description  from event_overview where ".($personal?"ldap":"ldap_unfiltered")."=? and not name~*'^dummy '";
+    my $sth = $self->db->prepare( $sql );
+    $sth->execute(($ldap));
+      my $rowarrref;
+    my $calendar = Data::ICal->new();
     
     my $vtimezone = Data::ICal::Entry::TimeZone->new();
     $vtimezone->add_properties( tzid => 'Europe/Berlin', tzname=>'CEST');
@@ -1204,27 +1204,27 @@ get '/CT/iCAL/:ldap'=> [ldap =>qr/[a-z_0-9]+/i] => sub
     sub icalDateForDate { my ($date, $mysec)=@_;
         my ($year,$month,$day,$hour,$min,$sec)= $date=~ /([0-9]+)-([0-9]+)-([0-9]+) ([0-9]+):([0-9]+):([0-9]+)/;
         if($hour+$min+$sec == 0)
-        {	my $date= DateTime->new( year => $year, month => $month, day => $day, hour => $hour, minute => $min, second => 1 );
+        {   my $date= DateTime->new( year => $year, month => $month, day => $day, hour => $hour, minute => $min, second => 1 );
             return $date->strftime('%Y%m%d');
         } else
-        {	return Date::ICal->new( year => $year, month => $month, day => $day, hour => $hour, min => $min, sec => $mysec )->ical;
+        {   return Date::ICal->new( year => $year, month => $month, day => $day, hour => $hour, min => $min, sec => $mysec )->ical;
         }
     }
     
     my $i;
-	while($rowarrref=$sth->fetchrow_arrayref() )
-	{
+    while($rowarrref=$sth->fetchrow_arrayref() )
+    {
         my $piz=$1 if $rowarrref->[2]=~/([0-9]{8})/;
-		my $vevent = Data::ICal::Entry::Event->new();
-		$vevent->add_properties(
+        my $vevent = Data::ICal::Entry::Event->new();
+        $vevent->add_properties(
         summary => ucfirst $rowarrref->[2].' '.$rowarrref->[0],
         uid=> 'iclinical_'. DateTime->now->epoch.'_'.$i++,
         description => $piz? "http://augimageserver/Viewer/?$piz":$rowarrref->[2],
         dtstart   =>  icalDateForDate($rowarrref->[1] , 1),
         dtend   =>  icalDateForDate($rowarrref->[1], 2)
         );
-		$calendar->add_entry($vevent);
-	}
+        $calendar->add_entry($vevent);
+    }
     $self->render( text=> $calendar->as_string );
 };
 
