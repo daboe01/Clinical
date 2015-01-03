@@ -1,29 +1,30 @@
 #!/usr/local/ActivePerl-5.14/site/bin/morbo
 
 # todo: check for remaining in-query-variable-interpolations and replace with ? placeholders
+#       get rid of (proprietary) TempFileNames.pm dependency
 
-use lib qw {/Users/daboe01/src/daboe01_Clinical/Clinical};
 use Mojolicious::Lite;
 use Mojolicious::Plugin::Database;
+use Mojolicious::Plugin::RenderFile;
+use Mojo::JSON qw(decode_json encode_json);
+use Mojo::UserAgent;
 use SQL::Abstract::More;
 use Data::Dumper;
-use Mojo::UserAgent;
 use POSIX;
 use Try::Tiny;
-use TempFileNames;
 use File::Find::Rule;
 use Apache::Session::File;
 use Net::LDAP;
 use URI::Escape;
-use Mojolicious::Plugin::RenderFile;
-use pdfgen;
 use DateTime;
 use Mojo::UserAgent::Proxy;
 use Date::ICal;
 use Data::ICal;
 use Data::ICal::Entry::Event;
 use Data::ICal::Entry::TimeZone;
-use Mojo::JSON qw(decode_json encode_json);
+use lib qw {/Users/daboe01/src/daboe01_Clinical/Clinical};
+use TempFileNames;
+use pdfgen;
 
 # enable receiving uploads up to 1GB
 $ENV{MOJO_MAX_MESSAGE_SIZE} = 1_073_741_824;
@@ -52,10 +53,11 @@ helper getLSDocuments => sub { my ($self)=@_;
     my $_docrepo= doku_repo_path.'/';
     return    grep { defined $_->{idtrial} && $_->{tag} !~ /^\./ }
     map  { my ($p,$f)=split /\//o; ($f or '')=~/^([0-9]+)_(.+)/; 
-            my $date = POSIX::strftime( "%Y-%m-%d", localtime( ( stat $_docrepo.$_ )[9] ) ); 
-            {id=>"$1$2", idtrial=>$1, name=> $2, tag=>$p, date=> $date} }
+           my $date = POSIX::strftime( "%Y-%m-%d", localtime( ( stat $_docrepo.$_ )[9] ) ); 
+          {id=>"$1$2", idtrial=>$1, name=> $2, tag=>$p, date=> $date} }
     map  { s/^$_docrepo//ogs;$_}
     File::Find::Rule->in($_docrepo);
+# <!> fixme: use the ->name('') method instead of the grep by hindsight
 };
 helper getLSPDocuments => sub { my ($self)=@_;
     my $_docrepo= doku_repo_path.'p/';
@@ -65,8 +67,8 @@ helper getLSPDocuments => sub { my ($self)=@_;
         {id=>"$1$2", idpersonnel=>$1, name=> $2, tag=>$p, date=> $date} }
     map  { s/^$_docrepo//ogs;$_}
     File::Find::Rule->in($_docrepo);
+# <!> fixme: use the ->name('') method instead of the grep by hindsight
 };
-
 
 get '/CT/download/:idtrial/:name' => [idtrial=>qr/[0-9]+/, name=>qr/.+/] => sub {
     my $self=shift;
@@ -241,13 +243,40 @@ post '/pupload/:idpersonnel' => [idpersonnel=>qr/[0-9]+/] => sub {
 };
 
 # support for visitvalue BLOB storage
+
 helper lsVVDocuments => sub { my ($self, $pk)=@_;
+    my $_docrepo= visit_repo_path.'/';
+    return grep { $_->{idvisitvalue} eq $pk && $_->{tag} !~ /^\./ }
+    map  {  /^([0-9]+)_(.+)/; 
+            my $date = POSIX::strftime( "%Y-%m-%d", localtime( ( stat $_docrepo.$_ )[9] ) ); 
+           { id=>$_, idvisitvalue => $1, name=> $2, date=> $date }
+         }
+    map  { s/^$_docrepo//ogs;$_
+         }
+    File::Find::Rule->name($pk.'*')->in($_docrepo);
 };
 helper getVVDocument => sub { my ($self, $pk)=@_;
+    return TempFileNames::readFile(visit_repo_path.'/'.$pk);
 };
 helper delVVDocument => sub { my ($self, $pk)=@_;
+    unlink visit_repo_path.'/'.$pk;
 };
-helper putVVDocument => sub { my ($self, $pk, $filename, $bytes)=@_;
+helper putVVDocument => sub { my ($self, $idvisitvalue, $filename, $bytes)=@_;
+	sub getFilename{ my ($idvisitvalue, $local_filename)=@_;
+		my ($filename, $suffix)=$local_filename =~/^(.+)\.([^\.]+)$/;
+        $suffix = lc $suffix;
+		my $dest=visit_repo_path.'/'.$idvisitvalue.'_'.$filename;
+		if(-e $dest.".$suffix")
+		{	my $i;
+			while(-e $dest.'_'.++$i.".$suffix"){}
+			return $dest.'_'.$i.".$suffix";
+		} else
+		{	return $dest.".$suffix";
+		}
+    }
+    my $destination_path= getFilename($idvisitvalue, $filename);
+    TempFileNames::writeFile($destination_path, $bytes);
+    return $destination_path;
 };
 
 get '/DBI/vvdocuments/id/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
@@ -270,15 +299,14 @@ post '/DBI/vvdocuments/idvisitvalue/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
 {   my $self = shift;
     my $pk = $self->param("pk");
     my @uploads = $self->req->upload('files[]');
-    my $curr_upload;
-    for $curr_upload (@uploads) {
+    for my $curr_upload (@uploads) {
         my $upload  = Mojo::Upload->new($curr_upload);
         my $bytes = $upload->slurp;
         my $filename=$upload->filename;
-        $filename=~s/[^0-9a-z\-\. ']/_/ogsi;
+        $filename=~s/[^0-9a-z\-\. '_]/_/ogsi;
         $self->putVVDocument($pk, $filename, $bytes);
     }
-    $self->render( json => $curr_upload );
+    $self->render( json => 'OK');
 };
 
 ###########################################
