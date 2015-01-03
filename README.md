@@ -34,7 +34,7 @@ sudo perl -MCPAN -e 'install ($_) for qw/Mojolicious Mojolicious::Plugin::Databa
 # locate your favourite web browser to http://localhost:3000/Frontend/index.html
 # (you may change the port either in backend.pl or from the command line)
 # the username is pi with no password
-# (passwords are not enforced unless you modify the helper LDAPChallenge with backend.pl appropriately)
+# (passwords are not enforced unless you modify the helper LDAPChallenge within backend.pl appropriately)
 ```
 
 LICENCE
