@@ -5,15 +5,16 @@ Clinical trial site administration in a box
 
 Features include:
  * Structured trials database
- * Human ressources management / Groupware
+ * Structured document repository
+ * Human ressources management
+ * Groupware
  * 100% browser based
  * Desktop-quality UI (e.g. keyboard navigation, undo / redo)
  * Fulltext search in realtime
- * Structured document repository
- * Visit interval planning
+ * Patients database / visit interval planning
+ * eCRF / worksheet producer
  * Calendars + iCAL feeds
  * Billing / Accounting / Reimbusements
- * eCRF / worksheet producer
  * Forms / reporting framework
  * Full audit trail
 
