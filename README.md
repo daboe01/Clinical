@@ -30,12 +30,14 @@ cat sql_template.sql | psql aug_clinical
 # we need a current TeX distribution such as <https://tug.org/mactex/>
 # perl is already installed on linux and mac but we need quite a bunch of non-core perl modules
 sudo perl -MCPAN -e 'install ($_) for qw/Mojolicious Mojolicious::Plugin::Database Mojolicious::Plugin::RenderFile SQL::Abstract::More Apache::Session::File Spreadsheet::WriteExcel Spreadsheet::ParseExcel Business::IBAN DBD::Pg Date::ICal Data::ICal Data::ICal::Entry::TimeZone/'
-# now you can either call morbo backend.pl (testing server)
-# or launch hypnotoad backend.pl during system boot
+# now download this repo and cd into it
+morbo backend.pl # this starts the testing server
 # locate your favourite web browser to http://localhost:3000/Frontend/index.html
 # (you may change the port either in backend.pl or from the command line)
 # the username is pi with no password
 # (passwords are not enforced unless you modify the helper LDAPChallenge within backend.pl appropriately)
+#
+# you may eventually want to automatically launch hypnotoad backend.pl (production server) during system boot
 ```
 
 LICENCE
