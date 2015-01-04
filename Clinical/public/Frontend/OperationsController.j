@@ -92,29 +92,29 @@
 
 @implementation OperationsController : CPObject
 {
-    id    trialsWindow;
-    id    trialsTV;
-    id    propsTV;
-    id    addPropsWindow;
-    id    addPropsTV;
-    id    patsTV;
-    id    patdatesTV;
-    id    popover;
-    id    bookingPopover;
-    id    annotationPopover;
-    id    annotationsTV;
-    id    annotationsWindow;
-    id    bookingText;
-    id    bookingBox;
-    id    bookingConnection;
-    id    bookingOk;
-    id    bookingCancel;
-    id    bookingProgress;
-    id    searchTerm @accessors;
-    id    accountsWindow;
-    id    travelWindow;
-    id    mainButtonBar;
-    id    visitsButtonBar;
+    id  trialsWindow;
+    id  trialsTV;
+    id  propsTV;
+    id  addPropsWindow;
+    id  addPropsTV;
+    id  patsTV;
+    id  patdatesTV;
+    id  popover;
+    id  bookingPopover;
+    id  annotationPopover;
+    id  annotationsTV;
+    id  annotationsWindow;
+    id  bookingText;
+    id  bookingBox;
+    id  bookingConnection;
+    id  bookingOk;
+    id  bookingCancel;
+    id  bookingProgress;
+    id  searchTerm @accessors;
+    id  accountsWindow;
+    id  travelWindow;
+    id  mainButtonBar;
+    id  visitsButtonBar;
     id  documentsButtonBar;
     id  editTextWindow;
     id  propsButtonBar;
@@ -128,7 +128,7 @@
     id  visitsBillingWindow;
     id  billingsTV;
 
-    id    distanceCalcConnection;
+    id  distanceCalcConnection;
     id  serviceConnection;
     id  ibanConnection;
 }
@@ -907,6 +907,15 @@
 }
 
 @end
+@implementation OnsiteController: OperationsController
+{
+}
+-(void) _performPostLoadInit
+{
+    [super _performPostLoadInit];
+// <!> select correct trial as parsed from url
+}
+@end
 
 
 @implementation GSMarkupTagOperationsController:GSMarkupTagObject
@@ -921,3 +930,14 @@
 }
 @end
 
+@implementation GSMarkupTagOnsiteController:GSMarkupTagOperationsController
++ (CPString) tagName
+{
+  return @"operationsController";
+}
+
++ (Class) platformObjectClass
+{
+    return [OnsiteController class];
+}
+@end
