@@ -162,6 +162,8 @@
     [button setToolTip:"Reload trials"];
     button=[mainButtonBar addButtonWithImageName:"download.png" target:self action:@selector(downloadExcel:)];
     [button setToolTip:"Download trial list"];
+    button=[mainButtonBar addButtonWithImageName:"play.png" target:self action:@selector(openOnsite:)];
+    [button setToolTip:"Download trial list"];
     [mainButtonBar registerWithArrayController:[CPApp delegate].trialsController plusTooltip:"Create new trial" minusTooltip:"Delete selected trial..."];
 
     button=[visitsButtonBar addButtonWithImageName:"reload.png" target:self action:@selector(recalcVisits:)];
@@ -316,7 +318,6 @@
     [pController insert: self];
     [addPropsTV editColumn:0 row:[addPropsTV selectedRow] withEvent:nil  select:YES];
 }
-
 
 -(void) doDownload: sender
 {   var trialsController=[CPApp delegate].trialsController;
@@ -906,14 +907,46 @@
     window.open(myurl, 'download_window');
 }
 
+-(void) openOnsite:sender
+{
+// <!> fixme iterate over selection and open each one in a separate tab
+    var trialname=[[CPApp delegate].trialsController valueForKeyPath:"selection.name"];
+    window.open("/Frontend/index_deep.html?t=Onsite.gsmarkup&session="+window.G_SESSION+"&trial="+ trialname, 'onsite_window');
+}
+
 @end
+
+@implementation CPObject(AnonymizedTrialSubjectID)
+-(CPString) anonymizedTrialSubjectID
+{
+    var  name=[[self valueForKey:"name"] stringByPaddingToLength:1 withString:"" startingAtIndex:0];
+    var  vname=[[self valueForKey:"givenname"] stringByPaddingToLength:1 withString:"" startingAtIndex:0];
+    var  gebjahr=[[self valueForKey:"birthdate"] stringByPaddingToLength:4 withString:"" startingAtIndex:0];
+    return [CPString stringWithFormat:"%s.%s %s", vname || '?', name || '?', gebjahr || '????'];
+}
+@end
+
+
 @implementation OnsiteController: OperationsController
 {
 }
 -(void) _performPostLoadInit
 {
     [super _performPostLoadInit];
-// <!> select correct trial as parsed from url
+// select correct trial as parsed from url
+    var re = new RegExp("trial=([^&#]+)");
+    var m = re.exec(document.location);
+    var trialName, trialObjects;
+    if (m)
+    {   trialName = decodeURIComponent(m[1]);
+        document.title=trialName;
+        var trialsController=[CPApp delegate].trialsController;
+        trialObjects=[trialsController._entity._store  fetchObjectsWithKey:"name" equallingValue:trialName inEntity: trialsController._entity options:@{"FSSynchronous": 1}];
+	    [trialsController setSelectedObjects:trialObjects];
+    }
+    if(!trialObjects || ![trialObjects count])
+    {   alert("Unknown trial "+ trialName);
+    }
 }
 @end
 

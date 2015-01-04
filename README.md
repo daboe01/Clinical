@@ -1,7 +1,7 @@
 Clinical
 ========
 
-Clinical trial site administration in a box
+Clinical trials in a box
 
 Features include:
  * Structured trials database
@@ -9,7 +9,7 @@ Features include:
  * Human ressources management
  * Groupware features / calendars + iCAL feeds
  * 100% browser based
- * Desktop-quality UI (e.g. keyboard navigation, undo / redo)
+ * Desktop-quality UI (e.g. keyboard navigation, unlimited undo / redo)
  * Fulltext search in realtime
  * Patients database / visit interval planning
  * eCRF / worksheet producer

@@ -25,10 +25,10 @@
         <vbox>
            <scrollView hasHorizontalScroller="YES">
               <tableView zebra="yes" id="patstv" autosaveName="patstv0"  valueBinding="#CPOwner.patientsController" allowsMultipleSelection="YES" allowsEmptySelection="NO">
+                  <tableColumn identifier="anonymizedTrialSubjectID" title="id" editable="YES"/>
+                  <tableColumn identifier="piz" title="piz" editable="YES"/>
                   <tableColumn identifier="code1" title="code1" editable="YES"/>
                   <tableColumn identifier="code2" title="code2" editable="YES"/>
-                  <tableColumn identifier="piz" title="piz" editable="YES"/>
-                  <tableColumn identifier="birthdate" title="birthdate" editable="YES"/>
                   <tableColumn identifier="state" title="state" dataView="#column_state"/>
                   <tableColumn identifier="comment" title="comment" editable="YES"/>
               </tableView>
