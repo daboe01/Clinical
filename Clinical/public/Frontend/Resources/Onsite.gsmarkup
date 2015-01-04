@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsmarkup>
+<gsmarkup>
+
+<objects>
+
+<onsiteController id="myadmincontroller"/>
+
+<menu type="main">
+    <menu title="Edit">
+        <menuItem title="Cut" action="cut:" keyEquivalent="x"/>
+        <menuItem title="Copy" action="copy:" keyEquivalent="c"/>
+        <menuItem title="Paste" action="paste:" keyEquivalent="v"/>
+        <menuItem title="Select all" action="selectAll:" keyEquivalent="a"/>
+        <menuItem title="Undo" action="undo:" keyEquivalent="z"/>
+        <menuItem title="Redo" action="redo:" keyEquivalent="Z"/>
+    </menu>
+    <menu title="Special">
+        <menuItem title="Logout" action="performLogout:"/>
+    </menu>
+</menu>
+
+<window bridge="YES" visible="YES" id="trialswindow" delegate="#myadmincontroller">
+   <splitView vertical="YES" autosaveName="vsplitter_main_os">
+        <vbox>
+           <scrollView hasHorizontalScroller="YES">
+              <tableView zebra="yes" id="patstv" autosaveName="patstv0"  valueBinding="#CPOwner.patientsController" allowsMultipleSelection="YES" allowsEmptySelection="NO">
+                  <tableColumn identifier="code1" title="code1" editable="YES"/>
+                  <tableColumn identifier="code2" title="code2" editable="YES"/>
+                  <tableColumn identifier="piz" title="piz" editable="YES"/>
+                  <tableColumn identifier="birthdate" title="birthdate" editable="YES"/>
+                  <tableColumn identifier="state" title="state" dataView="#column_state"/>
+                  <tableColumn identifier="comment" title="comment" editable="YES"/>
+              </tableView>
+            </scrollView>
+            <ButtonBar target="#myadmincontroller" plusButtonAction="addPatient:" minusButtonAction="deletePatient:" actionsButton="YES" id="patientsbuttonbar">
+                 <popUpButtonItem title="Brief an Hausarzt" target="#myadmincontroller" action="hausarztBrief:" enabledBinding="#CPOwner.patientsController.selection.piz"/>
+                 <popUpButtonItem title="Fahrtkosten erstatten..." target="#myadmincontroller" action="fahrtkostenPanel:" enabledBinding="#CPOwner.patientsController.selection.piz"/>
+                 <popUpButtonItem title="Open DCV" target="#myadmincontroller" action="runDCV:" enabledBinding="#CPOwner.patientsController.selection.piz"/>
+            </ButtonBar>
+         </vbox>
+         <vbox>
+           <scrollView hasHorizontalScroller="YES">
+              <tableView zebra="yes" id="pats2tv" autosaveName ="pats2tv_os"  delegate="#myadmincontroller" valueBinding="#CPOwner.patientVisitsController" allowsEmptySelection="NO">
+                  <tableColumn identifier="idvisit" title="visit" dataView="#column_idvisit"/>
+                  <tableColumn identifier="visit_date" title="date" editable="YES"/>
+                  <tableColumn identifier="lower_margin" title="lower"/>
+                  <tableColumn identifier="center_margin" title="center"/>
+                  <tableColumn identifier="upper_margin" title="upper"/>
+                  <tableColumn identifier="missing_service" title="MS" dataView="#visitsmissingicon" minWidth="32" maxWidth="32"/>
+                  <tableColumn identifier="comment" title="comment"/>
+             </tableView>
+          </scrollView>
+          <ButtonBar target="#myadmincontroller" plusButtonAction="insertVisit:" minusButtonAction="removeVisit:" actionsButton="YES" id="visitsbuttonbar">
+            <popUpButtonItem title="Create all visits" target="#myadmincontroller" action="addDefaultVisits:"/>
+            <popUpButtonItem title="Open worksheet" target="#myadmincontroller" action="openECRF:" enabledBinding="#CPOwner.patientVisitsController.selection.@count"/>
+            <popUpButtonItem title="Print worksheet" target="#myadmincontroller" action="printECRF:" enabledBinding="#CPOwner.patientVisitsController.selection.@count"/>
+         </ButtonBar>
+       </vbox>
+       <vbox>
+         <scrollView hasHorizontalScroller="NO">
+             <tableView zebra="yes" id="patdatestv" autosaveName="patdatestv_1" target="#myadmincontroller" doubleAction="bookInDocscal:" valueBinding="#CPOwner.visitDatesController">
+                <tableColumn identifier="startdate" title="visit proposals"/>
+                <tableColumn identifier="missing_service" title="MS" dataView="#visitsmissingicon" minWidth="32" maxWidth="32"/>
+             </tableView>
+        </scrollView>
+        <ButtonBar target="#myadmincontroller" actionsButton="YES">
+         <popUpButtonItem title="Buchen" target="#myadmincontroller" action="bookInDocscal:" enabledBinding="#CPOwner.patientsController.selection.piz"/>
+        </ButtonBar>
+     </vbox>
+  </splitView>
+</window>
+
+<window title="Booking" x="260" y="300" width="300" height="90" visible="NO"  resizable="NO">
+  <vbox id="bookingbox">
+    <textField id="bookingtext"/>
+    <hbox>
+    <progresIndicator id="progress" indeterminate="YES"/>
+        <button target="#bookingwindow" id="booking_cancel" action="orderOut:" title="Cancel"/>
+        <button target="#myadmincontroller" id="booking_ok" action="doBookInDocscal:" title="Buchen"/>
+    </hbox>
+  </vbox>
+</window>
+
+
+<window visible="NO">
+  <popUpButton width="200" id="popupdataviewstates" itemsBinding="#CPOwner.statesController.arrangedObjects.name"/>
+  <tableViewPopup   width="100" height="23"  id="column_idvisit" itemsController="#CPOwner.visitsController" itemsValue="arrangedObjects.id" itemsFace="arrangedObjects.name"/>
+  <tableViewPopup   width="100" height="23"  id="column_state" itemsController="#CPOwner.statusController" itemsValue="arrangedObjects.id" itemsFace="arrangedObjects.name"/>
+  <iconTableViewControl width="25" height="23"  id="visitsmissingicon"/>
+  <datePicker style="graphical" id="graphical_picker"/>
+</window>
+
+
+<window id="travelwindow" title="Fahrtkostenerstattung"  visible="NO"  x="5" y="35" width="700" height="200">
+    <hbox>
+    <vbox>
+      <hbox><label halign="min" valign="center" width="60"> IBAN</label> <textField width="200" halign="left" valueBinding="#CPOwner.patientsController.selection.iban" title="name"/></hbox>
+      <hbox><label halign="min" valign="center" width="60"> BIC</label> <textField width="200" halign="left" valueBinding="#CPOwner.patientsController.selection.bic" title="name"/></hbox>
+      <hbox><label halign="min" valign="center" width="60"> Bank</label> <textField width="200" halign="left" valueBinding="#CPOwner.patientsController.selection.bank" title="name"/></hbox>
+      <hbox><label halign="min" valign="center" width="60"> Travel distance</label> <textField width="200" halign="left" valueBinding="#CPOwner.patientsController.selection.travel_distance" title="name"/></hbox>
+    </vbox>
+    <vbox>
+        <scrollView hasHorizontalScroller="NO">
+          <tableView zebra="yes" autosaveName ="travel2tv2"  valueBinding="#CPOwner.patientVisitsController2" allowsMultipleSelection="YES">
+             <tableColumn identifier="visit_date" title="date" editable="NO"/>
+             <tableColumn identifier="travel_additional_costs" width="60" title="add. costs" editable="YES"/>
+             <tableColumn identifier="travel_costs" title="alt. costs" width="60"  editable="YES"/>
+             <tableColumn identifier="date_reimbursed" title="date reimbursed" editable="YES"/>
+             <tableColumn identifier="travel_comment" title="comment" editable="YES"/>
+          </tableView>
+        </scrollView>
+        <ButtonBar target="#myadmincontroller" actionsButton="YES" id="travelbuttonbar">
+         <popUpButtonItem title="IBAN validieren" target="#myadmincontroller" action="validateIBAN:" enabledBinding="#CPOwner.patientsController.selection.iban"/>
+         <popUpButtonItem title="Als abgerechnet markieren" target="#myadmincontroller" action="markTravelReimbursed:" enabledBinding="#CPOwner.patientVisitsController2.selectedObjects.@count"/>
+        </ButtonBar>
+    </vbox>
+  </hbox>
+</window>
+
+</objects>
+
+<connectors>
+    <outlet source="myadmincontroller" target="trialswindow" label="trialsWindow"/>
+    <outlet source="myadmincontroller" target="patstv" label="patsTV"/>
+    <outlet source="myadmincontroller" target="bookingtext" label="bookingText"/>
+    <outlet source="myadmincontroller" target="bookingbox" label="bookingBox"/>
+    <outlet source="myadmincontroller" target="patdatestv" label="patdatesTV"/>
+    <outlet source="myadmincontroller" target="booking_ok" label="bookingOk"/>
+    <outlet source="myadmincontroller" target="booking_cancel" label="bookingCancel"/>
+    <outlet source="myadmincontroller" target="progress" label="bookingProgress"/>
+    <outlet source="myadmincontroller" target="travelwindow" label="travelWindow"/>
+    <outlet source="myadmincontroller" target="mainbuttonbar" label="mainButtonBar"/>
+    <outlet source="myadmincontroller" target="visitsbuttonbar" label="visitsButtonBar"/>
+    <outlet source="myadmincontroller" target="patientsbuttonbar" label="patientsButtonBar"/>
+    <outlet source="myadmincontroller" target="travelbuttonbar" label="travelButtonBar"/>
+    <outlet source="myadmincontroller" target="graphical_picker" label="graphicalPicker"/>
+    <outlet source="myadmincontroller" target="pats2tv" label="visitsTV"/>
+</connectors>
+
+</gsmarkup>
