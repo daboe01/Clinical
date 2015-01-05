@@ -22,7 +22,7 @@ var _sharedUploadManager;
 	{	_sharedUploadManager=[self new];
 		_sharedUploadManager.appController= [CPApp delegate];
 
-		 _sharedUploadManager.myCuploader=[[Cup alloc] initWithURL: [_sharedUploadManager.appController uploadURL] ];
+		 _sharedUploadManager.myCuploader=[[Cup alloc] initWithURL:[_sharedUploadManager.appController uploadURL] ];
 		 _sharedUploadManager.queueController=[_sharedUploadManager.myCuploader queueController]
 		[CPBundle loadRessourceNamed: "UploadManager.gsmarkup" owner: _sharedUploadManager];
 		[_sharedUploadManager.myCuploader setDropTarget: _sharedUploadManager.tableView];

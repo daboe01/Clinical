@@ -4,18 +4,18 @@ Clinical
 Clinical trials in a box
 
 Features include:
- * Structured trials database
- * Structured document repository
- * Human ressources management
- * Groupware features / calendars + iCAL feeds
  * 100% browser based
  * Desktop-quality UI (e.g. keyboard navigation, unlimited undo / redo)
+ * Structured trials database
+ * Structured document repository
  * Fulltext search in realtime
+ * Human ressources management
+ * Groupware features / calendars + iCAL feeds
  * Patients database / visit interval planning
  * eCRF / worksheet producer
  * Billing / Accounting / Reimbusements
  * Forms / reporting framework
- * REST API
+ * RESTful API
  * Full audit trail
 
 INSTALL
