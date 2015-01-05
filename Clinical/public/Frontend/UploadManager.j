@@ -10,11 +10,11 @@ var _sharedUploadManager;
 
 
 @implementation UploadManager : CPObject
-{	id					queueController @accessors;
-	id					myCuploader @accessors;
-	id					tableView;
-	id					uploadWindow;
-	var					appController @accessors;
+{	id queueController @accessors;
+	id myCuploader @accessors;
+	id tableView;
+	id uploadWindow;
+	var appController @accessors;
 }
 
 + sharedUploadManager

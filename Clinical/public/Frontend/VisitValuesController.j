@@ -3,6 +3,7 @@
 @import "Widgets/WidgetCappusance.j"
 @import "Widgets/WidgetOSDI.j"
 @import "Widgets/WidgetTimestamp.j"
+@import "Widgets/WidgetUpload.j"
 
 // todo:
 // make this a popup instead of a window
