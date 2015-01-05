@@ -498,7 +498,6 @@
     var idpatient=[[CPApp delegate].patientsController valueForKeyPath: "selection.id"];
     var myreq=[CPURLRequest requestWithURL:"/DBI/patient_visits_service/idpatient/"+idpatient+'?session='+ window.G_SESSION];
     serviceConnection=[CPURLConnection connectionWithRequest: myreq delegate: self];
-
 }
 -(void) recalcVisits: sender
 {

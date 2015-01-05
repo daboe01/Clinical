@@ -428,7 +428,6 @@
 		<relationship type="toOne" name="person" bindingColumn="idattendee" target="personnel_catalogue"/>
 		<relationship type="toOne" name="meeting" bindingColumn="idmeeting" target="team_meetings"/>
 	</entity>
-
 </entities>
 
 <connectors>

@@ -59,7 +59,7 @@ BaseURL=HostURL+"/";
 }
 - (void) registerWithArrayController:(CPArrayController) aController plusTooltip:(CPString)ptt minusTooltip:(CPString)mtt
 {
-    [[self buttons][1] bind:CPEnabledBinding toObject:aController withKeyPath:"selectedObjects.@count" options: nil];
+    [[self buttons][1] bind:CPEnabledBinding toObject:aController withKeyPath:"selectedObjects.@count" options:nil];
     if(ptt)
         [[self buttons][0] setToolTip: ptt]
     if(mtt)
