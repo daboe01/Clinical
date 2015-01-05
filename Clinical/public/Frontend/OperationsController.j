@@ -163,7 +163,7 @@
     button=[mainButtonBar addButtonWithImageName:"download.png" target:self action:@selector(downloadExcel:)];
     [button setToolTip:"Download trial list"];
     button=[mainButtonBar addButtonWithImageName:"play.png" target:self action:@selector(openOnsite:)];
-    [button setToolTip:"Download trial list"];
+    [button setToolTip:"Run data entry mode"];
     [mainButtonBar registerWithArrayController:[CPApp delegate].trialsController plusTooltip:"Create new trial" minusTooltip:"Delete selected trial..."];
 
     button=[visitsButtonBar addButtonWithImageName:"reload.png" target:self action:@selector(recalcVisits:)];
