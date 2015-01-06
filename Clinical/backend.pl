@@ -245,8 +245,9 @@ post '/pupload/:idpersonnel' => [idpersonnel=>qr/[0-9]+/] => sub {
 # support for visitvalue BLOB storage
 
 helper lsVVDocuments => sub { my ($self, $pk)=@_;
-    my $_docrepo= visit_repo_path.'/';
-    return grep { $_->{idvisitvalue} eq $pk && $_->{tag} !~ /^\./ }
+    my $_docrepo= visit_repo_path;
+
+    return grep { $_->{idvisitvalue} eq $pk && $_->{id} !~ /^\./ }
     map  {  /^([0-9]+)_(.+)/; 
             my $date = POSIX::strftime( "%Y-%m-%d", localtime( ( stat $_docrepo.$_ )[9] ) ); 
            { id=>$_, idvisitvalue => $1, name=> $2, date=> $date }
@@ -259,7 +260,8 @@ helper getVVDocument => sub { my ($self, $pk)=@_;
     return TempFileNames::readFile(visit_repo_path.'/'.$pk);
 };
 helper delVVDocument => sub { my ($self, $pk)=@_;
-    unlink visit_repo_path.'/'.$pk;
+warn visit_repo_path.$pk;
+    unlink visit_repo_path.$pk;
 };
 helper putVVDocument => sub { my ($self, $idvisitvalue, $filename, $bytes)=@_;
 	sub getFilename{ my ($idvisitvalue, $local_filename)=@_;
@@ -279,23 +281,23 @@ helper putVVDocument => sub { my ($self, $idvisitvalue, $filename, $bytes)=@_;
     return $destination_path;
 };
 
-get '/DBI/vvdocuments/id/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
+get '/DBI/vvdocuments/id/:pk' => [pk=>qr/[a-z0-9\s_\.-]+/i] => sub
 {   my $self = shift;
     my $pk  = $self->param('pk');
     $self->render( data =>  $self->getVVDocument($pk) );
 };
-get '/DBI/vvdocuments/idvisitvalue/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
+get '/DBI/vvdocuments/idvisitvalue/:pk' => [pk=>qr/[a-z0-9\s_\.-]+/i] => sub
 {   my $self = shift;
     my $pk  = $self->param('pk');
-    $self->render( data =>  $self->lsVVDocuments($pk) );
+    $self->render( json =>  [ $self->lsVVDocuments($pk) ] );
 };
-del '/DBI/vvdocuments/id/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
+del '/DBI/vvdocuments/id/:pk' => [pk=>qr/[a-z0-9\s_\.-]+/i] => sub
 {   my $self = shift;
     my $pk  = $self->param('pk');
     $self->delVVDocument($pk);
     $self->render( text=> 'OK');
 };
-post '/DBI/vvdocuments/idvisitvalue/:pk' => [pk=>qr/[a-z0-9\s_]+/i] => sub
+post '/DBI/vvdocuments/idvisitvalue/:pk' => [pk=>qr/[a-z0-9\s_\.-]+/i] => sub
 {   my $self = shift;
     my $pk = $self->param("pk");
     my @uploads = $self->req->upload('files[]');

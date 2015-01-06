@@ -11,7 +11,7 @@ var _sharedUploadManager;
 	id _vvDocumentsController;
 }
 - store
-{   return [CPApp store].store;
+{   return [CPApp delegate].store;
 }
 -(CPView) view
 {   var r=[super view]
@@ -21,15 +21,20 @@ var _sharedUploadManager;
     [_cuploader setRemoveCompletedFiles:YES];
     [_cuploader setAutoUpload:YES];
     [_cuploader setDelegate:self];
-
-    var myreq=[CPURLRequest requestWithURL:"/DBI/vvdocuments/idvisitvalue/"+[_myVisitValue valueForKey:"id"] +'?session='+ window.G_SESSION];
-    [CPURLConnection connectionWithRequest:myreq delegate:self];
-    [vvDocumentsController setContent:[[self store] fetchObjectsForURLRequest:myreq inEntity: _vvDocumentsController._entity requestDelegate:nil]];
+    [self _reloadController];
     return r;
+}
+-(void) _reloadController
+{
+    var myreq=[CPURLRequest requestWithURL:"/DBI/vvdocuments/idvisitvalue/"+[_myVisitValue valueForKey:"id"] +"?session="+ window.G_SESSION];
+    var a= [[self store] fetchObjectsForURLRequest:myreq inEntity:_vvDocumentsController._entity requestDelegate:nil];
+    [_vvDocumentsController setContent:a];
+
 }
 
 - (void)cup:(Cup)aCup uploadDidCompleteForFile:(CupFile)aFile
 {
+    [self _reloadController];
 }
 
 @end
