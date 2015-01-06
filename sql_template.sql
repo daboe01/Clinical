@@ -3157,7 +3157,7 @@ COPY audittrail (id, changedate, action, writetable, newdata, whereclause, usern
 -- Name: audittrail_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('audittrail_id_seq', 7, true);
+SELECT pg_catalog.setval('audittrail_id_seq', 57, true);
 
 
 --
@@ -3240,6 +3240,8 @@ SELECT pg_catalog.setval('meeting_attendees_id_seq', 1, false);
 
 COPY patient_visits (id, idpatient, idvisit, visit_date, state, travel_costs, date_reimbursed, travel_comment, travel_additional_costs, actual_costs) FROM stdin;
 3822	608	7	2014-12-27 00:00:00	\N	\N	\N	\N	\N	\N
+3825	608	6	\N	\N	\N	\N	\N	\N	\N
+3826	608	9	\N	\N	\N	\N	\N	\N	\N
 3787	609	\N	2014-11-05 00:00:00	\N	\N	\N	\N	\N	\N
 3798	612	7	2014-11-17 00:00:00	\N	\N	\N	\N	\N	\N
 3800	612	6	\N	\N	\N	\N	\N	\N	\N
@@ -3258,8 +3260,6 @@ COPY patient_visits (id, idpatient, idvisit, visit_date, state, travel_costs, da
 3799	612	5	2014-11-18 00:00:00	\N	\N	\N	\N	\N	\N
 3823	608	5	\N	\N	\N	\N	\N	\N	\N
 3824	608	6	\N	\N	\N	\N	\N	\N	\N
-3825	608	9	\N	\N	\N	\N	\N	\N	\N
-3826	608	10	\N	\N	\N	\N	\N	\N	\N
 \.
 
 
@@ -3278,8 +3278,8 @@ COPY patients (id, idtrial, piz, code1, code2, comment, state, name, givenname, 
 609	197	\N	\N	\N	\N	\N	xxx	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
 613	25	5	\N	\N	\N	\N	test5	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
 614	25	6	\N	\N	\N	\N	test6	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
-608	25	1	0001	0001/A	\N	4	Test	\N	\N	\N	\N	\N	\N	2014-11-13	\N	\N	\N	\N	10
 612	25	\N	\N	\N	\N	\N	test43	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
+608	25	1	0001	0001/A	\N	4	Bö	Da	1972-01-01	\N	\N	\N	\N	2014-11-13	\N	\N	\N	\N	10
 \.
 
 
@@ -3440,7 +3440,6 @@ COPY procedures_catalogue (id, name, type, base_cost, widgetclassname, widgetpar
 42	Fluoreszenzangiographische Untersuchung der terminalen Strombahn am Augenhintergrund einschließlich Aufnahmen und Applikation des Teststoffes	1	64.8799999999999955	\N	\N	\N	\N
 155	UCVA standard 1M binocular	\N	15	\N	\N	\N	\N
 152	UCVA standard 4M binocular	\N	15	\N	\N	\N	\N
-45	Fotographische Verlaufskontrolle intraokularer Veränderungen mittels Spaltlampenfotographie	1	13.4100000000000001	\N	\N	\N	\N
 46	Fotographische Verlaufskontrolle von Veränderungen des Augenhintergrunds mittels Fundusfotographie	1	20.1000000000000014	\N	\N	\N	\N
 47	Tonometrische Untersuchung mit Anwendung des Impressionstonometers	1	7.33999999999999986	\N	\N	\N	\N
 48	Tonometrische Untersuchung mit Anwendung des Applanationstonometers	1	10.4900000000000002	\N	\N	\N	\N
@@ -3471,6 +3470,7 @@ COPY procedures_catalogue (id, name, type, base_cost, widgetclassname, widgetpar
 51	Elektromyographie der äußeren Augenmuskeln	1	58.75			\N	\N
 168	OSDI Questionnaire	\N	\N	WidgetOSDI	<?xml version="1.0"?>\n<!DOCTYPE gsmarkup>\n<gsmarkup>\n<objects>\n <window visible="NO">\n   <vbox id="widgets">\n       <label> Have you experienced any of the following during the last week?</label>\n       <label> Eyes that are sensitive to light?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value1">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n       </popUpButton>\n       <label> Eyes that feel gritty?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value2">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n       </popUpButton>\n       <label> Painful or sore eyes?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value3">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n       </popUpButton>\n       <label> Blurred vision?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value4">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n       </popUpButton>\n       <label> Poor vision?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value5">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n       </popUpButton>\n\n\n\n\n\n\n\n\n       <label> Have problems with your eyes limited you in performing any of the following during the last week?</label>\n       <label> Reading?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value6">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n           <popUpButtonItem title="NA" tag="-1"/>\n       </popUpButton>\n       <label> Driving at night?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value7">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n           <popUpButtonItem title="NA" tag="-1"/>\n       </popUpButton>\n       <label> Working with a computer or bank machine (ATM)?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value8">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n           <popUpButtonItem title="NA" tag="-1"/>\n       </popUpButton>\n       <label> Watching TV?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value9">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n           <popUpButtonItem title="NA" tag="-1"/>\n       </popUpButton>\n\n\n\n\n\n\n\n\n       <label> Have your eyes felt uncomfortable in any of the following situations of the during the last week?</label>\n       <label> Windy conditions?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value10">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n           <popUpButtonItem title="NA" tag="-1"/>\n       </popUpButton>\n       <label> Places or areas with low humidity (very dry)?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value11">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n           <popUpButtonItem title="NA" tag="-1"/>\n       </popUpButton>\n       <label> Areas that are air conditioned?</label>\n       <popUpButton width="100" valueBinding="#CPOwner.value12">\n           <popUpButtonItem title="All of the time" tag="4"/>\n           <popUpButtonItem title="Most of the time" tag="3"/>\n           <popUpButtonItem title="Half of the time" tag="2"/>\n           <popUpButtonItem title="Some of the time" tag="1"/>\n           <popUpButtonItem title="None of the time" tag="0"/>\n           <popUpButtonItem title="NA" tag="-1"/>\n       </popUpButton>\n\n\n\n\n       <vspace height="20" valign="min"/>\n       <label> OSDI</label>\n       <label valueBinding="#CPOwner.value13"/>\n </vbox>\n</window>\n\n\n\n\n</objects>\n<connectors>\n <outlet source="#CPOwner" target="widgets" label="_myView"/>\n</connectors>\n\n\n\n\n\n\n\n\n</gsmarkup>	{\\bf OSDI: <value13>}	\N
 162	AE Interview	\N	20	WidgetTimestamp	<?xml version="1.0"?>\n<!DOCTYPE gsmarkup>\n<gsmarkup>\n<objects>\n <window visible="NO">\n   <hbox id="widgets">\n           <label valign="center"> Haben sich SAEs ereignet?</label>\n           <popUpButton width="80" valueBinding="#CPOwner.value2">\n                <popUpButtonItem title="Ja" tag="1"/>\n                <popUpButtonItem title="Nein" tag="0"/>\n           </popUpButton>\n          <label valign="center"> Zeit </label>\n          <textField valueBinding="#CPOwner.value1" width="120" halign="min"/>\n          <button title="Notieren" target="#CPOwner" action="takeTime:"/>\n </hbox>\n</window>\n</objects>\n<connectors>\n   <outlet source="#CPOwner" target="widgets" label="_myView"/>\n</connectors>\n</gsmarkup>	{\\bf<value2>} (0=Nein, 1=Ja). Beantwortet: {\\bf<value1>}	\N
+45	Fotographische Verlaufskontrolle intraokularer Veränderungen mittels Spaltlampenfotographie	1	13.4100000000000001	WidgetUpload	<?xml version="1.0"?>\n<!DOCTYPE gsmarkup>\n<gsmarkup>\n<objects>\n  <arrayController id="vvdocuments_controller" entity="vvdocuments"/>\n  <window visible="NO">\n   <vbox id="widgets">\n     <tabView type="topBezel"  width="300" halign="min" height="350" valign="min">\n       <tabViewItem title="Upload">\n\t<vbox>\n            <scrollView hasHorizontalScroller="NO"   width="300" halign="min" height="300" valign="min">\n\t    <tableView id="uploadtableview" valueBinding="#CPOwner.queueController">\n\t\t <tableColumn identifier="name" title="name"/>\n\t\t <tableColumn identifier="size" title="size"/>\n\t\t <tableColumn identifier="percentComplete" title="progress"/>\n\t  </tableView>\n \t</scrollView>\n          <button title="Pick files..." target="#CPOwner._cuploader" action="addFiles:"/>\n         </vbox>\n         </tabViewItem>\n         <tabViewItem title="Manage uploads">\n          <vbox>\n  \t<scrollView hasHorizontalScroller="NO"  width="300" halign="min" height="300" valign="min">\n\t    <tableView valueBinding="vvdocuments_controller">\n\t\t <tableColumn identifier="name" title="name"/>\n\t  </tableView>\n\t</scrollView>\n          <ButtonBar target="#vvdocuments_controller"  width="300" halign="min" minusButtonAction="remove:" actionsButton="NO"/>\n         </vbox>\n        </tabViewItem>\n    </tabView>\n  </vbox>\n</window>\n</objects>\n\n <entities>\n\t<entity id="vvdocuments" store="#CPOwner.store">\n\t\t<column name="id" primaryKey="YES"/>\n \t\t<column name="idvisitvalue"/>\n \t\t<column name="name"/>\n\t</entity>\n</entities>\n<connectors>\n    <outlet source="#CPOwner" target="widgets" label="_myView"/>\n    <outlet source="#CPOwner" target="uploadtableview" label="_dropTarget"/>\n    <outlet source="#CPOwner" target="vvdocuments_controller" label="_vvDocumentsController"/>\n </connectors>\n</gsmarkup>		\N
 \.
 
 
@@ -3747,6 +3747,8 @@ COPY trial_properties (id, idtrial, idproperty, value) FROM stdin;
 5562	25	42	
 5563	25	43	\\documentclass{scrreprt}\r\\usepackage[ngerman]{babel}\r\\usepackage[utf8]{inputenc}\r\\usepackage[T1]{fontenc}\r\\usepackage{graphicx}\r\\usepackage{wallpaper}\r\\usepackage{tabularx}\r\r\r\\renewcommand{\\familydefault}{\\sfdefault}\r\\usepackage{helvet}\r\r\\pagenumbering{none}\r\r\r\\begin{document}\r\\baselineskip15pt\r\\setlength{\\headheight}{7\\baselineskip}\r\\setlength{\\oddsidemargin}{-3mm}\r\\addtolength{\\textwidth}{2cm}\r\r<foreach:patients>\r\r\\ThisCenterWallPaper{1}{<copytex:briefkopfAdresszeile3.pdf>}\r\r\\noindent <anrede1>\\\\\r\\noindent <givenname> <name>\\\\\r\\noindent <street> \\\\\r\\noindent <zip> <town> \\\\\r\\\\ \\\\\r\\hspace*{11.0cm}  Freiburg, <today>\\\\\r\r\\noindent Datenschutzerkl"arung in der klinischen Studie {\\it <Voller Titel>}\\\\\r\r\\noindent  Sehr geehrte<anrede2>, <name>,\\\\\r\r\\noindent hiermit m"ochten wir Sie dar"uber informieren, dass ....\\\\\\\\\r\r\\noindent Mit freundlichen Gr"u"sen, \\\\ \\\\\r\r\\hspace*{-7mm}  \\begin{tabularx}{20cm}{XX}\r<_Loginname_>\\\\\r<_Loginrole_> \\\\\r\\end{tabularx}\r\r\\newpage\r\r</foreach:patients>\r\r\r\\end{document}\r
 5479	197	31	
+5659	25	28	
+5660	25	49	
 \.
 
 
@@ -3826,7 +3828,7 @@ SELECT pg_catalog.setval('trial_properties_catalogue_id_seq', 65, true);
 -- Name: trial_properties_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('trial_properties_id_seq', 5658, true);
+SELECT pg_catalog.setval('trial_properties_id_seq', 5660, true);
 
 
 --
@@ -3872,6 +3874,10 @@ SELECT pg_catalog.setval('trial_visits_id_seq', 300, true);
 --
 
 COPY visit_procedure_values (id, idvisit_procedure, idpatient_visit, value_full) FROM stdin;
+9	133	3822	\N
+10	144	3822	\N
+8	143	3822	{"value1":null,"value2":null,"value3":null,"value4":null,"value5":null,"value6":3,"value7":null,"value8":null,"value9":null,"value10":null,"value11":null,"value12":null,"value13":0,"value14":null,"value15":null,"value16":null,"value17":null,"value18":null,"value19":null,"value20":null,"value21":null,"value22":null,"value23":null,"value24":null,"value25":null}
+11	145	3822	\N
 \.
 
 
@@ -3879,7 +3885,7 @@ COPY visit_procedure_values (id, idvisit_procedure, idpatient_visit, value_full)
 -- Name: visit_procedure_values_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('visit_procedure_values_id_seq', 7, true);
+SELECT pg_catalog.setval('visit_procedure_values_id_seq', 11, true);
 
 
 --
@@ -3892,6 +3898,7 @@ COPY visit_procedures (id, idvisit, idprocedure, actual_cost, ordering, paramete
 120	\N	\N	\N	\N	\N
 143	7	168	\N	3	\N
 144	7	162	\N	0	\N
+145	7	45	\N	4	\N
 136	299	162	\N	\N	\N
 139	5	15	\N	\N	\N
 140	5	162	\N	\N	\N
@@ -3902,7 +3909,7 @@ COPY visit_procedures (id, idvisit, idprocedure, actual_cost, ordering, paramete
 -- Name: visit_procedures_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('visit_procedures_id_seq', 144, true);
+SELECT pg_catalog.setval('visit_procedures_id_seq', 145, true);
 
 
 --
