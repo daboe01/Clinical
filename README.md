@@ -32,8 +32,7 @@ cat sql_template.sql | psql aug_clinical
 sudo perl -MCPAN -e 'install ($_) for qw/Mojolicious Mojolicious::Plugin::Database Mojolicious::Plugin::RenderFile SQL::Abstract::More Apache::Session::File Spreadsheet::WriteExcel Spreadsheet::ParseExcel Business::IBAN DBD::Pg Date::ICal Data::ICal Data::ICal::Entry::TimeZone/'
 # now download this repo and cd into it
 morbo backend.pl # this starts the testing server
-# locate your favourite web browser to http://localhost:3000/Frontend/index.html
-# (you may change the port either in backend.pl or from the command line)
+# now locate your favourite web browser to http://localhost:3000/Frontend/index.html
 # the username is pi with no password
 # (passwords are not enforced unless you modify the helper LDAPChallenge within backend.pl appropriately)
 #
