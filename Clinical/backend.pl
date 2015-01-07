@@ -162,7 +162,7 @@ get '/DBI/pdocuments_tag_unique/idpersonnel/:pk' => [pk=>qr/[a-z0-9\s]+/i] => su
 # update docs
 put '/DBI/documents/id/:key'=> [key=>qr/.+/] => sub
 {   my $self    = shift;
-    my $jsonR   = decode_json( $self->req->body );
+    my $jsonR   = decode_json( $self->req->body || '{}' );
     my $key        = $self->param('key');
     my @doc=grep {$_->{id} eq $key} $self->getLSDocuments();
     my $idtrial=$doc[0]->{idtrial};
@@ -175,7 +175,7 @@ put '/DBI/documents/id/:key'=> [key=>qr/.+/] => sub
 };
 put '/DBI/pdocuments/id/:key'=> [key=>qr/.+/] => sub
 {   my $self = shift;
-    my $jsonR = decode_json( $self->req->body );
+    my $jsonR = decode_json( $self->req->body  || '{}' );
     my $key = $self->param('key');
     my @doc=grep {$_->{id} eq $key} $self->getLSPDocuments();
     my $idpersonnel=$doc[0]->{idpersonnel};
@@ -413,7 +413,7 @@ put '/DBI/:table/:pk/:key'=> [key=>qr/\d+/] => sub
     my $pk      = $self->param('pk');
     my $key     = $self->param('key');
     my $sql     = SQL::Abstract->new;
-    my $jsonR   = decode_json( $self->req->body );
+    my $jsonR   = decode_json( $self->req->body  || '{}' );
 
    my  %session;
    my $sessionid=$self->param('session');
@@ -496,7 +496,7 @@ post '/DBI/:table/:pk'=> sub
     my $table    = $self->param('table');
     my $pk        = $self->param('pk');
     my $sql = SQL::Abstract->new;
-    my $jsonR   = decode_json( $self->req->body );
+    my $jsonR   = decode_json( $self->req->body||'{}' );
 
     my  %session;
     my $sessionid=$self->param('session');
@@ -886,6 +886,11 @@ any '/CT/pdfstamper/:idtrial/:formname'=> [idtrial =>qr/\d+/, formname =>qr/[a-z
             for my $ckey (keys %$pat) {
                 $keyvaldict->{$ckey}=$pat->{$ckey};
             }
+            my $trial= $self->getObjectFromTable('all_trials', $idtrial);
+            my $group= $self->getObjectFromTable('groups_catalogue', $trial->{idgroup});
+            for my $ckey (keys %$group) {
+                $keyvaldict->{"GRP_".$ckey}=$group->{$ckey};
+            }
             $keyvaldict->{iban}=~s/ //ogs;
             # get the visits
             my $sql=qq{select trial_visits.name as visit, patient_visits_rich.* from patient_visits_rich join trial_visits on trial_visits.id=idvisit where idpatient=?};
@@ -1124,7 +1129,7 @@ get '/CT/travel_distance/:idpatient' => [idpatient =>qr/[0-9]+/] => sub
     my $url="http://maps.googleapis.com/maps/api/distancematrix/json?origins=".lc $address."&destinations=meinestr+meinestadt";
     my $data=$ua->get($url)->res->body;
         
-    my $jsonR = decode_json($data );
+    my $jsonR = decode_json($data  || '{}');
     my $dist = $jsonR->{rows}->[0]->{elements}->[0]->{distance}->{text};
     $dist=~s/[^\.0-9]+//ogs;
     $dist  = ceil($dist)*2;   # hin und zurueck
@@ -1231,12 +1236,14 @@ get '/CT/iCAL/:ldap'=> [ldap =>qr/[a-z_0-9]+/i] => sub
     my $self=shift;
     my $personal=$self->param('personal');
     my $ldap = $self->param('ldap');
-    my $sql="SELECT  distinct name, event_date, tooltip || ' (' || piz ||')' as description  from event_overview where ".($personal?"ldap":"ldap_unfiltered")."=? and not name~*'^dummy '";
-    my $sth = $self->db->prepare( $sql );
-    $sth->execute(($ldap));
-      my $rowarrref;
-    my $calendar = Data::ICal->new();
-    
+    my $show_ends = $self->param('show_ends');
+	my $sql="SELECT  distinct name, event_date, tooltip || ' (' || piz ||')' as description  from event_overview where ".($personal?"ldap":"ldap_unfiltered")."=? and not name~*'^dummy '";
+    $sql.="  and not name~*'^Ende: '" unless $show_ends;
+	my $sth = $self->db->prepare( $sql );
+	$sth->execute(($ldap));
+  	my $rowarrref;
+	my $calendar = Data::ICal->new();
+
     my $vtimezone = Data::ICal::Entry::TimeZone->new();
     $vtimezone->add_properties( tzid => 'Europe/Berlin', tzname=>'CEST');
     $calendar->add_entry($vtimezone);
