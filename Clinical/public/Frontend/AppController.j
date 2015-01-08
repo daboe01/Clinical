@@ -510,7 +510,7 @@ var VisitProcedurePBoardType="VisitProcedurePBoardType";
 
            var request = [CPURLRequest requestWithURL:BaseURL+"CT/copyprocs"+ idsourcevisit +"/"+ idtargetvisit + window.G_SESSION];
            [request setHTTPMethod:"POST"];
-	       [CPURLConnection sendSynchronousRequest:request returningResponse: nil];
+           [CPURLConnection sendSynchronousRequest:request returningResponse: nil];
        }
    }
 }
