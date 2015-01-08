@@ -25,7 +25,7 @@
         <vbox>
           <label> Visits </label>
           <scrollView hasHorizontalScroller="YES">
-             <tableView zebra="yes" autosaveName="allvisits_tv" valueBinding="#CPOwner.visitsController" target="#CPOwner">
+             <tableView zebra="yes" autosaveName="allvisits_tv" valueBinding="#CPOwner.visitsController" target="#CPOwner" delegate="#CPOwner">
                 <tableColumn identifier="ordering" title="order" editable="YES" width="50"/>
                 <tableColumn identifier="name" title="name" editable="YES"/>
                 <tableColumn identifier="visit_interval" title="interval" editable="YES"/>

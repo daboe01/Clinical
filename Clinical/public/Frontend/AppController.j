@@ -45,6 +45,32 @@ BaseURL=HostURL+"/";
 @end
 
 // fixme<!> refactor to cappusance
+@implementation CPTableView(copypaste)
+- (void)cut:(id)sender
+{
+    if(_delegate && [_delegate respondsToSelector:@selector(cut:)])
+    {
+        [_delegate cut:sender];
+    }
+}
+- (void)copy:(id)sender
+{
+    if(_delegate && [_delegate respondsToSelector:@selector(copy:)])
+    {
+        [_delegate copy:sender];
+    }
+}
+- (void)paste:(id)sender
+{
+    if(_delegate && [_delegate respondsToSelector:@selector(paste:)])
+    {
+        [_delegate paste:sender];
+    }
+}
+@end
+
+
+// fixme<!> refactor to cappusance
 @implementation CPButtonBar(addbutton)
 - (CPButton) addButtonWithImageName:(CPString) aName target:(id) aTarget action:(SEL) aSelector
 {   var sendimage=[[CPImage alloc] initWithContentsOfFile: [CPString stringWithFormat:@"%@/%@", [[CPBundle mainBundle] resourcePath], aName]];
@@ -452,6 +478,10 @@ BaseURL=HostURL+"/";
 }
 // END: KOKA und Visit procedures
 
+-(void) copy:sender
+{
+// alert(sender);
+}
 
 // MISC stuff
 -(void) runAccounts: sender
