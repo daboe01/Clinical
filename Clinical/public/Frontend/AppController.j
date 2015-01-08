@@ -23,6 +23,8 @@ BaseURL=HostURL+"/";
 @import "CalendarController.j"
 
 
+var VisitProcedurePBoardType="VisitProcedurePBoardType";
+
 @implementation SessionStore : FSStore 
 
 -(CPURLRequest) requestForAddressingObjectsWithKey: aKey equallingValue: (id) someval inEntity:(FSEntity) someEntity
@@ -185,6 +187,7 @@ BaseURL=HostURL+"/";
     id    visitprocBB;
     id    persoEventsTV;
     id    graphicalPicker;
+    id    adminVisitsTV;
 
     id    addTXWindow;
     id    accountsTV;
@@ -480,7 +483,36 @@ BaseURL=HostURL+"/";
 
 -(void) copy:sender
 {
-// alert(sender);
+   var fr=[[CPApp keyWindow] firstResponder];
+   if(fr === adminVisitsTV)
+   {   var binder=[CPBinder getBinding:"content" forObject:fr];
+       var ac=[binder._info objectForKey:CPObservedObjectKey];
+       var currentVisit=[ac selectedObject];
+       var idvisit=[currentVisit valueForKey:"id" synchronous:YES];
+       var pasteboard = [CPPasteboard generalPasteboard];
+       [pasteboard declareTypes:[VisitProcedurePBoardType] owner:nil];
+       [pasteboard setString:idvisit forType:VisitProcedurePBoardType];
+   }
+}
+-(void) paste:sender
+{
+   var fr=[[CPApp keyWindow] firstResponder];
+   if(fr === adminVisitsTV)
+   {
+       var pasteboard = [CPPasteboard generalPasteboard],
+           idsourcevisit = [pasteboard stringForType:VisitProcedurePBoardType];
+       if (idsourcevisit)
+       {
+           var binder=[CPBinder getBinding:"content" forObject:fr];
+           var ac=[binder._info objectForKey:CPObservedObjectKey];
+           var currentVisit=[ac selectedObject];
+           var idtargetvisit=[currentVisit valueForKey:"id" synchronous:YES];
+
+           var request = [CPURLRequest requestWithURL:BaseURL+"CT/copyprocs"+ idsourcevisit +"/"+ idtargetvisit + window.G_SESSION];
+           [request setHTTPMethod:"POST"];
+	       [CPURLConnection sendSynchronousRequest:request returningResponse: nil];
+       }
+   }
 }
 
 // MISC stuff

@@ -25,7 +25,7 @@
         <vbox>
           <label> Visits </label>
           <scrollView hasHorizontalScroller="YES">
-             <tableView zebra="yes" autosaveName="allvisits_tv" valueBinding="#CPOwner.visitsController" target="#CPOwner" delegate="#CPOwner">
+             <tableView zebra="yes" id="adminvisits_tv" autosaveName="allvisits_tv" valueBinding="#CPOwner.visitsController" target="#CPOwner" delegate="#CPOwner">
                 <tableColumn identifier="ordering" title="order" editable="YES" width="50"/>
                 <tableColumn identifier="name" title="name" editable="YES"/>
                 <tableColumn identifier="visit_interval" title="interval" editable="YES"/>
@@ -87,6 +87,7 @@
     <outlet source="#CPOwner" target="visitprocs_tv" label="visitProcsTV"/>
     <outlet source="#CPOwner" target="visitperso_bb" label="visitpersoBB"/>
     <outlet source="#CPOwner" target="visitproc_bb" label="visitprocBB"/>
+    <outlet source="#CPOwner" target="adminvisits_tv" label="adminVisitsTV"/>
 </connectors>
 
 </gsmarkup>
