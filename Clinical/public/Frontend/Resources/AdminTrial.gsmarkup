@@ -49,7 +49,7 @@
         <scrollView hasHorizontalScroller="YES">
            <tableView zebra="yes" id="visitprocs_tv" autosaveName="visitprocs_tv" valueBinding="#CPOwner.proceduresVisitController" delegate="#CPOwner">
                <tableColumn identifier="procedure_name" title="procedure" editable="YES"/>
-               <tableColumn width="50" identifier="actual_cost" title="acatual costs" editable="YES"/>
+               <tableColumn width="50" identifier="actual_cost" title="actual costs" editable="YES"/>
                <tableColumn width="50" identifier="procedure.base_cost" title="base costs" editable="NO"/>
                <tableColumn width="50" identifier="procedure.min_cost" title="min" editable="NO"/>
                <tableColumn width="50" identifier="procedure.avg_cost" title="avg" editable="NO"/>
