@@ -23,7 +23,6 @@ BaseURL=HostURL+"/";
 @import "CalendarController.j"
 
 
-var VisitProcedurePBoardType="VisitProcedurePBoardType";
 
 @implementation SessionStore : FSStore 
 
@@ -490,8 +489,8 @@ var VisitProcedurePBoardType="VisitProcedurePBoardType";
        var currentVisit=[ac selectedObject];
        var idvisit=[currentVisit valueForKey:"id" synchronous:YES];
        var pasteboard = [CPPasteboard generalPasteboard];
-       [pasteboard declareTypes:[VisitProcedurePBoardType] owner:nil];
-       [pasteboard setString:idvisit forType:VisitProcedurePBoardType];
+       [pasteboard declareTypes:[CPStringPboardType] owner:nil];
+       [pasteboard setString:"#VisitProcedurePBoardType"+idvisit forType:CPStringPboardType];
    }
 }
 -(void) paste:sender
@@ -500,9 +499,9 @@ var VisitProcedurePBoardType="VisitProcedurePBoardType";
    if(fr === adminVisitsTV)
    {
        var pasteboard = [CPPasteboard generalPasteboard],
-           idsourcevisit = [pasteboard stringForType:VisitProcedurePBoardType];
-       if (idsourcevisit)
-       {
+           idsourcevisit = [pasteboard stringForType: CPStringPboardType];
+       if ([idsourcevisit hasPrefix:"#VisitProcedurePBoardType"])
+       {   idsourcevisit=[idsourcevisit substringFromIndex:25];
            var binder=[CPBinder getBinding:"content" forObject:fr];
            var ac=[binder._info objectForKey:CPObservedObjectKey];
            var currentVisit=[ac selectedObject];
