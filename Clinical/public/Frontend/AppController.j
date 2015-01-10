@@ -508,9 +508,9 @@ var VisitProcedurePBoardType="VisitProcedurePBoardType";
            var currentVisit=[ac selectedObject];
            var idtargetvisit=[currentVisit valueForKey:"id" synchronous:YES];
 
-           var request = [CPURLRequest requestWithURL:BaseURL+"CT/copyprocs"+ idsourcevisit +"/"+ idtargetvisit + window.G_SESSION];
-           [request setHTTPMethod:"POST"];
-           [CPURLConnection sendSynchronousRequest:request returningResponse: nil];
+           var myreq=[CPURLRequest requestWithURL: BaseURL+"CT/copyover_koka_visit/"+idsourcevisit +"/"+ idtargetvisit+"?session="+  window.G_SESSION];
+           [CPURLConnection sendSynchronousRequest: myreq returningResponse: nil];
+           [proceduresVisitController reload];
        }
    }
 }
