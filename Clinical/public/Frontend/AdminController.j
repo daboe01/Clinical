@@ -83,12 +83,21 @@
 }
 -(void) insertGroup:sender
 {
-    [[CPApp delegate].groupsControllerAll addObject:@{"name": "NewGroup"}];
+    [[CPApp delegate].groupsControllerAll addObject:@{"name": "New group"}];
 
 }
 -(void) removeGroup:sender
 {
     [[CPApp delegate].groupsControllerAll remove:self];
+}
+-(void) insertState:sender
+{
+    [[CPApp delegate].statesController addObject:@{"name": "New state", "type": 0}];
+
+}
+-(void) removeState:sender
+{
+    [[CPApp delegate].statesController remove:self];
 }
 
 

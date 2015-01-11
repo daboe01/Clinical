@@ -131,7 +131,7 @@
 		<tableColumn identifier="type" title="type" editable="YES"/>
 	 </tableView>
 	</scrollView>
-	<ButtonBar target="#CPOwner.statesController" plusButtonAction="insert:" minusButtonAction="remove:"/>
+    <ButtonBar target="#myadmincontroller" plusButtonAction="insertState:" minusButtonAction="removeState:"/>
    </vbox>
   </tabViewItem>
   <tabViewItem title="Procedures">
