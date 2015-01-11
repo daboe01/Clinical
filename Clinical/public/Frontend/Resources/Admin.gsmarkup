@@ -83,7 +83,7 @@
                 <tableColumn identifier="sprechstunde" title="sprechstunde" editable="YES"/>
          </tableView>
         </scrollView>
-        <ButtonBar target="#CPOwner.groupsControllerAll" plusButtonAction="insert:" minusButtonAction="remove:"/>
+        <ButtonBar target="#myadmincontroller" plusButtonAction="insertGroup:" minusButtonAction="removeGroup:"/>
        </vbox>
        <vbox>
         <label>Members</label>

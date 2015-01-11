@@ -499,12 +499,12 @@ post '/DBI/:table/:pk'=> sub
     my $jsonR   = decode_json( $self->req->body||'{}' );
 
     my  %session;
-    my $sessionid=$self->param('session');
+    my  $sessionid=$self->param('session');
     tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
-    my $ldap = $session{username};
+    my  $ldap = $session{username};
 
     if($table eq 'personnel_catalogue')
-    {        my $level=$self->getUserlevel($ldap);
+    {   my $level=$self->getUserlevel($ldap);
         $jsonR->{level}= $level if exists $jsonR->{level} && $jsonR->{level} > $level;
         $jsonR->{name}= 'New' unless exists $jsonR->{name};
     }        

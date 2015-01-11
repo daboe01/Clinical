@@ -75,12 +75,22 @@
 
 -(void) sendMeetingInvitations:sender
 {
-    var idmeeting = [[CPApp delegate].teamMeetingsController valueForKeyPath:"selection.id"]
+    var idmeeting = [[CPApp delegate].teamMeetingsController valueForKeyPath:"selection.id"];
 	var myreq=[CPURLRequest requestWithURL:"/CT/invite_teammeeting/"+idmeeting+'?session='+ window.G_SESSION];
 	[myreq setHTTPMethod:"POST"];
 	[CPURLConnection sendSynchronousRequest: myreq returningResponse: nil];
 
 }
+-(void) insertGroup:sender
+{
+    [[CPApp delegate].groupsControllerAll addObject:@{"name": "NewGroup"}];
+
+}
+-(void) removeGroup:sender
+{
+    [[CPApp delegate].groupsControllerAll remove:self];
+}
+
 
 - (BOOL)tableView:(CPTableView)tableView shouldEditTableColumn:(CPTableColumn)column row:(int)row {
 	var identifier= [column identifier];
