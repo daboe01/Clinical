@@ -444,6 +444,9 @@ var VisitProcedurePBoardType="#VisitProcedurePBoardType";
        [datePickerPopover showRelativeToRect:frame ofView:tableView preferredEdge: nil];
        [[tableView window] makeKeyAndOrderFront:self];
        return YES;
+   } else if (tableView === adminVisitsTV)
+   {
+       return YES;
    }
    return NO;
 }

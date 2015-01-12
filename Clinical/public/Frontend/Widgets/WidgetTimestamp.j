@@ -5,14 +5,34 @@
 {
 
 }
-
-- (void)takeTime:sender
+- (void)_takeTimeForValue:(CPString) aVal
 {
     var timerDate=[CPDate new];
     var dateFormatter = [[CPDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"YYYY-MM-dd hh:mm:ss.SS"];
     [dateFormatter setTimeZone:[CPTimeZone timeZoneForSecondsFromGMT:0.0]];
-    [self setValue1:[dateFormatter stringFromDate:timerDate]];
+    [self setValue:[dateFormatter stringFromDate:timerDate] forKey:aVal];
+}
+
+- (void)takeTime:sender
+{
+    [self _takeTimeForValue:"value1"];
+}
+- (void)takeTime2:sender
+{
+    [self _takeTimeForValue:"value2"];
+}
+- (void)takeTime3:sender
+{
+    [self _takeTimeForValue:"value3"];
+}
+- (void)takeTime4:sender
+{
+    [self _takeTimeForValue:"value4"];
+}
+- (void)takeTime5:sender
+{
+    [self _takeTimeForValue:"value5"];
 }
 
 
