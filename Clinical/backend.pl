@@ -602,11 +602,11 @@ get '/CT/download_list'=> sub
     my $a=$sth->fetchall_arrayref();
     my @colnames=map {'"'.$_->[0].'"' } @$a;
     my $colnames= join " text,",@colnames;
-    $sql="SELECT distinct all_trials.name, groups_catalogue.name as group, ct.* FROM crosstab( 'select idtrial, trial_properties_catalogue.name, value from trial_properties join trial_properties_catalogue on idproperty= trial_properties_catalogue.id order by 1,2', 'SELECT distinct trial_properties_catalogue.name FROM trial_properties_catalogue join trial_properties on idproperty= trial_properties_catalogue.id order by 1') AS ct(idtrial integer, $colnames text) join all_trials on idtrial=all_trials.id join  group_assignments ON group_assignments.idgroup = all_trials.idgroup JOIN personnel_catalogue ON group_assignments.idpersonnel = personnel_catalogue.id join groups_catalogue on groups_catalogue.id=all_trials.idgroup where personnel_catalogue.ldap=? order by 1";
+    $sql="SELECT distinct all_trials.name, groups_catalogue.name as group, global_state, ct.* FROM crosstab( 'select idtrial, trial_properties_catalogue.name, value from trial_properties join trial_properties_catalogue on idproperty= trial_properties_catalogue.id order by 1,2', 'SELECT distinct trial_properties_catalogue.name FROM trial_properties_catalogue join trial_properties on idproperty= trial_properties_catalogue.id order by 1') AS ct(idtrial integer, $colnames text) join all_trials on idtrial=all_trials.id join  group_assignments ON group_assignments.idgroup = all_trials.idgroup JOIN personnel_catalogue ON group_assignments.idpersonnel = personnel_catalogue.id join groups_catalogue on groups_catalogue.id=all_trials.idgroup join global_state on global_state.idtrial=all_trials.id where personnel_catalogue.ldap=? order by 1";
     $sth = $dbh->prepare( $sql );
     $sth->execute(($session{username}));
     if(!$excel)
-    {   my $result=    "name\tidtrial\tgroup\t".join("\t", @colnames)."\n";
+    {   my $result="name\tidtrial\tgroup\tglobal_state\t".join("\t", @colnames)."\n";
         while(my $curr=$sth->fetchrow_arrayref())
         {   $result.=join("\t", (@$curr));
             $result.="\n";
