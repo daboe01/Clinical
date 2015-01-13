@@ -733,7 +733,6 @@ get '/CT/copyover_koka_visit/:idvisitold/:idvisitnew' => [idvisitold =>qr/[0-9]+
     while(my $id_new=$sth_new->fetchrow_arrayref())
     {   my $id_old=$sth_old->fetchrow_arrayref();
         $sth->execute(($id_new->[0], $id_old->[0]));
-        warn "$id_new, $id_old";
     }
 
     $self->render(text=>'OK');
