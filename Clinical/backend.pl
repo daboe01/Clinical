@@ -708,7 +708,7 @@ get '/CT/download_koka/:idtrial' => [idtrial=>qr/[0-9]+/] => sub {
     my $idtrial=$self->param('idtrial');
     my $sessionid=$self->param('session');
     my $dbh=$self->db;
-        my $sql=qq{select *, cost * 1.25 as cost_overhead from (SELECT idtrial, trial_visits.name as visit, procedures_catalogue.name as procedure, coalesce( actual_cost, base_cost) as cost FROM visit_procedures join procedures_catalogue on procedures_catalogue.id=idprocedure join trial_visits on trial_visits.id=idvisit order by idtrial, visit_interval) a where idtrial=?};
+    my $sql=qq{select *, cost * 1.25 as cost_overhead from (SELECT idtrial, trial_visits.name as visit, procedures_catalogue.name as procedure, coalesce( actual_cost, base_cost) as cost FROM visit_procedures join procedures_catalogue on procedures_catalogue.id=idprocedure join trial_visits on trial_visits.id=idvisit order by idtrial, visit_interval) a where idtrial=?};
     my $sth = $dbh->prepare( $sql );
     $sth->execute(($idtrial));
     my $outR=$sth->fetchall_arrayref();
@@ -722,6 +722,20 @@ get '/CT/copyover_koka_visit/:idvisitold/:idvisitnew' => [idvisitold =>qr/[0-9]+
     my $stmt = 'insert into  visit_procedures (idprocedure, idvisit, actual_cost) select idprocedure, ? as idivsit, actual_cost from visit_procedures where idvisit=?';
     my $sth = $dbh->prepare($stmt);
     $sth->execute(($idvisitnew, $idvisitold));
+    my $sql=qq{SELECT id from visit_procedures where idvisit=?};
+    my $sth_old = $dbh->prepare( $sql );
+    $sth_old->execute(($idvisitold));
+
+    my $sth_new = $dbh->prepare( $sql );
+    $sth_new->execute(($idvisitnew));
+    $stmt = 'insert into procedures_personnel (idpersonnel, idprocedure) select idpersonnel, ? as idprocedure from procedures_personnel where idprocedure=?';
+    $sth = $dbh->prepare($stmt);
+    while(my $id_new=$sth_new->fetchrow_arrayref())
+    {   my $id_old=$sth_old->fetchrow_arrayref();
+        $sth->execute(($id_new->[0], $id_old->[0]));
+        warn "$id_new, $id_old";
+    }
+
     $self->render(text=>'OK');
 };
         
