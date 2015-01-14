@@ -508,6 +508,9 @@ post '/DBI/:table/:pk'=> sub
         $jsonR->{level}= $level if exists $jsonR->{level} && $jsonR->{level} > $level;
         $jsonR->{name}= 'New' unless exists $jsonR->{name};
     }        
+    if($table eq 'procedures_catalogue')
+    {   $jsonR->{name}= 'New' unless exists $jsonR->{name};
+    }
     my($stmt, @bind) = $sql->insert( $self->mapTableNameForWriting($table), $jsonR || {name=>'New'});
     my $sth = $self->db->prepare($stmt);
     $sth->execute(@bind);
@@ -1403,13 +1406,15 @@ any '/CT/print_visit_ecrf/:idpatientvisit'=> [idpatientvisit =>qr/\d+/] => sub
     tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
     my $ldap=$session{username};
 
-    my $sql=qq{SELECT idtrial, patients.code1, patients.code2, visit_date, value_full, coalesce(ecrf_name, procedures_catalogue.name) as name, procedures_catalogue.latex_representation
-               FROM visit_procedure_values join visit_procedures on visit_procedures.id=idvisit_procedure
-               join procedures_catalogue on idprocedure=procedures_catalogue.id
-               join patient_visits on patient_visits.id=visit_procedure_values.idpatient_visit
-               join patients on patients.id=idpatient
-               where patient_visits.id=?
-               order by ordering};
+    my $sql=qq{SELECT trial_visits.idtrial, patients.code1, patients.code2, visit_date, value_full, coalesce(ecrf_name, procedures_catalogue.name) as name, procedures_catalogue.latex_representation,
+        trial_visits.name as visit_name
+        FROM visit_procedure_values join visit_procedures on visit_procedures.id=idvisit_procedure
+        join procedures_catalogue on idprocedure=procedures_catalogue.id
+        join patient_visits on patient_visits.id=visit_procedure_values.idpatient_visit
+        join patients on patients.id=idpatient
+        join trial_visits on visit_procedures.idvisit=trial_visits.id
+        where patient_visits.id=?
+        order by visit_procedures.ordering};
     my $sth = $self->db->prepare( $sql );
     $sth->execute(($idpatientvisit));
     my @values;
@@ -1431,6 +1436,7 @@ any '/CT/print_visit_ecrf/:idpatientvisit'=> [idpatientvisit =>qr/\d+/] => sub
     $keyvaldict->{code1} =$values[0]->{code1};
     $keyvaldict->{code2} =$values[0]->{code2};
     $keyvaldict->{visit_date} =$values[0]->{visit_date};
+    $keyvaldict->{visit_name} =$values[0]->{visit_name};
     my $data= pdfgen::PDFForTemplateAndRef(TempFileNames::readFile(form_repo_path.'/ecrf_template.tex'), $keyvaldict);
     $self->render(data=> $data , format =>'pdf' );
 };
