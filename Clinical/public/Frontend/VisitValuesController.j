@@ -2,6 +2,7 @@
 @import "Widgets/WidgetSimpleString.j"
 @import "Widgets/WidgetCappusance.j"
 @import "Widgets/WidgetOSDI.j"
+@import "Widgets/WidgetTOSS.j"
 @import "Widgets/WidgetTimestamp.j"
 @import "Widgets/WidgetUpload.j"
 
@@ -13,13 +14,20 @@
 @implementation VisitValuesController : CPViewController
 {
     CPWindow _window;
-
+    CPSize   _parentSize;
 }
 
 var LABEL_WIDTH     = 200;
 var LABEL_HEIGHT    =  15;
 var INTERITEM_SPACE =  20;
 
+-(id) initWithParentSize:(CPSize) aSize
+{
+    if(self = [super init])
+    {   _parentSize=aSize;
+    }
+    return self;
+}
 -(void) loadView
 {
     // visitProcedureValues need to be autocreated upon visit insert in DB so we can guarantee existence for binding
@@ -29,7 +37,7 @@ var INTERITEM_SPACE =  20;
     [[_representedObject._entity relationOfName:"visitvalues"] _invalidateCache];
     var visitProcedureValues=[_representedObject valueForKey:"visitvalues" synchronous:YES];
 
-    _view = [[CPScrollView alloc] initWithFrame:CGRectMake(0, 0, 800, 500)];
+    _view = [[CPScrollView alloc] initWithFrame:CGRectMake(0, 0, 800, _parentSize.height - 32)];
     [_view setAutoresizingMask: CPViewWidthSizable | CPViewHeightSizable];
     var contentView = [[CPBox alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
     [_view setDocumentView:contentView]

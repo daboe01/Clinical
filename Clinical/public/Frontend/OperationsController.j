@@ -881,7 +881,7 @@
 
 -(void) openECRF:sender
 {
-    var vvc= [[VisitValuesController alloc] init];
+    var vvc= [[VisitValuesController alloc] initWithParentSize:[visitsTV frame].size];
     var visit= [[CPApp delegate].patientVisitsController selectedObject];
     [vvc setRepresentedObject:visit];
 
