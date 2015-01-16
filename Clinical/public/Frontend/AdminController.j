@@ -172,6 +172,7 @@
 	id	searchTerm @accessors;
     id  accountsWindow;
     id  transactionsBB;
+    id  accountsBB;
     id  progress;
 }
 
@@ -221,7 +222,14 @@
 -(void) _performPostLoadInit
 {
 	[transactionsBB addButtonWithImageName:"reload.png" target:self action:@selector(reloadFromSAP:)];
+	[accountsBB addButtonWithImageName:"reload.png" target:self action:@selector(reloadAccounts:)];
 
+}
+-(void) reloadAccounts:sender
+{
+// <!> fixme: it would be better to fix relaod of arraycontroller instead of this workaround here.
+    [[CPApp delegate].accountsController._entity _invalidatePKCache];
+    [[CPApp delegate].accountsController setContent:[[CPApp delegate].accountsController._entity allObjects]];
 }
 
 -(void) reloadFromSAP:sender

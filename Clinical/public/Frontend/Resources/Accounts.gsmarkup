@@ -16,7 +16,7 @@
         <tableColumn identifier="idgroup" title="group" dataView="#column_idgroup" editable="YES"/>
      </tableView>
     </scrollView>
-    <ButtonBar actionsButton="YES" target="#mycontroller" plusButtonAction="insertAccount:" minusButtonAction="removeAccount:">
+    <ButtonBar actionsButton="YES" target="#mycontroller" plusButtonAction="insertAccount:" minusButtonAction="removeAccount:" id="accountsbb">
          <popUpButtonItem title="Config..." target="#CPOwner" action="runConfig:"/>
     </ButtonBar>
     </vbox>
@@ -33,7 +33,7 @@
     </scrollView>
         <hbox>
         <ButtonBar target="#CPOwner" actionsButton="YES" id="txbb">
-         <popUpButtonItem title="Korrekurbuchungen..." target="#CPOwner" action="makeKorrekturbuchung:"/>
+           <popUpButtonItem title="Korrekurbuchungen..." target="#CPOwner" action="makeKorrekturbuchung:"/>
         </ButtonBar>
             <progresIndicator id="progress" indeterminate="YES"/>
         </hbox>
@@ -70,6 +70,7 @@
     <outlet source="CPOwner" target="addtxtv" label="addTxTV"/>
     <outlet source="CPOwner" target="accounts_tv" label="accountsTV"/>
     <outlet source="mycontroller" target="accountswindow" label="accountsWindow"/>
+    <outlet source="mycontroller" target="accountsbb" label="accountsBB"/>
     <outlet source="mycontroller" target="txbb" label="transactionsBB"/>
     <outlet source="mycontroller" target="progress" label="progress"/>
 </connectors>
