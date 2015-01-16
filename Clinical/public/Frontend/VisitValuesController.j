@@ -7,9 +7,9 @@
 @import "Widgets/WidgetUpload.j"
 
 // todo:
-// make this a popup instead of a window
-// unbind upon window/popup close
-// groups by tabs (write -numberOfTabItems and itemsForTabIndex:)
+// (?) groups by tabs (write -numberOfTabItems and itemsForTabIndex:)
+// purely vertical(?)
+// make headlines bold
 
 @implementation VisitValuesController : CPViewController
 {

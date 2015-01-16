@@ -245,7 +245,7 @@
 
 <window title="Edit text" id="edittextwindow" x="460" y="60" width="400" height="600" visible="NO"  resizable="YES">
     <scrollView hasHorizontalScroller="NO" width="400" height="800">
-            <textView editable="YES" valueBinding="#CPOwner.propertiesController.selection.value" continuousBinding="YES" backgroundColor="white"/>
+        <textView editable="YES" valueBinding="#CPOwner.propertiesController.selection.value" continuousBinding="YES" backgroundColor="white"/>
     </scrollView>
 </window>
 
@@ -269,6 +269,12 @@
         <tableColumn identifier="description" title="description" editable="YES"/>
      </tableView>
     </scrollView>
+    <hbox>
+       <ButtonBar target="#myadmincontroller" actionsButton="YES">
+         <popUpButtonItem title="Reload" target="#myadmincontroller" action="reloadAccount:"/>
+       </ButtonBar>
+       <progresIndicator id="accountsprogress" indeterminate="YES"/>
+    </hbox>
    </vbox>
  </window>
 
@@ -358,6 +364,7 @@
     <outlet source="myadmincontroller" target="pats2tv" label="visitsTV"/>
     <outlet source="myadmincontroller" target="visitsbillingwindow" label="visitsBillingWindow"/>
     <outlet source="myadmincontroller" target="billings_tv" label="billingsTV"/>
+    <outlet source="myadmincontroller" target="accountsprogress" label="accountsProgress"/>
 </connectors>
 
 </gsmarkup>

@@ -166,8 +166,8 @@
 @implementation AccountsController : CPObject
 {
 	id	searchTerm @accessors;
-    id accountsWindow;
-    id transactionsBB;
+    id  accountsWindow;
+    id  transactionsBB;
     id  progress;
 }
 
@@ -224,14 +224,13 @@
 {
     var idaccount=[[CPApp delegate].accountsController valueForKeyPath:"selection.id"];
     var myreq=[CPURLRequest requestWithURL:"/CT/reload_account/"+idaccount+"?session="+ window.G_SESSION];
-    [myreq setHTTPMethod:"GET"];
     [CPURLConnection connectionWithRequest: myreq delegate:self];
-
+    [progress startAnimation:self];
 }
 -(void) connection: someConnection didReceiveData: data
 {
     [[CPApp delegate].balancedController reload]
-    [progress stopAnimation: self];
+    [progress stopAnimation:self];
 
 }
 @end

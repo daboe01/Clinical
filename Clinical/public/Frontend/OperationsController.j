@@ -127,10 +127,12 @@
     id  visitsTV;
     id  visitsBillingWindow;
     id  billingsTV;
+    id  accountsProgress;
 
     id  distanceCalcConnection;
     id  serviceConnection;
     id  ibanConnection;
+    id  accountsConnection;
 }
 
 
@@ -443,6 +445,11 @@
             alert("IBAN inkorrekt");
         }
 
+    } else if(someConnection === accountsConnection)
+    {
+        accountsConnection=nil;
+        [[CPApp delegate].transactionsController reload]
+        [accountsProgress stopAnimation: self];
     }
 }
 
@@ -767,6 +774,14 @@
             [accountsWindow makeKeyAndOrderFront:self];
         }
     }
+}
+-(void) reloadAccount:sender
+{
+    var idaccount=[[CPApp delegate].accountsController valueForKeyPath:"selection.id"];
+    var myreq=[CPURLRequest requestWithURL:"/CT/reload_account/"+idaccount+"?session="+ window.G_SESSION];
+    [myreq setHTTPMethod:"GET"];
+    accountsConnection=[CPURLConnection connectionWithRequest: myreq delegate:self];
+    [accountsProgress startAnimation: self];
 }
 
 - (BOOL)tableView:(CPTableView)tableView shouldEditTableColumn:(CPTableColumn)column row:(int)row {
