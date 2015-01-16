@@ -345,6 +345,7 @@
 		<column name="type"/>
 		<column name="amount_change"/>
 		<column name="description"/>
+		<column name="receiptid"/>
 	</entity>
 	<entity id="accounts_balanced" store="#CPOwner.store">
 		<column name="idaccount"/>
