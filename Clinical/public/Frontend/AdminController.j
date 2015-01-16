@@ -160,6 +160,10 @@
     }
     return self;
 }
+-(void) setObjectValue:(id)aVal
+{
+    [super setObjectValue:[CPString stringWithFormat:"%5.2f", aVal]];
+}
 @end
 
 
