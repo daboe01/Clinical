@@ -112,12 +112,6 @@ var _itemcache=[];
 	[self loadView];
 }
 
--(void) setRepresentedObject: someObject
-{	day=[someObject valueForKey:"day"];
-	[super setRepresentedObject: someObject];
-	[self loadView];
-}
-
 -(void) setSelected:(BOOL) state
 {    [_view setValue:state? [CPColor yellowColor]: [CPColor colorWithWhite:(190.0 / 255.0) alpha: 1.0]  forThemeAttribute:@"border-color"];
 }
