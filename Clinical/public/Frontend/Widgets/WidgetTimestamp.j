@@ -9,8 +9,8 @@
 {
     var timerDate=[CPDate new];
     var dateFormatter = [[CPDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"YYYY-MM-dd hh:mm:ss.SS"];
-    [dateFormatter setTimeZone:[CPTimeZone timeZoneForSecondsFromGMT:0.0]];
+    [dateFormatter setDateFormat:@"YYYY-MM-dd HH:mm:ss.SS"];
+    [dateFormatter setTimeZone:[CPTimeZone timeZoneWithAbbreviation:"CET"]];
     [self setValue:[dateFormatter stringFromDate:timerDate] forKey:aVal];
 }
 
@@ -90,8 +90,8 @@
         _running = YES;
         startDate=[CPDate new];
         var dateFormatter = [[CPDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"YYYY-MM-dd hh:mm:ss.SS"];
-        [dateFormatter setTimeZone:[CPTimeZone timeZoneForSecondsFromGMT:0.0]];
+        [dateFormatter setDateFormat:@"YYYY-MM-dd HH:mm:ss.SS"];
+        [dateFormatter setTimeZone:[CPTimeZone timeZoneWithAbbreviation:"CET"]];
         [self setValue:[dateFormatter stringFromDate:startDate] forKey:stopWatchValueKey];
         oriTitle=[sender title];
         stopWatchTimer = [CPTimer scheduledTimerWithTimeInterval:1/10 target:self selector:@selector(showActivity:) userInfo:nil repeats:YES];
@@ -105,12 +105,12 @@
 
         startDate=[CPDate new];
         var dateFormatter = [[CPDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"YYYY-MM-dd hh:mm:ss.SS"];
-        [dateFormatter setTimeZone:[CPTimeZone timeZoneForSecondsFromGMT:0.0]];
+        [dateFormatter setDateFormat:@"YYYY-MM-dd HH:mm:ss.SS"];
+        [dateFormatter setTimeZone:[CPTimeZone timeZoneWithAbbreviation:"CET"]];
 
         var dateFormatter = [[CPDateFormatter alloc] init];
         [dateFormatter setDateFormat:@"mm:ss.SS"];
-        [dateFormatter setTimeZone:[CPTimeZone timeZoneForSecondsFromGMT:0.0]];
+        [dateFormatter setTimeZone:[CPTimeZone timeZoneWithAbbreviation:"CET"]];
         [self setValue:[dateFormatter stringFromDate:currentDate] forKey:stopWatchValueKey2];
     }
 }
@@ -149,7 +149,7 @@
     currentDate = [CPDate dateWithTimeIntervalSince1970:timeInterval];
     var dateFormatter = [[CPDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"mm:ss.SS"];
-    [dateFormatter setTimeZone:[CPTimeZone timeZoneForSecondsFromGMT:0.0]];
+    [dateFormatter setTimeZone:[CPTimeZone timeZoneWithAbbreviation:"CET"]];
     [stopWatchLabel setStringValue:[dateFormatter stringFromDate:currentDate]];
 } 
 

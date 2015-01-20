@@ -266,7 +266,8 @@
      <tableView zebra="yes" id="accountswindowtv" autosaveName="accountswindowtv0" valueBinding="#CPOwner.transactionsController" allowsMultipleSelection="YES">
         <tableColumn identifier="date_transaction" title="date"/>
         <tableColumn identifier="amount_change" title="amount"/>
-        <tableColumn identifier="description" title="description" editable="YES"/>
+        <tableColumn identifier="description" title="description" editable="NO"/>
+        <tableColumn identifier="receiptid" title="beleg" editable="NO"/>
      </tableView>
     </scrollView>
     <hbox>

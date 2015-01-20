@@ -5,6 +5,7 @@
 @import "Widgets/WidgetTOSS.j"
 @import "Widgets/WidgetTimestamp.j"
 @import "Widgets/WidgetUpload.j"
+@import "Widgets/WidgetETDRS.j"
 
 // todo:
 // (?) groups by tabs (write -numberOfTabItems and itemsForTabIndex:)

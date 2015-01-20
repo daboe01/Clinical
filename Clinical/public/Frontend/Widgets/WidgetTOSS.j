@@ -1,7 +1,7 @@
 @import "WidgetTimestamp.j"
 
 
-@implementation WidgetTOSS : WidgetTimestamp 
+@implementation WidgetTOSS : WidgetStopwatch 
 {
 }
 
@@ -9,9 +9,9 @@
 {
     var sum= value3+value4+value5;
 
-    [self willChangeValueForKey:"value6"];
-    value6=sum;
-    [self didChangeValueForKey:"value6"];
+    [self willChangeValueForKey:"value1"];
+    value1=sum;
+    [self didChangeValueForKey:"value1"];
 }
 
 - (void)_reverseSetBinding
