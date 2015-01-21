@@ -3,7 +3,7 @@
 var _STATE_COLORS=[[CPColor whiteColor], [CPColor greenColor], [CPColor redColor]];
 
 @implementation ChartItem: CPCollectionViewItem
-{	CPString _char;
+{    CPString _char;
     int      _state;
 }
 -(id) init
@@ -27,24 +27,24 @@ var _STATE_COLORS=[[CPColor whiteColor], [CPColor greenColor], [CPColor redColor
 
 -(CPView) loadView
 {
-	var myview=[CPBox new];
-	[myview setTitle:_char];
-	[myview setTitleFont:[CPFont boldSystemFontOfSize:18]]
-	[myview setTitlePosition:CPBelowTop];
+    var myview=[CPBox new];
+    [myview setTitle:_char];
+    [myview setTitleFont:[CPFont boldSystemFontOfSize:18]]
+    [myview setTitlePosition:CPBelowTop];
     [myview setBorderType:CPLineBorder];
     [myview setBorderWidth:0];
-	[myview setBoxType:CPBoxSeparator]
+    [myview setBoxType:CPBoxSeparator]
 
-	[self setView:myview];
+    [self setView:myview];
     [self setState:_state]
-	return myview;
+    return myview;
 }
 
 -(void) setRepresentedObject:(id)someObject
 {
    _char=someObject;
-	[super setRepresentedObject:someObject];
-	[self loadView];
+    [super setRepresentedObject:someObject];
+    [self loadView];
 }
 
 -(void) setSelected:(BOOL) state
@@ -107,10 +107,11 @@ var _STATE_COLORS=[[CPColor whiteColor], [CPColor greenColor], [CPColor redColor
 
 - (void)deleteBackward:(id)sender
 {
-  [[self selectionIndexes] enumerateIndexesUsingBlock:function(idx, stop)
+    [[self selectionIndexes] enumerateIndexesUsingBlock:function(idx, stop)
        {   [[self itemAtIndex:idx] setState:0];
        }];
-  [self moveLeft:self];
+    [self _reverseSetBinding];
+    [self moveLeft:self];
 }
 - (id)objectValue
 {   var ret="";
@@ -125,8 +126,8 @@ var _STATE_COLORS=[[CPColor whiteColor], [CPColor greenColor], [CPColor redColor
     if(!aStr) return;
     var arr = [];
     var l = aStr.length;
-    l=MIN(i, [_items count])
-	for (i = 0; i <  l; i++)
+    l=MIN(l, [_items count])
+    for (var i = 0; i <  l; i++)
     {   [[self itemAtIndex:i] setState:aStr[i]];
     }
 }
@@ -140,7 +141,6 @@ var _STATE_COLORS=[[CPColor whiteColor], [CPColor greenColor], [CPColor redColor
 }
 @end
 
-
 @implementation WidgetETDRS : WidgetStopwatch 
 {
     id _chartView;
@@ -151,50 +151,64 @@ var _STATE_COLORS=[[CPColor whiteColor], [CPColor greenColor], [CPColor redColor
 {
     var arr = [];
     var l = aStr.length;
-	for (i = 0; i <  l; i++) arr.push(aStr[i])
-	[_chartView setContent:arr];
+    for (var i = 0; i <  l; i++) arr.push(aStr[i])
+    [_chartView setContent:arr];
 }
 
 - (void)setLetters:(id)sender
 {
     [self _setLetterString:[_chartPopup titleOfSelectedItem]];
 }
-
+- (CPString) letters
+{   return [[_chartPopup itemAtIndex:value1] title];
+}
 - (id)view
 {
     var aView=[super view];
-    [self _setLetterString:[[_chartPopup itemAtIndex:value1=0] title]];
+    [self _setLetterString:[self letters]];
     [_chartView bind:CPValueBinding toObject:self withKeyPath:"value2" options:nil];
     return aView;
 }
 
-- (void)_calculate
+// our widget changed (hard-wired to value2)
+- (void)setValue2:(id)aVal
 {
-//<!> fixme build latex string eg. in value10
+    var aStr=[_chartView objectValue];
+    var letters=[self letters]
+    var latex = "~\\\\";
+    var score=0;
+    var l = letters.length;
+    for (var i = 0; i <  l; i++)
+    {
+        var diacritical="~~ ";
+        if(i< aStr.length)
+        {   switch(aStr[i])
+            {   case '1':
+                    score++;
+                    diacritical="O"
+                break;
+                case '2':
+                    diacritical="X"
+                break;
+            }
+        }
+        latex+="\\rlap{~ {\\Large$^"+letters[i]+"$}}{\\Huge "+diacritical+"}";
+        if( ((i+1) % 5 == 0)) latex+="\\\\";
+    }
+    [self setValue3:score];
+    value10=latex;
+    [super setValue2:aVal];
 }
 
-- (void)_reverseSetBinding
-{
-    [super _reverseSetBinding];
-    [self _calculate]
-}
-
--(void) setObjectValue:(id)aValue
-{
-    [super setObjectValue:aValue];
-    [self _calculate]
-}
 @end
 
 
 @implementation GSMarkupTagChartView:GSMarkupTagCollectionView
 + (CPString) tagName
-{	return @"chartView";
+{    return @"chartView";
 }
 
 + (Class) platformObjectClass
-{	return [ChartView class];
+{    return [ChartView class];
 }
 @end
-
-
