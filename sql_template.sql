@@ -1330,6 +1330,7 @@ CREATE VIEW global_state AS
                         CASE
                             WHEN ((a_2.name ~* '^rekru'::text) AND a_2.inbetween) THEN '1_Recruiting'::text
                             WHEN ((a_2.name ~* '^rekru'::text) AND a_2.past) THEN '2_Follow-Up'::text
+                            WHEN (get_trial_property_field('Aufbewahrung'::text, a_2.idtrial) IS NOT NULL) THEN '5_Archived'::text
                             WHEN ((a_2.name ~* '^gesamtlauf'::text) AND a_2.past) THEN '4_Finished'::text
                             WHEN ((a_2.name ~* '^vertra'::text) AND ((NOT a_2.past) OR (a_2.past IS NULL))) THEN '0_Contracting'::text
                             WHEN ((a_2.name ~* '^gesamtlaufzeit'::text) AND a_2.upcoming) THEN '3_Upcoming'::text
@@ -3157,7 +3158,7 @@ COPY audittrail (id, changedate, action, writetable, newdata, whereclause, usern
 -- Name: audittrail_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('audittrail_id_seq', 57, true);
+SELECT pg_catalog.setval('audittrail_id_seq', 120, true);
 
 
 --
@@ -3216,7 +3217,7 @@ COPY groups_catalogue (id, name, sprechstunde, websitename, telephone) FROM stdi
 -- Name: groups_catalogue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('groups_catalogue_id_seq', 19, true);
+SELECT pg_catalog.setval('groups_catalogue_id_seq', 20, true);
 
 
 --
@@ -3298,6 +3299,7 @@ COPY personnel_catalogue (id, name, ldap, email, function, tel, level, abrechnun
 36	Mickey Mouse	mm	\N	\N	\N	\N	\N	\N
 37	Icaljoe	ics	\N	\N	\N	\N	\N	\N
 1	I am the PI	pi	my.email@xx.com	Pruefarzt	\N	3	\N	\N
+44	New	\N	\N	\N	\N	\N	\N	\N
 \.
 
 
@@ -3305,7 +3307,7 @@ COPY personnel_catalogue (id, name, ldap, email, function, tel, level, abrechnun
 -- Name: personnel_catalogue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('personnel_catalogue_id_seq', 37, true);
+SELECT pg_catalog.setval('personnel_catalogue_id_seq', 44, true);
 
 
 --
@@ -3372,6 +3374,10 @@ COPY personnel_properties (id, propertydate, idpersonnel, idproperty, value) FRO
 126	\N	37	4	\N
 127	\N	37	5	\N
 128	\N	37	2	\N
+153	\N	44	1	\N
+154	\N	44	4	\N
+155	\N	44	2	\N
+156	\N	44	5	\N
 \.
 
 
@@ -3400,7 +3406,7 @@ SELECT pg_catalog.setval('personnel_properties_catalogue_id_seq', 9, true);
 -- Name: personnel_properties_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('personnel_properties_id_seq', 128, true);
+SELECT pg_catalog.setval('personnel_properties_id_seq', 156, true);
 
 
 --
@@ -3491,6 +3497,9 @@ COPY procedures_personnel (id, idpersonnel, idprocedure) FROM stdin;
 7	37	140
 4	37	133
 9	1	139
+11	1	144
+13	37	141
+12	37	141
 \.
 
 
@@ -3498,7 +3507,7 @@ COPY procedures_personnel (id, idpersonnel, idprocedure) FROM stdin;
 -- Name: procedures_personnel_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('procedures_personnel_id_seq', 10, true);
+SELECT pg_catalog.setval('procedures_personnel_id_seq', 17, true);
 
 
 --
@@ -3528,7 +3537,7 @@ COPY process_steps_catalogue (id, type, name) FROM stdin;
 -- Name: process_steps_catalogue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('process_steps_catalogue_id_seq', 18, true);
+SELECT pg_catalog.setval('process_steps_catalogue_id_seq', 20, true);
 
 
 --
@@ -3628,14 +3637,14 @@ SELECT pg_catalog.setval('trial_personnel_id_seq', 14, true);
 --
 
 COPY trial_process_step (id, idtrial, type, start_date, end_date, deadline, idpersonnel, title) FROM stdin;
-417	25	7	2013-09-01	2014-02-28	\N	\N	
-749	25	11	2014-09-01	2014-07-31	\N	\N	\N
-465	25	12	2014-02-25	\N	\N	2	\N
+417	25	7	2013-09-01	2014-02-28	\N	1	
+465	25	12	2014-02-25	\N	\N	1	\N
+749	25	11	2014-09-01	2014-07-31	\N	1	\N
 850	195	11	2014-11-16	\N	\N	\N	\N
 851	196	11	2014-11-16	\N	\N	\N	\N
 852	197	11	2014-11-17	\N	\N	\N	\N
-627	25	12	2014-05-06	2014-05-07	\N	\N	\N
-750	25	17	2014-07-31	2029-07-31	\N	\N	\N
+627	25	12	2014-05-06	2014-05-07	\N	1	\N
+750	25	17	2014-07-31	2029-07-31	\N	1	\N
 \.
 
 
@@ -3899,7 +3908,17 @@ COPY visit_procedures (id, idvisit, idprocedure, actual_cost, ordering, paramete
 143	7	168	\N	3	\N
 144	7	162	\N	0	\N
 145	7	45	\N	4	\N
+151	6	51	\N	\N	\N
+152	6	151	\N	\N	\N
+153	6	168	\N	\N	\N
+154	6	162	\N	\N	\N
+155	6	45	\N	\N	\N
+156	10	51	\N	\N	\N
+157	10	151	\N	\N	\N
 136	299	162	\N	\N	\N
+158	10	168	\N	\N	\N
+159	10	162	\N	\N	\N
+160	10	45	\N	\N	\N
 139	5	15	\N	\N	\N
 140	5	162	\N	\N	\N
 \.
@@ -3909,7 +3928,7 @@ COPY visit_procedures (id, idvisit, idprocedure, actual_cost, ordering, paramete
 -- Name: visit_procedures_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('visit_procedures_id_seq', 145, true);
+SELECT pg_catalog.setval('visit_procedures_id_seq', 180, true);
 
 
 --
