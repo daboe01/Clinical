@@ -766,14 +766,20 @@
     var myreq=[CPURLRequest requestWithURL: '/CT/trial_properties/'+idtrial];
     var mpackage=[[CPURLConnection sendSynchronousRequest: myreq returningResponse: nil]  rawString];
     var o  = JSON.parse( mpackage );
-    if(o['Drittmittelnummer']);
-    {   var myoptions=[CPDictionary dictionaryWithObject: "1" forKey: "FSSynchronous"];
-        var a=[accountsController._entity._store fetchObjectsWithKey:"account_number" equallingValue: o['Drittmittelnummer'] inEntity: accountsController._entity options: myoptions];
+    var drittmittelnummer=o['Drittmittelnummer'];
+    if(drittmittelnummer);
+    {
+        var myoptions=[CPDictionary dictionaryWithObject: "1" forKey: "FSSynchronous"];
+        var a=[accountsController._entity._store fetchObjectsWithKey:"account_number" equallingValue:[drittmittelnummer stringByReplacingOccurrencesOfString:" " withString:""] inEntity: accountsController._entity options: myoptions];
         if([a count]==1)
         {   a=[a objectAtIndex: 0];
             [accountsWindow setTitle: [a valueForKey:"name"]];
             [accountsController selectObjectWithPK:[a valueForKey:"id"]]
             [accountsWindow makeKeyAndOrderFront:self];
+        } else
+        {
+            alert("Kein Konto gefunden! Bitte ggf. unter 'Accounts' anlegen");
+        // fixme<!> autocreate
         }
     }
 }
