@@ -8,21 +8,22 @@
 <window bridge="YES" id="accountswindow" delegate="#mycontroller">
    <splitView vertical="YES" autosaveName="vsplitter_accounts">
       <vbox>
-    <scrollView hasHorizontalScroller="NO">
-     <tableView zebra="yes" autosaveName="alltrials_tv" id="accounts_tv" valueBinding="#CPOwner.accountsController" target="#CPOwner">
-        <tableColumn identifier="account_number" title="Nummer" editable="YES"/>
-        <tableColumn identifier="name" title="Name" editable="YES"/>
-        <tableColumn identifier="balance" title="balance" dataView="#rightAlignedText" editable="NO"/>
-        <tableColumn identifier="idgroup" title="group" dataView="#column_idgroup" editable="YES"/>
-     </tableView>
-    </scrollView>
+        <searchField valueBinding="mycontroller.searchTermGlobal"/>
+        <scrollView hasHorizontalScroller="NO">
+         <tableView zebra="yes" autosaveName="alltrials_tv" id="accounts_tv" valueBinding="#CPOwner.accountsController" target="#CPOwner">
+           <tableColumn identifier="account_number" title="Nummer" editable="YES"/>
+           <tableColumn identifier="name" title="Name" editable="YES"/>
+           <tableColumn identifier="balance" title="balance" dataView="#rightAlignedText" editable="NO"/>
+           <tableColumn identifier="idgroup" title="group" dataView="#column_idgroup" editable="YES"/>
+        </tableView>
+      </scrollView>
     <ButtonBar actionsButton="YES" target="#mycontroller" plusButtonAction="insertAccount:" minusButtonAction="removeAccount:" id="accountsbb">
          <popUpButtonItem title="Config..." target="#CPOwner" action="runConfig:"/>
     </ButtonBar>
     </vbox>
     <vbox>
-        <searchField valueBinding="mycontroller.searchTerm"/>
-    <scrollView hasHorizontalScroller="NO">
+      <searchField valueBinding="mycontroller.searchTerm"/>
+      <scrollView hasHorizontalScroller="NO">
        <tableView zebra="yes" id="transactions_tv" autosaveName="transactions_tv" valueBinding="#CPOwner.balancedController">
         <tableColumn identifier="date_transaction" title="date" editable="NO"/>
         <tableColumn identifier="type" title="type" editable="NO"/>
@@ -30,8 +31,8 @@
         <tableColumn identifier="description" title="description" editable="NO"/>
         <tableColumn identifier="balance" title="kontostand" dataView="#rightAlignedText" editable="NO"/>
        </tableView>
-    </scrollView>
-        <hbox>
+      </scrollView>
+      <hbox>
         <ButtonBar target="#CPOwner" actionsButton="YES" id="txbb">
            <popUpButtonItem title="Korrekurbuchungen..." target="#CPOwner" action="makeKorrekturbuchung:"/>
         </ButtonBar>

@@ -166,21 +166,40 @@
 }
 @end
 
+@implementation CPObject(_IDSearch)
+-(CPString) _quotedID
+{   return ","+[self valueForKey:"id"]+","
+}
+@end
 
 @implementation AccountsController : CPObject
 {
 	id	searchTerm @accessors;
+	id	searchTermGlobal @accessors;
     id  accountsWindow;
     id  transactionsBB;
     id  accountsBB;
     id  progress;
 }
 
--(void) setSearchTerm: aTerm
+-(void) setSearchTerm:aTerm
 {
 	if(aTerm && aTerm.length)
 	{	[[CPApp delegate].balancedController setFilterPredicate: [CPPredicate predicateWithFormat:"description CONTAINS[cd] %@", aTerm.toLowerCase()]];
 	} else [[CPApp delegate].balancedController setFilterPredicate: nil];
+}
+-(void) setSearchTermGlobal:aTerm
+{
+	if(aTerm && aTerm.length)
+	{
+        var myreq=[CPURLRequest requestWithURL:"/CT/filter_accounts/"+aTerm];
+        var filter=[CPURLConnection sendSynchronousRequest:myreq returningResponse:nil];
+        if(filter && [filter rawString]) [[CPApp delegate].accountsController setFilterPredicate: [CPPredicate predicateWithFormat:"%@ CONTAINS _quotedID", [filter rawString]]];
+        [self setSearchTerm:aTerm];
+	} else
+    {   [[CPApp delegate].accountsController setFilterPredicate: nil];
+        [self setSearchTerm:nil];
+    }
 }
 
 // number formatting

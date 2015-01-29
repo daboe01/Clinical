@@ -159,7 +159,7 @@
 
     var button=[mainButtonBar addButtonWithImageName:"config.png" target:self action:@selector(runConfig:)];
     [button bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"trialsController.selection.@count" options:nil];
-    [button setToolTip:"Configure trial and visits"];
+    [button setToolTip:"Configure trial and visits..."];
     button=[mainButtonBar addButtonWithImageName:"reload.png" target:self action:@selector(reloadTrialsList:)];
     [button setToolTip:"Reload trials"];
     button=[mainButtonBar addButtonWithImageName:"download.png" target:self action:@selector(downloadExcel:)];
@@ -180,6 +180,8 @@
     [button setToolTip:"Download/view document"];
     [button bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"dokusController.selection.@count" options:nil];
     [documentsButtonBar registerWithArrayController:[CPApp delegate].dokusController plusTooltip:"Upload document" minusTooltip:"Delete selected document..."];
+    var button=[documentsButtonBar addButtonWithImageName:"reload.png" target:self action:@selector(_reloadDokus)];
+    [button setToolTip:"Refresh lists"];
 
     button=[propsButtonBar addButtonWithImageName:"edit.png" target:editTextWindow action:@selector(makeKeyAndOrderFront:)];
     [button setToolTip:"Open multiline editor"];

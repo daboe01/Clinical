@@ -508,7 +508,7 @@ post '/DBI/:table/:pk'=> sub
         $jsonR->{level}= $level if exists $jsonR->{level} && $jsonR->{level} > $level;
         $jsonR->{name}= 'New' unless exists $jsonR->{name};
     }        
-    if($table eq 'procedures_catalogue')
+    if($table eq 'procedures_catalogue' || $table eq 'trial_properties_catalogue')
     {   $jsonR->{name}= 'New' unless exists $jsonR->{name};
     }
     my($stmt, @bind) = $sql->insert( $self->mapTableNameForWriting($table), $jsonR || {name=>'New'});
