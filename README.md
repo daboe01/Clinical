@@ -22,6 +22,7 @@ INSTALL
 =====
 ```bash
 # the easiest way to get Postgres up and running on a mac is Postgres.app
+# (on linux do not forget to additionally install the postgres-dev package)
 createdb  aug_clinical
 createuser postgres -s
 createuser root -s
