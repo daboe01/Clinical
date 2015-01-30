@@ -29,7 +29,7 @@ cat sql_template.sql | psql aug_clinical
 #
 # we need a current TeX distribution such as <https://tug.org/mactex/>
 # perl is already installed on linux and mac but we need quite a bunch of non-core perl modules
-curl -L https://cpanmin.us | perl - -M https://cpan.metacpan.org -n Mojolicious Mojolicious::Plugin::Database Mojolicious::Plugin::RenderFile SQL::Abstract::More Apache::Session::File Spreadsheet::WriteExcel Spreadsheet::ParseExcel Business::IBAN DBD::Pg Date::ICal Data::ICal Data::ICal::Entry::TimeZone
+curl -L https://cpanmin.us | perl - -M https://cpan.metacpan.org -n Mojolicious Mojolicious::Plugin::Database Mojolicious::Plugin::RenderFile SQL::Abstract::More Apache::Session::File Spreadsheet::WriteExcel Spreadsheet::ParseExcel Business::IBAN DBD::Pg Date::ICal Data::ICal Data::ICal::Entry::TimeZone Net::LDAP DateTime File::Find::Rule
 # now download this repo and cd into it
 morbo backend.pl # this starts the testing server
 # now locate your favourite web browser to http://localhost:3000/Frontend/index.html
