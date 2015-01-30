@@ -14,7 +14,7 @@ Features include:
  * Patients database
  * Visit interval planning (cross-checks human ressources)
  * Source data management / worksheets
- * Billing / Accounting / Reimbusements
+ * Billing / Accounting / Reimbursements
  * Finances controlling
  * Forms / reporting framework
  * RESTful API
