@@ -10,7 +10,7 @@ Features include:
  * Per trial document repository
  * Fulltext search in realtime
  * Human ressources management
- * Groupware features / calendars + iCAL feeds
+ * Groupware (including personalized calendar, iCAL feeds, meetings)
  * Patients database / visit interval planning
  * eCRF / worksheet producer
  * Billing / Accounting / Reimbusements
