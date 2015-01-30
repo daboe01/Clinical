@@ -9,7 +9,7 @@ Features include:
  * Fulltext search in realtime
  * Human ressources management (working hours, holidays, certificate repos)
  * Groupware (personalized calendar / iCAL feed, meetings)
- * Patients database
+ * Per trial subject log
  * Visit interval planning (cross-checks human ressources)
  * Source data management / worksheets
  * Billing / Accounting / Reimbursements
