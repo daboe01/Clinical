@@ -3,7 +3,7 @@ Clinical trials in a box
 
 Features include:
  * 100% browser based
- * High quality UI (e.g. keyboard navigation, unlimited undo / redo)
+ * High quality GUI (incl. keyboard navigation, unlimited undo / redo)
  * Structured trials database
  * Per trial document repository
  * Per trial subject log
