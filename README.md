@@ -9,11 +9,13 @@ Features include:
  * Structured trials database
  * Per trial document repository
  * Fulltext search in realtime
- * Human ressources management
- * Groupware (including personalized calendar, iCAL feeds, meetings)
- * Patients database / visit interval planning
- * eCRF / worksheet producer
+ * Human ressources management (working hours, holidays, certificate repos)
+ * Groupware (personalized calendar, iCAL, meetings)
+ * Patients database
+ * Visit interval planning (cross-checks human ressources)
+ * Source data management / worksheets
  * Billing / Accounting / Reimbusements
+ * Finances controlling
  * Forms / reporting framework
  * RESTful API
  * Full audit trail
