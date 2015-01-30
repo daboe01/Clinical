@@ -10,7 +10,7 @@ Features include:
  * Fulltext search in realtime
  * Human ressources management (working hours, holidays, certificate repos)
  * Groupware (personalized calendar / iCAL feed, meetings)
- * Visit interval planning (cross-checks human ressources)
+ * Visit interval planning (incl. cross-checks with human ressources)
  * Source data management / worksheets
  * Billing / Accounting / Reimbursements
  * Finances controlling
