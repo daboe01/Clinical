@@ -6,10 +6,10 @@ Features include:
  * Desktop-quality UI (e.g. keyboard navigation, unlimited undo / redo)
  * Structured trials database
  * Per trial document repository
+ * Per trial subject log
  * Fulltext search in realtime
  * Human ressources management (working hours, holidays, certificate repos)
  * Groupware (personalized calendar / iCAL feed, meetings)
- * Per trial subject log
  * Visit interval planning (cross-checks human ressources)
  * Source data management / worksheets
  * Billing / Accounting / Reimbursements
