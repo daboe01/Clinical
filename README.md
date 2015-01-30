@@ -7,7 +7,7 @@ Features include:
  * 100% browser based
  * Desktop-quality UI (e.g. keyboard navigation, unlimited undo / redo)
  * Structured trials database
- * Structured document repository
+ * Per trial document repository
  * Fulltext search in realtime
  * Human ressources management
  * Groupware features / calendars + iCAL feeds
