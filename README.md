@@ -1,7 +1,5 @@
-Clinical
-========
-
 Clinical trials in a box
+========
 
 Features include:
  * 100% browser based
