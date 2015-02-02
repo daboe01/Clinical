@@ -20,6 +20,9 @@ use Date::ICal;
 use Data::ICal;
 use Data::ICal::Entry::Event;
 use Data::ICal::Entry::TimeZone;
+use Net::IMAP::Simple; 
+use Email::MIME; 
+use Email::MIME::Attachment::Stripper; 
 use Data::Dumper;
 
 use lib qw {/Users/daboe01/src/daboe01_Clinical/Clinical};
