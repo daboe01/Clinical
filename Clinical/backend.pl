@@ -1022,68 +1022,124 @@ post '/CT/invite_teammeeting/:idteammeeting' => [idteammeeting =>qr/[0-9]+/] => 
     my $ldap=$session{username};
     
     my $dbh=$self->db;
-    my $stmt = qq{ SELECT a.title, a.starttime, personnel_catalogue.email, personnel_catalogue.ldap
-        FROM ( SELECT DISTINCT team_meetings.title, COALESCE(meeting_attendees.idattendee, group_assignments.idpersonnel) AS idpersonnel, team_meetings.starttime, team_meetings.stoptime
-        FROM team_meetings
-        JOIN group_assignments ON group_assignments.idgroup = team_meetings.idgroup
-        LEFT JOIN meeting_attendees ON meeting_attendees.idmeeting = team_meetings.id) a
-        JOIN personnel_catalogue ON personnel_catalogue.id = a.idpersonnel where team_meetings.id=?) };
+    my $stmt = qq{      SELECT idmeeting, a.title, to_char(a.starttime,'YYYYMMDDThh24MISS') as dtstart, to_char(coalesce(a.stoptime,a.starttime+ '1 hour'),'YYYYMMDDThh24MISS') as dtend, to_char(now(),'YYYYMMDDThh24MISS') as dtstamp, personnel_catalogue.email, personnel_catalogue.ldap, location
+                        FROM ( SELECT DISTINCT team_meetings.id as idmeeting, team_meetings.title, location, COALESCE(meeting_attendees.idattendee, group_assignments.idpersonnel) AS idpersonnel, team_meetings.starttime, team_meetings.stoptime
+                        FROM team_meetings
+                        JOIN group_assignments ON group_assignments.idgroup = team_meetings.idgroup
+                        LEFT JOIN meeting_attendees ON meeting_attendees.idmeeting = team_meetings.id) a
+                        JOIN personnel_catalogue ON personnel_catalogue.id = a.idpersonnel where idmeeting=? and email is not null};
     my $sth = $dbh->prepare($stmt);
     $sth->execute(($idteammeeting));
+    my $i;
     while(my $c=$sth->fetchrow_hashref())
     {
+        my $calendar = Data::ICal->new();
+        $calendar->add_properties( method => 'REQUEST' );
+        my $event = Data::ICal::Entry::Event->new();
+        $event->add_properties(
+            summary     => $c->{title},
+            description => $c->{title},
+            dtstart     => Date::ICal->new( ical => $c->{dtstart})->ical,
+            dtend       => Date::ICal->new( ical => $c->{dtend} ) ->ical,
+            dtstamp     => Date::ICal->new( ical => $c->{dtstamp})->ical,
+            tzid        => 'Europe/Berlin',
+            tzname      => 'CEST',
+            class       => 'PUBLIC',
+            organizer   => 'MAILTO:'.email_groupware_address,
+            attendee    => "ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE;CN=daniel:MAILTO:$c->{email}",
+            location    => $c->{location},
+            priority    => 5,
+            transp      => 'OPAQUE',
+            sequence    => 0,
+            uid         => 'minv_'.$c->{dtstamp}.$i++,
+        );
+        $calendar->add_entry($event);
+        my $data=$calendar->as_string;
+        my $msg = MIME::Lite->new(
+            From    => email_groupware_address,
+            To      => $c->{email},
+            Subject => 'Meeting: '.$c->{title},
+            Type    =>'multipart/mixed',
+        );
+        $msg->attach( Type    => "TEXT",  Data    => "Rueckmeldung bitte via Terminkalender-Programm\n");
+        my $part = MIME::Lite->new(
+            Type    => "text/calendar;  name=\"subject.ics\"",
+            Filename    => "subject.ics",
+            Data        => $data,
+            Encoding    => 'base64',
+            Disposition => 'attachment',
+        );
+        $msg->attr('content-class' => 'urn:content-classes:calendarmessage', 'content-description' => "subject.ics");
+        $msg->attach($part);
+        $msg->send;
     }
-    
-    my $calendar = Data::ICal->new();
-    $calendar->add_properties(
-    method      => "REQUEST",
-    );
-    my $event = Data::ICal::Entry::Event->new();
-    $event->add_properties(
-    summary     => "Subject",
-    description => "FreeFormText.",
-    dtstart     => Date::ICal->new( epoch => time )->ical,
-    dtend       => Date::ICal->new( epoch => time +3 )->ical,
-    dtstamp     => Date::ICal->new( epoch => time )->ical,
-    class       => "PUBLIC",
-    organizer   => "CN=Daniel:MAILTO:daboe01\@googlemail.com",
-    attendee   => "ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE;CN=daniel:MAILTO:daniel.boehringer\@uniklinik-freiburg.de",
-    location    => "Phone call",
-    priority    => 5,
-    transp      => "OPAQUE",
-    sequence    => 0,
-    uid         => "1234567",
-    );
-    $calendar->add_entry($event);
-    
-    my $data=$calendar->as_string;
-    
-    my $msg = MIME::Lite->new(
-    From    =>'daboe01@googlemail.com',
-    To      =>'daniel.boehringer@uniklinik-freiburg.de',
-    Subject =>'Wichtiges Meeting!',
-    Type    =>'multipart/mixed',
-    );
-    $msg->attach(
-    Type    => "TEXT",
-    Data    => "Wir muessen reden!\n",
-    );
-    
-    my $part = MIME::Lite->new(
-    Type    => "text/calendar;  name=\"subject.ics\"",
-    Filename    => "subject.ics",
-    Data        => $data,
-    Encoding    => 'base64',
-    Disposition => 'attachment',
-    );
-    $msg->attr('content-class' => 'urn:content-classes:calendarmessage',
-    'content-description' => "subject.ics",
-    );
-    $msg->attach($part);
-    
-    # $msg->send;
-    
+
     $self->render(text=>'OK');
+};
+get '/CT/check_teammeeting_responses' => sub{
+    my $self = shift;
+    my $response=0;
+    my $server = Net::IMAP::Simple->new('mail5.uniklinik-freiburg.de');
+    $server->login(email_user, email_password);
+
+    sub parseICS { my ($dbh, $data)=@_;
+        
+        sub parse_datetime {
+            my $in=shift;
+            my ($y, $m, $d, $h, $mm, $s);
+            ($y, $m, $d, $h, $mm, $s) = ($1, $2, $3, $4, $5, $6) if $in =~/^([0-9]{4})([0-9]{2})([0-9]{2})T([0-9]{2})([0-9]{2})([0-9]{2})$/;
+            ($y, $m, $d, $h, $mm, $s) = ($1, $2, $3) if $in =~/^([0-9]{4})([0-9]{2})([0-9]{2})$/;
+        
+            my $out="$y-$m-$d $h:$mm:$s";
+            $out=~s/ [:]+$//ogs;
+            return $out;
+        }
+        my ($dtstart, $dtend, $partstat, $state, $email);
+        $dtstart=parse_datetime($1)     if $data=~/DTSTART:([0-9T]+)Z/o;
+        $dtend=parse_datetime($1)       if $data=~/DTEND:([0-9T]+)Z/o;
+        $partstat=$1                    if $data=~/PARTSTAT=([A-Z\s]+)/o;
+        ($state, $email)=($1, $2)       if $data=~/(accepted|declined):.+?:\s*([^\s]+)/ios;
+        return 0 unless $partstat=~/accepted|declined/io;
+        my $stmt = qq{  SELECT idmeeting, personnel_catalogue.id as idattendee FROM ( SELECT DISTINCT team_meetings.id as idmeeting, team_meetings.title, location,  group_assignments.idpersonnel AS idpersonnel, team_meetings.starttime, team_meetings.stoptime
+                        FROM team_meetings
+                        JOIN group_assignments ON group_assignments.idgroup = team_meetings.idgroup) a
+                        JOIN personnel_catalogue ON personnel_catalogue.id = a.idpersonnel where  starttime=? and coalesce(a.stoptime,a.starttime+ '1 hour')=? and personnel_catalogue.email=?};
+        my $sth = $dbh->prepare($stmt);
+        $sth->execute(($dtstart, $dtend, $email));
+        my $c;
+        if($c=$sth->fetchrow_hashref())
+        {
+            my $sql = SQL::Abstract->new;
+            my ($stmt, @bind) = $partstat=~/accepted/oi? $sql->insert( 'meeting_attendees', $c) : $sql->delete( 'meeting_attendees', $c);
+            $sth = $dbh->prepare($stmt);
+            $sth->execute(@bind);
+            return 1;
+        }
+        return 0;
+    };
+
+    my $nmessages = $server->select('INBOX');
+    # loop through all msg-no's
+    foreach my $msg ( 1 .. $nmessages )
+    {
+        my $email_mime = Email::MIME->new( join('', @{$server->get($msg)}) );
+            
+        my $stripper = Email::MIME::Attachment::Stripper->new($email_mime);
+        my @attachments = $stripper->attachments(); # get attachments
+            
+        # loop through attachments
+        foreach my $cur_att ( @attachments )
+        {
+            if($cur_att->{'payload'} && parseICS($self->db, $cur_att->{'payload'} ))
+            {   
+                #  $imap->delete( $msg );
+                $response=1;
+                last;
+            }
+        }
+    }
+    $server->quit();
+    $self->render(text => $response);
 };
 
 get '/CT/validate_iban/:idpatient' => [idpatient =>qr/[0-9]+/] => sub
