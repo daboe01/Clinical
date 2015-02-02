@@ -4,7 +4,7 @@ Clinical trials in a box
 Features include:
  * 100% browser based
  * High quality GUI (incl. keyboard navigation, unlimited undo / redo)
- * Structured trials database
+ * State tracking trials database
  * Per trial document repository
  * Per trial subject log
  * Fulltext search in realtime
