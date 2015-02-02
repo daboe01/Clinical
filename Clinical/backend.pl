@@ -39,10 +39,14 @@ plugin 'database', {
 plugin 'RenderFile';
 
 
-use constant doku_repo_path => '/Users/daboe01/src/daboe01_Clinical/Clinical/docrepo/';
-use constant form_repo_path => '/Users/daboe01/src/daboe01_Clinical/Clinical/forms/';
-use constant visit_repo_path => '/Users/daboe01/src/daboe01_Clinical/Clinical/visitdocs/';
+use constant base_path => '/Users/Shared/bin/Clinical/';
+use constant doku_repo_path  => base_path.'docrepo';
+use constant form_repo_path  => base_path.'forms';
+use constant visit_repo_path => base_path.'visitdocs/';
 use constant proxy_string => 'http://U:P@193.196.237.21:80/';
+use constant email_groupware_address => 'termine@uniklinik.de';
+use constant email_user => 'myuser';
+use constant email_password => 'mypassword';
 
 #use constant doku_repo_path => '/Users/daboe01/src/daboe01_Clinicaltrials/Clinicaltrials/docrepo';
 
@@ -1102,10 +1106,11 @@ get '/CT/check_teammeeting_responses' => sub{
         my $stmt = qq{  SELECT idmeeting, personnel_catalogue.id as idattendee FROM ( SELECT DISTINCT team_meetings.id as idmeeting, team_meetings.title, location,  group_assignments.idpersonnel AS idpersonnel, team_meetings.starttime, team_meetings.stoptime
                         FROM team_meetings
                         JOIN group_assignments ON group_assignments.idgroup = team_meetings.idgroup) a
-                        JOIN personnel_catalogue ON personnel_catalogue.id = a.idpersonnel where  starttime=? and coalesce(a.stoptime,a.starttime+ '1 hour')=? and personnel_catalogue.email=?};
+                        JOIN personnel_catalogue ON personnel_catalogue.id = a.idpersonnel where ? between  starttime - '2 hours'::interval and starttime + '2 hours'::interval and personnel_catalogue.email~*?};
         my $sth = $dbh->prepare($stmt);
-        $sth->execute(($dtstart, $dtend, $email));
+        $sth->execute(($dtstart, $email));
         my $c;
+        warn "$dtstart, $dtend, $email";
         if($c=$sth->fetchrow_hashref())
         {
             my $sql = SQL::Abstract->new;
@@ -1131,7 +1136,7 @@ get '/CT/check_teammeeting_responses' => sub{
         {
             if($cur_att->{'payload'} && parseICS($self->db, $cur_att->{'payload'} ))
             {   
-                #  $imap->delete( $msg );
+                $server->delete( $msg );
                 $response=1;
                 last;
             }
@@ -1140,6 +1145,7 @@ get '/CT/check_teammeeting_responses' => sub{
     $server->quit();
     $self->render(text => $response);
 };
+
 
 get '/CT/validate_iban/:idpatient' => [idpatient =>qr/[0-9]+/] => sub
 {   my $self = shift;
