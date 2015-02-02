@@ -1094,11 +1094,10 @@ get '/CT/check_teammeeting_responses' => sub{
             $out=~s/ [:]+$//ogs;
             return $out;
         }
-        my ($dtstart, $dtend, $partstat, $state, $email);
+        my ($dtstart, $dtend, $partstat, $email);
         $dtstart=parse_datetime($1)     if $data=~/DTSTART:([0-9T]+)Z/o;
         $dtend=parse_datetime($1)       if $data=~/DTEND:([0-9T]+)Z/o;
-        $partstat=$1                    if $data=~/PARTSTAT=([A-Z\s]+)/o;
-        ($state, $email)=($1, $2)       if $data=~/(accepted|declined):.+?:\s*([^\s]+)/ios;
+        ($partstat, $email)=($1, $2)       if $data=~/(accepted|declined):.+?:\s*([^\s]+)/ios;
         return 0 unless $partstat=~/accepted|declined/io;
         my $stmt = qq{  SELECT idmeeting, personnel_catalogue.id as idattendee FROM ( SELECT DISTINCT team_meetings.id as idmeeting, team_meetings.title, location,  group_assignments.idpersonnel AS idpersonnel, team_meetings.starttime, team_meetings.stoptime
                         FROM team_meetings
