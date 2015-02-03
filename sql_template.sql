@@ -1453,7 +1453,8 @@ CREATE TABLE team_meetings (
     starttime timestamp without time zone,
     stoptime timestamp without time zone,
     title text,
-    idgroup integer
+    idgroup integer,
+    location text
 );
 
 
@@ -3158,7 +3159,7 @@ COPY audittrail (id, changedate, action, writetable, newdata, whereclause, usern
 -- Name: audittrail_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('audittrail_id_seq', 120, true);
+SELECT pg_catalog.setval('audittrail_id_seq', 121, true);
 
 
 --
@@ -3605,8 +3606,8 @@ SELECT pg_catalog.setval('status_catalogue_id_seq', 515, true);
 -- Data for Name: team_meetings; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY team_meetings (id, starttime, stoptime, title, idgroup) FROM stdin;
-1	2014-12-30 00:00:00	2014-12-31 00:00:00	\N	19
+COPY team_meetings (id, starttime, stoptime, title, idgroup, location) FROM stdin;
+1	2014-12-30 00:00:00	2014-12-31 00:00:00	\N	19	\N
 \.
 
 
@@ -3816,13 +3817,13 @@ COPY trial_properties_catalogue (id, type, name, ordering, default_value) FROM s
 59	0	Readingcenter note	2001	\N
 53	0	Readingcenter	2001	\N
 54	0	eCRF	30	\N
-39	0	Injekteuren	9	\N
 63	1	Kilometerpauschale Reisekosten	23	0.25
 60	0	Unmasked Monitor	6	\N
 55	0	eCRF Support	30	\N
 64	0	Fahrkostenpauschale	23	25
 62	0	Protokollnummer	-3	\N
 65	0	Prüfpräparat	0	\N
+39	0	Injekteure	9	\N
 \.
 
 
