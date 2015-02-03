@@ -68,7 +68,7 @@
 				submit.disabled = true;
 				submit.value = "...";
 				submit.style.opacity = "0.5";
-				window.G_USERNAME= document.getElementById("username").value;
+				window.G_USERNAME= document.getElementById("username").value.toLowerCase();
 				if(window.G_SESSION =ajax.gets("/AUTH?u="+escape(window.G_USERNAME)+"&p="+escape(document.getElementById("password").value)))
 				{
 					authenticationDidSucceed();

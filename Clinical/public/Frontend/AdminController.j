@@ -18,6 +18,8 @@
     id  pDocumentsBB;
     id  graphicalPicker;
     id  datePickerPopover;
+    id  teamMeetingBB;
+    id  progress;
 }
 
 -(void) _performPostLoadInit
@@ -26,7 +28,8 @@
     [button setToolTip:"Download/view document"];
     [button bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"dokusController.selection.@count" options:nil];
     [pDocumentsBB registerWithArrayController:[CPApp delegate].dokusController plusTooltip:"Upload document" minusTooltip:"Delete selected document..."];
-
+    button=[teamMeetingBB addButtonWithImageName:"reload.png" target:self action:@selector(checkForEmailResponses:)];
+    [button setToolTip:"Reload trials"];
 }
 
 -(void) cancelAddProperty: sender
@@ -79,8 +82,22 @@
 	var myreq=[CPURLRequest requestWithURL:"/CT/invite_teammeeting/"+idmeeting+'?session='+ window.G_SESSION];
 	[myreq setHTTPMethod:"POST"];
 	[CPURLConnection sendSynchronousRequest: myreq returningResponse: nil];
+}
+
+-(void) checkForEmailResponses:sender
+{
+	var myreq=[CPURLRequest requestWithURL:"/CT/check_teammeeting_responses/"+'?session='+ window.G_SESSION];
+    [progress startAnimation:self];
+    [CPURLConnection connectionWithRequest:myreq delegate:self];
+}
+
+-(void) connection: someConnection didReceiveData: data
+{
+    [[CPApp delegate].meetingAttendeesController reload];
+    [progress stopAnimation:self];
 
 }
+
 -(void) insertGroup:sender
 {
     [[CPApp delegate].groupsControllerAll addObject:@{"name": "New group"}];
@@ -103,7 +120,7 @@
 
 - (BOOL)tableView:(CPTableView)tableView shouldEditTableColumn:(CPTableColumn)column row:(int)row {
 	var identifier= [column identifier];
-	if(identifier === 'title')
+	if(identifier === 'title' || identifier === 'location')
 	{   return YES;
 	}
 	datePickerPopover =[CPPopover new];

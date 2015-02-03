@@ -191,7 +191,7 @@ var _itemcache=[];
 
 -(void) open: sender
 {	var piz=[sender representedObject]["piz"];
-	if(piz) [[DocsCalController alloc] initWithPIZ:piz];
+//	if(piz) [[DocsCalController alloc] initWithPIZ:piz];
 }
 
 @end

@@ -149,6 +149,7 @@ var _STATE_COLORS=[[CPColor whiteColor], [CPColor greenColor], [CPColor redColor
 
 - (void)_setLetterString:(CPString)aStr
 {
+    if(!aStr) return;
     var arr = [];
     var l = aStr.length;
     for (var i = 0; i <  l; i++) arr.push(aStr[i])
@@ -157,10 +158,10 @@ var _STATE_COLORS=[[CPColor whiteColor], [CPColor greenColor], [CPColor redColor
 
 - (void)setLetters:(id)sender
 {
-    [self _setLetterString:[_chartPopup titleOfSelectedItem]];
+    [self _setLetterString:[_chartPopup titleOfSelectedItem] || ''];
 }
 - (CPString) letters
-{   return [[_chartPopup itemAtIndex:value1] title];
+{   return [[_chartPopup itemAtIndex:value1 === undefined ? 0: value1] title];
 }
 - (id)view
 {

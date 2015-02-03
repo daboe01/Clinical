@@ -36,10 +36,10 @@
         <ButtonBar target="#CPOwner" actionsButton="YES" id="txbb">
            <popUpButtonItem title="Korrekurbuchungen..." target="#CPOwner" action="makeKorrekturbuchung:"/>
         </ButtonBar>
-            <progresIndicator id="progress" indeterminate="YES"/>
-        </hbox>
-      </vbox>
-   </splitView>
+        <progresIndicator id="progress" indeterminate="YES"/>
+     </hbox>
+   </vbox>
+  </splitView>
  </window>
 
  <window visible="NO">

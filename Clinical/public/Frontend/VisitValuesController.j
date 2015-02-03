@@ -55,6 +55,8 @@ var INTERITEM_SPACE =  20;
          var newWidgetClass=[CPClassFromString(className) class];
          var newWidget=[[newWidgetClass alloc] initWithVisitValue:currentProcedureValue];
          var newView= [newWidget view];
+         if(!newView) continue;
+
          [contentView addSubview:newView];
          [newView setFrameOrigin:valueCursor];
 

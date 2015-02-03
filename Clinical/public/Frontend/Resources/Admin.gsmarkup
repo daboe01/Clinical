@@ -11,7 +11,7 @@
    <tabViewItem title="Personnel">
     <vbox>
      <vspace height="10" valign="min"/>
-     <splitView vertical="YES" autosaveName="vsplitter_accounts">
+     <splitView vertical="YES" autosaveName="vsplitter_admin_perso">
        <vbox>
         <scrollView hasHorizontalScroller="NO">
            <tableView zebra="yes" autosaveName="trialpersonnel2_tv" valueBinding="#CPOwner.personnelController">
@@ -73,7 +73,7 @@
   <tabViewItem title="Groups">
    <vbox>
      <vspace height="10" valign="min"/>
-     <hbox>
+     <splitView vertical="YES" autosaveName="vsplitter_admin_group">
       <vbox>
         <scrollView hasHorizontalScroller="NO">
          <tableView zebra="yes" autosaveName="allgroups_tv" valueBinding="#CPOwner.groupsControllerAll">
@@ -85,21 +85,13 @@
         </scrollView>
         <ButtonBar target="#myadmincontroller" plusButtonAction="insertGroup:" minusButtonAction="removeGroup:"/>
        </vbox>
-       <vbox>
-        <label>Members</label>
-        <scrollView hasHorizontalScroller="NO">
-         <tableView zebra="yes" autosaveName="groups_members_tv" valueBinding="#CPOwner.groupassignmentController2">
-                <tableColumn identifier="idpersonnel" dataView="#popupdataviewgroupmember"  title="person"/>
-         </tableView>
-        </scrollView>
-        <ButtonBar target="#CPOwner.groupassignmentController2" plusButtonAction="insert:" minusButtonAction="remove:"/>
-        <hbox>
-
+       <hbox>
          <vbox>
            <label>Meetings</label>
            <scrollView hasHorizontalScroller="NO">
              <tableView zebra="yes" autosaveName="groups_meetings_tv" valueBinding="#CPOwner.teamMeetingsController" delegate="#mycontroller">
                 <tableColumn identifier="title" title="name" editable="YES"/>
+                <tableColumn identifier="location" title="location" editable="YES"/>
                 <tableColumn identifier="starttime" title="start" editable="YES"/>
                 <tableColumn identifier="stoptime" title="stop" editable="YES"/>
              </tableView>
@@ -107,19 +99,30 @@
            <ButtonBar target="#CPOwner.teamMeetingsController" plusButtonAction="insert:" minusButtonAction="remove:" actionsButton="YES">
              <popUpButtonItem title="Send invitations" target="#myadmincontroller" action="sendMeetingInvitations:"/>
           </ButtonBar>
-        </vbox>
-        <vbox>
+         </vbox>
+         <vbox>
           <label>Meeting attendees</label>
           <scrollView hasHorizontalScroller="NO">
             <tableView zebra="yes" autosaveName="groups_meetings_attendee_tv" valueBinding="#CPOwner.meetingAttendeesController">
                 <tableColumn identifier="idattendee" dataView="#popupdataviewattendee"  title="person"/>
             </tableView>
           </scrollView>
-          <ButtonBar target="#CPOwner.meetingAttendeesController" plusButtonAction="insert:" minusButtonAction="remove:"/>
+          <hbox>
+            <ButtonBar target="#CPOwner.meetingAttendeesController" plusButtonAction="insert:" minusButtonAction="remove:" id="teammeetingbb"/>
+            <progresIndicator id="progress" indeterminate="YES"/>
+         </hbox>
+      </vbox>
+      <vbox>
+           <label>Group members</label>
+           <scrollView hasHorizontalScroller="NO">
+             <tableView zebra="yes" autosaveName="groups_members_tv" valueBinding="#CPOwner.groupassignmentController2">
+                <tableColumn identifier="idpersonnel" dataView="#popupdataviewgroupmember"  title="person"/>
+             </tableView>
+           </scrollView>
+           <ButtonBar target="#CPOwner.groupassignmentController2" plusButtonAction="insert:" minusButtonAction="remove:"/>
        </vbox>
-      </hbox>
-     </vbox>
-    </hbox>
+     </hbox>
+    </splitView>
    </vbox>
   </tabViewItem>
 
@@ -200,6 +203,8 @@
         <outlet source="mycontroller" target="addpropstv" label="addPropsTV"/>
         <outlet source="mycontroller" target="pdocumentsbuttonbar" label="pDocumentsBB"/>
         <outlet source="mycontroller" target="graphical_picker" label="graphicalPicker"/>
+        <outlet source="mycontroller" target="teammeetingbb" label="teamMeetingBB"/>
+        <outlet source="mycontroller" target="progress" label="progress"/>
 </connectors>
 
 

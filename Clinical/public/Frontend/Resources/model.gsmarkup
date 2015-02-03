@@ -416,6 +416,7 @@
 		<column name="stoptime"/>
 		<column name="title"/>
 		<column name="idgroup"/>
+		<column name="location"/>
 		<relationship type="toOne" name="group" bindingColumn="idgroup" target="groups_catalogue"/>
 		<relationship type="toMany" name="attendees" bindingColumn="id" targetColumn="idmeeting" target="meeting_attendees"/>
 	</entity>
