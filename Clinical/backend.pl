@@ -673,7 +673,7 @@ get '/CT/conflictlist' =>  sub
     my  %session;
     tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
     my $dbh=$self->db;
-    my $sql=qq{SELECT visit_date, ldap, name as visit, piz from visit_conflicts_overview where ldap_filtering=?};
+    my $sql=qq{SELECT visit_date, ldap, name as visit, piz from visit_conflicts_overview where ldap_filtering=? and visit_date>now()};
     my $sth = $dbh->prepare( $sql );
     $sth->execute(($session{username}));
     my $outR=$sth->fetchall_arrayref();
@@ -828,7 +828,7 @@ get '/CT/CAL/:date'=> [date =>qr/[-\d]+/] => sub
     my  %session;
     tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
     my $dbh=$self->db;
-    my $sql="SELECT distinct name, event_date, type,piz,tooltip from event_overview where event_date::date=? and ".($personal?"ldap":"ldap_unfiltered")."=? order by 2";
+    my $sql="select distinct name, event_date, type, piz, tooltip from (SELECT distinct case when visit_conflicts_overview.ldap is not null then '<!> '|| event_overview.name else event_overview.name end as name, event_date, event_overview.type,event_overview.piz, case when visit_conflicts_overview.ldap is not null  then '<!> Conflict due to ' ||visit_conflicts_overview.ldap ||' <!> ' || event_overview.tooltip else event_overview.tooltip end as tooltip, event_overview.ldap, event_overview.ldap_unfiltered from event_overview left join visit_conflicts_overview on (( visit_date::date=event_date::date and date_part('hour', event_date)=0 and date_part('minute', event_date)=0 and date_part('second', event_date)=0 or visit_date=event_date) and event_overview.ldap=visit_conflicts_overview.ldap and type !=3) ) event_date where event_date::date=? and ".($personal?"ldap":"ldap_unfiltered")."=? order by 2";
     my $sth = $dbh->prepare( $sql );
     $sth->execute(($date, $session{username}));
     my @a;
