@@ -131,6 +131,7 @@
 
     id  distanceCalcConnection;
     id  serviceConnection;
+    id  conflictcheckConnection;
     id  ibanConnection;
     id  accountsConnection;
 }
@@ -431,13 +432,33 @@
 
         if(data === '0')
         {
-            [someConnection._bookingObject setValue: someConnection._bookingDate forKey:"visit_date"];
+            [someConnection._bookingObject setValue:someConnection._bookingDate forKey:"visit_date"];
+            // now query whether this booking generated any conflicts
+            var myreq=[CPURLRequest requestWithURL: BaseURL+"CT/check_for_conflict/"+someConnection._bookingDate+'?session='+ window.G_SESSION];
+            conflictcheckConnection=[CPURLConnection connectionWithRequest:myreq delegate:self];
             someConnection._bookingDate=nil;
             someConnection._bookingObject=nil;
+
         } else
-        {   alert("buchung nicht erfolgreich. nochmal versuchen");        // <!> fixme
+        {
+            var myalert = [CPAlert new];
+            var txt="Die letzte Buchung ist nicht 'durchgegangen'!\nGgf. nochmal versuchen";
+            [myalert setMessageText:txt];
+            [myalert addButtonWithTitle:"OK"];
+            [myalert beginSheetModalForWindow:trialsWindow modalDelegate:self didEndSelector:@selector(_dummyMethod:) contextInfo: nil];
         }
         bookingConnection=nil;
+    } else if (someConnection === conflictcheckConnection)
+    {
+        conflictcheckConnection = nil;
+        if (parseInt([data rawString], 10))
+        {
+            var myalert = [CPAlert new];
+            var txt="Die letzte Buchung hat einen Konflikt generiert!\nBitte den Kalender auf Markierungen checken.";
+            [myalert setMessageText:txt];
+            [myalert addButtonWithTitle:"OK"];
+            [myalert beginSheetModalForWindow:trialsWindow modalDelegate:self didEndSelector:@selector(_dummyMethod:) contextInfo: nil];
+       }
     } else if(someConnection === ibanConnection)
     {
         ibanConnection = nil;
@@ -453,6 +474,9 @@
         [[CPApp delegate].transactionsController reload]
         [accountsProgress stopAnimation: self];
     }
+}
+-(void) _dummyMethod:(id)sender
+{
 }
 
 -(void) doBookInDocscal: sender
@@ -613,9 +637,6 @@
 -(void)createUnbilledList: sender
 {   document.location='/CT/unbilledlist?session='+ window.G_SESSION;
 }
--(void)createConflictList: sender
-{   document.location='/CT/conflictlist?session='+ window.G_SESSION;
-}
 -(void) runDCV: sender
 {
     window.open("http://augimageserver/Viewer/?"+ [[[CPApp delegate].patientsController selectedObject] valueForKeyPath:"piz"], 'docscal_window');
@@ -646,7 +667,7 @@
 
 
 -(void) fahrtkostenPanel:sender
-{   if(! parseInt([[CPApp delegate].patientsController valueForKeyPath: "selection.travel_distance"],10) ) 
+{   if(! parseInt([[CPApp delegate].patientsController valueForKeyPath: "selection.travel_distance"], 10)) 
     {   var idpatient=[[CPApp delegate].patientsController valueForKeyPath: "selection.id"];
         var myreq=[CPURLRequest requestWithURL: BaseURL+"CT/travel_distance/"+idpatient];
         distanceCalcConnection=    [CPURLConnection connectionWithRequest: myreq delegate: self];

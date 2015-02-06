@@ -368,6 +368,7 @@
 		<column name="name"/>
 		<column name="type"/>
 		<column name="base_cost"/>
+		<column name="procedure_time"/>
 		<column name="widgetclassname"/>
 		<column name="widgetparameters"/>
 		<column name="latex_representation"/>

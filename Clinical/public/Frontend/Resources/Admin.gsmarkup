@@ -10,16 +10,15 @@
   <tabView type="topBezel">
    <tabViewItem title="Personnel">
     <vbox>
-     <vspace height="10" valign="min"/>
      <splitView vertical="YES" autosaveName="vsplitter_admin_perso">
        <vbox>
+        <searchField valueBinding="mycontroller.persoSearchTerm"/>
         <scrollView hasHorizontalScroller="NO">
            <tableView zebra="yes" autosaveName="trialpersonnel2_tv" valueBinding="#CPOwner.personnelController">
                 <tableColumn identifier="ldap" title="ldap" editable="YES"/>
                 <tableColumn identifier="name" title="name" editable="YES"/>
                 <tableColumn identifier="email" title="email" editable="YES"/>
                 <tableColumn identifier="tel" title="tel" editable="YES"/>
-                <tableColumn identifier="abrechnungsname" title="abrechnungsname" editable="YES"/>
                 <tableColumn identifier="level" title="level" editable="YES"/>
            </tableView>
         </scrollView>
@@ -73,7 +72,7 @@
   <tabViewItem title="Groups">
    <vbox>
      <vspace height="10" valign="min"/>
-     <splitView vertical="YES" autosaveName="vsplitter_admin_group">
+     <splitView vertical="YES" autosaveName="vsplitter_admin_group_0">
       <vbox>
         <scrollView hasHorizontalScroller="NO">
          <tableView zebra="yes" autosaveName="allgroups_tv" valueBinding="#CPOwner.groupsControllerAll">
@@ -146,6 +145,7 @@
           <tableColumn identifier="name" title="name" editable="YES"/>
           <tableColumn identifier="ecrf_name" title="worksheetname" editable="YES"/>
           <tableColumn identifier="base_cost" title="hauskatalog EUR" editable="YES"/>
+          <tableColumn identifier="procedure_time" title="procedure time" editable="YES"/>
           <tableColumn identifier="widgetclassname" title="widgetclass" editable="YES"/>
        </tableView>
       </scrollView>

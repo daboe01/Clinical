@@ -194,5 +194,9 @@ var _itemcache=[];
 //	if(piz) [[DocsCalController alloc] initWithPIZ:piz];
 }
 
+-(void)createConflictList: sender
+{   document.location='/CT/conflictlist?session='+ window.G_SESSION;
+}
+
 @end
 

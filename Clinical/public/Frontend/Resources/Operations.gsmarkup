@@ -17,16 +17,17 @@
     </menu>
     <menu title="Controlling">
         <menuItem title="Download Unbilledlist" target="#myadmincontroller" action="createUnbilledList:"/>
-        <menuItem title="Download Visitconflictlist" target="#myadmincontroller" action="createConflictList:"/>
         <menuItem title="Download Todolist" target="#myadmincontroller" action="createTodoListGlobal:"/>
         <menuItem title="Download Inkassolist" target="#myadmincontroller" action="downloadInkassoList:"/>
+        <menuSeparator />
         <menuItem title="Accounts..." action="runAccounts:"/>
+        <menuItem title="Admin..." action="runAdmin:"/>
     </menu>
     <menu title="Special">
         <menuItem title="Calendar..." target="#myadmincontroller" action="runCalendar:"/>
         <menuItem title="My space..." action="runPersonnel:"/>
-        <menuItem title="Admin..." action="runAdmin:"/>
-        <menuItem title="Logout" action="performLogout:"/>
+        <menuSeparator />
+       <menuItem title="Logout" action="performLogout:"/>
     </menu>
    </menu>
 

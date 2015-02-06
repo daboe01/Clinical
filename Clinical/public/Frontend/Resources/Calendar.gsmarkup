@@ -3,47 +3,51 @@
 <gsmarkup>
 
 <objects>
-  <window title="Calendar"  x="10" y="50" id="calendarwindow" minWidth="1106" width="1106" height="750">
-	<vbox>
-	<hbox>
-		<popUpButton width="100" valueBinding="#CPOwner.month">
-			<popUpButtonItem title="Januar" tag="1"/>
-			<popUpButtonItem title="Februar" tag="2"/>
-			<popUpButtonItem title="Maerz" tag="3"/>
-			<popUpButtonItem title="April" tag="4"/>
-			<popUpButtonItem title="Mai" tag="5"/>
-			<popUpButtonItem title="Juni" tag="6"/>
-			<popUpButtonItem title="Juli" tag="7"/>
-			<popUpButtonItem title="August" tag="8"/>
-			<popUpButtonItem title="September" tag="9"/>
-			<popUpButtonItem title="Oktober" tag="10"/>
-			<popUpButtonItem title="November" tag="11"/>
-			<popUpButtonItem title="Dezember" tag="12"/>
-		</popUpButton>
-		<textField halign="min" width="50" valueBinding="#CPOwner.year"/><stepper min="2000" max="2050" halign="left" width="5" valueBinding="#CPOwner.year"/>
-		<button title="Heute" target="#CPOwner" action="selectToday:"/>
-                <switchButton id="filter_switch" target="#CPOwner" action="changeFilterForMe:" title="Filtered for me" halign="min" width="120"/> 
-		<hspace/>
-	</hbox>
-	<collectionView id="calendar_header_view" itemWidth="150" itemHeight="25" maxColumns="7" itemsClassName="CalendarHeaderItem" halign="min" valign="min" width="1100" height="21"/>
-	<scrollView hasHorizontalScroller="NO"  hasVerticalScroller="YES">
-		<collectionView id="calendar_view" itemWidth="150" itemHeight="100" maxColumns="7" itemsClassName="CalendarDayItem" selectable="YES" halign="min" width="1100"/>
-	</scrollView>
-	</vbox>
+ <window title="Calendar"  x="10" y="50" id="calendarwindow" minWidth="1106" width="1106" height="750">
+  <vbox>
+    <hbox>
+        <popUpButton width="100" valueBinding="#CPOwner.month">
+            <popUpButtonItem title="Januar" tag="1"/>
+            <popUpButtonItem title="Februar" tag="2"/>
+            <popUpButtonItem title="Maerz" tag="3"/>
+            <popUpButtonItem title="April" tag="4"/>
+            <popUpButtonItem title="Mai" tag="5"/>
+            <popUpButtonItem title="Juni" tag="6"/>
+            <popUpButtonItem title="Juli" tag="7"/>
+            <popUpButtonItem title="August" tag="8"/>
+            <popUpButtonItem title="September" tag="9"/>
+            <popUpButtonItem title="Oktober" tag="10"/>
+            <popUpButtonItem title="November" tag="11"/>
+            <popUpButtonItem title="Dezember" tag="12"/>
+        </popUpButton>
+        <textField halign="min" width="50" valueBinding="#CPOwner.year"/><stepper min="2000" max="2050" halign="left" width="5" valueBinding="#CPOwner.year"/>
+        <button title="Heute" target="#CPOwner" action="selectToday:"/>
+        <switchButton id="filter_switch" target="#CPOwner" action="changeFilterForMe:" title="Filtered for me" halign="min" width="120"/> 
+        <hspace/>
+        <button title="Download conflict list" target="#CPOwner" action="createConflictList:"/>
+        <button title="Create meeting..." target="#CPOwner" action="createMeeting:"/>
+        <hspace width="20" halign="min"/>
+    </hbox>
+    <collectionView id="calendar_header_view" itemWidth="150" itemHeight="25" maxColumns="7" itemsClassName="CalendarHeaderItem" halign="min" valign="min" width="1100" height="21"/>
+    <scrollView hasHorizontalScroller="NO"  hasVerticalScroller="YES">
+        <collectionView id="calendar_view" itemWidth="150" itemHeight="100" maxColumns="7" itemsClassName="CalendarDayItem" selectable="YES" halign="min" width="1100"/>
+    </scrollView>
+  </vbox>
+
  </window>
 </objects>
 
 <entities>
-	<entity id="calendar_function">
-		<column name="day" primaryKey="YES"/>
-	</entity>
+    <entity id="calendar_function">
+        <column name="day" primaryKey="YES"/>
+    </entity>
 </entities>
 
 <connectors>
-	<outlet source="#CPOwner" target="calendarwindow" label="calendarWindow"/>
-	<outlet source="#CPOwner" target="calendar_view" label="calendarView"/>
-	<outlet source="#CPOwner" target="calendar_header_view" label="calendarHeader"/>
-	<outlet source="#CPOwner" target="filter_switch" label="filterSwitch"/>
+    <outlet source="#CPOwner" target="calendarwindow" label="calendarWindow"/>
+    <outlet source="#CPOwner" target="calendar_view" label="calendarView"/>
+    <outlet source="#CPOwner" target="calendar_header_view" label="calendarHeader"/>
+    <outlet source="#CPOwner" target="filter_switch" label="filterSwitch"/>
 </connectors>
 
 </gsmarkup>

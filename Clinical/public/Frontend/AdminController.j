@@ -20,6 +20,14 @@
     id  datePickerPopover;
     id  teamMeetingBB;
     id  progress;
+	id	persoSearchTerm @accessors;
+}
+-(void) setPersoSearchTerm:aTerm
+{
+	if(aTerm && aTerm.length)
+	{   var term= aTerm.toLowerCase();
+        [[CPApp delegate].personnelController setFilterPredicate: [CPPredicate predicateWithFormat:"name CONTAINS[cd] %@ or ldap CONTAINS[cd] %@ or email CONTAINS[cd] %@", term, term, term]];
+	} else [[CPApp delegate].personnelController setFilterPredicate: nil];
 }
 
 -(void) _performPostLoadInit
@@ -29,7 +37,7 @@
     [button bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"dokusController.selection.@count" options:nil];
     [pDocumentsBB registerWithArrayController:[CPApp delegate].dokusController plusTooltip:"Upload document" minusTooltip:"Delete selected document..."];
     button=[teamMeetingBB addButtonWithImageName:"reload.png" target:self action:@selector(checkForEmailResponses:)];
-    [button setToolTip:"Reload trials"];
+    [button setToolTip:"Check for answers"];
 }
 
 -(void) cancelAddProperty: sender
