@@ -680,6 +680,20 @@ get '/CT/conflictlist' =>  sub
     $self->render_file('data' => $self->get_XLS_for_arr($outR, $sth->{NAME}), 'format'   => 'xls', 'filename' => 'absent_conflicts.xls');
 };
 
+get '/CT/check_for_conflict/:date' => [date=>qr/[0-9 :-]+/] => sub {
+   my $self=shift;
+    my $date=$self->param('date');
+    my $sessionid=$self->param('session');
+    my  %session;
+    tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
+    my $dbh=$self->db;
+    my $sql=qq{SELECT count(*) from visit_conflicts_overview where ldap_filtering=? and visit_date=?};
+    my $sth = $dbh->prepare( $sql );
+    $sth->execute(($session{username}, $date));
+    my $outR=$sth->fetchall_arrayref();
+    $self->render(text=>$outR->[0]->[0]);
+};
+
 get '/CT/duelist' => sub
 {   my $self=shift;
     my $idtrial=$self->param('idtrial');
