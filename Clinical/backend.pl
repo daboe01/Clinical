@@ -877,7 +877,7 @@ any '/CT/pdfstamper/:idtrial/:formname'=> [idtrial =>qr/\d+/, formname =>qr/[a-z
 {   my $self=shift;
     my $idtrial = $self->param('idtrial');
     my $formname= $self->param('formname');
-    my $piz= $self->param('piz');
+    my $idpatient= $self->param('pid');
     my $sessionid=$self->param('session');
     my $filter=$self->param('filter');
     my $kilometerpauschale=$self->getProperty($idtrial,'kilometerpauschale');
@@ -886,13 +886,18 @@ any '/CT/pdfstamper/:idtrial/:formname'=> [idtrial =>qr/\d+/, formname =>qr/[a-z
     tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
     my $ldap=$session{username};
     my $keyvaldict=$self->getPropertiesDict($idtrial, $ldap);
- #<!> fixme: protect piz with session!
+
+    #<!> fixme: protect pat with session!
+    my ($pat, $piz);
+    if($idpatient)
+    {   $pat= $self->getObjectFromTable('patients', $idpatient);
+        $piz=$pat->{piz};
+    }
     if($piz)
     {
-        my $sql = SQL::Abstract::More->new;
         my $ua = Mojo::UserAgent->new;
-        my $data='[]';    # $ua->get('http://auginfo/piz/'.$piz.'?history=4')->res->body;
-        my $jsonR   = decode_json( $data );
+        my $data=$ua->get('http://auginfo/piz/'.$piz.'?history=4')->res->body;
+        my $jsonR   = decode_json( $data  || '[]' );
         for my $curr_address (@$jsonR) {
             my @name_arr=split/\^/o,$curr_address->{name};
             $keyvaldict->{$curr_address->{type}.'_name'}="$name_arr[5] $name_arr[1] $name_arr[0]";
@@ -906,61 +911,50 @@ any '/CT/pdfstamper/:idtrial/:formname'=> [idtrial =>qr/\d+/, formname =>qr/[a-z
             $keyvaldict->{$curr_address->{type}.'_street'}="$addr_arr[0]";
             $keyvaldict->{$curr_address->{type}.'_ort'}="$addr_arr[4] $addr_arr[2]";
         }
-        $data='{}';   # $ua->get('http://auginfo/piz/'.$piz)->res->body;
-        $jsonR   = decode_json( $data );
+        $data=$ua->get('http://auginfo/piz/'.$piz)->res->body;
+        $jsonR   = decode_json( $data  || '{}');
         for my $ckey (keys %$jsonR) {
             $keyvaldict->{"PAT_".$ckey}=$jsonR->{$ckey};
         }
-        # get patient id
-        my($stmt, @bind) = $sql->select( -columns  => [qw/id/], -from => 'patients', -where => {idtrial => $idtrial, piz=>$piz});
-        my $sth = $self->db->prepare($stmt);
-        $sth->execute(@bind);
-        my $a=$sth->fetchall_arrayref();
-        my $idpatient=$a && $a->[0]? $a->[0]->[0]: undef;
-        if($idpatient)
-        {
-            my $pat= $self->getObjectFromTable('patients', $idpatient);
-            for my $ckey (keys %$pat) {
-                $keyvaldict->{$ckey}=$pat->{$ckey};
-            }
-            my $trial= $self->getObjectFromTable('all_trials', $idtrial);
-            my $group= $self->getObjectFromTable('groups_catalogue', $trial->{idgroup});
-            for my $ckey (keys %$group) {
-                $keyvaldict->{"GRP_".$ckey}=$group->{$ckey};
-            }
-            $keyvaldict->{iban}=~s/ //ogs;
-            # get the visits
-            my $sql=qq{select trial_visits.name as visit, patient_visits_rich.* from patient_visits_rich join trial_visits on trial_visits.id=idvisit where idpatient=?};
-            $filter=~s/[^0-9,]//ogs;  # untaint
-            $filter=~s/,$//ogs;
-            $sql.=" and patient_visits_rich.id in( $filter )" if $filter;
-            $sql.=" order by trial_visits.ordering, patient_visits_rich.visit_date";
-            my $sth = $self->db->prepare( $sql );
-            $sth->execute(($idpatient));
-            my @visits;
-            my $sum=0;
-            while(my $c=$sth->fetchrow_hashref())
-            {
-                my $reisekosten=$c->{travel_costs}? $c->{travel_costs}:($kilometerpauschale*$pat->{travel_distance}+($c->{travel_additional_costs} ||0.0));
-                $c->{reisekosten}=sprintf("%3.2f EUR",$reisekosten);
-                my $sql = SQL::Abstract->new;
-                my($stmt, @bind) = $sql->update('patient_visits', {actual_costs=>$reisekosten}, {id=>$c->{id}});
-                my $sthc = $self->db->prepare($stmt);
-                $sthc->execute(@bind);
-        
-                $c->{visit_date}=~s/ 00:00:00$//ogs;
-                $sum += $reisekosten;
-                push @visits, $c;
-            }
-            $keyvaldict->{PAT_anrede}=$jsonR->{weiblich}?'Frau':'Herr';
-            $keyvaldict->{visits}=\@visits;
-            $keyvaldict->{reisekosten_sum}=sprintf("%3.2f EUR",$sum);
+        for my $ckey (keys %$pat) {
+            $keyvaldict->{$ckey}=$pat->{$ckey};
         }
+        my $trial= $self->getObjectFromTable('all_trials', $idtrial);
+        my $group= $self->getObjectFromTable('groups_catalogue', $trial->{idgroup});
+        for my $ckey (keys %$group) {
+            $keyvaldict->{"GRP_".$ckey}=$group->{$ckey};
+        }
+        $keyvaldict->{iban}=~s/ //ogs;
+        # get the visits
+        my $sql=qq{select trial_visits.name as visit, patient_visits_rich.* from patient_visits_rich join trial_visits on trial_visits.id=idvisit where idpatient=?};
+        $filter=~s/[^0-9,]//ogs;  # untaint
+        $filter=~s/,$//ogs;
+        $sql.=" and patient_visits_rich.id in( $filter )" if $filter;
+        $sql.=" order by trial_visits.ordering, patient_visits_rich.visit_date";
+        my $sth = $self->db->prepare( $sql );
+        $sth->execute(($idpatient));
+        my @visits;
+        my $sum=0;
+        while(my $c=$sth->fetchrow_hashref())
+        {
+            my $reisekosten=$c->{travel_costs}? $c->{travel_costs}:($kilometerpauschale*$pat->{travel_distance}+($c->{travel_additional_costs} ||0.0));
+            $c->{reisekosten}=sprintf("%3.2f EUR",$reisekosten);
+            my $sql = SQL::Abstract->new;
+            my($stmt, @bind) = $sql->update('patient_visits', {actual_costs=>$reisekosten}, {id=>$c->{id}});
+            my $sthc = $self->db->prepare($stmt);
+            $sthc->execute(@bind);
+    
+            $c->{visit_date}=~s/ 00:00:00$//ogs;
+            $sum += $reisekosten;
+            push @visits, $c;
+        }
+        $keyvaldict->{PAT_anrede}=$jsonR->{weiblich}?'Frau':'Herr';
+        $keyvaldict->{visits}=\@visits;
+        $keyvaldict->{reisekosten_sum}=sprintf("%3.2f EUR",$sum);
     }
     my $data= pdfgen::PDFForTemplateAndRef(TempFileNames::readFile(form_repo_path.'/'. $formname.'.tex'), $keyvaldict);
     $self->render(data=> $data , format =>'pdf' );
-};
-
+}
 get '/CT/serienbrief_patienten/:propid'=> [ propid =>qr/\d+/] => sub
 {   my $self=shift;
     my $sessionid=$self->param('session');

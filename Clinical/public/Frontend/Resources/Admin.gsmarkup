@@ -144,7 +144,8 @@
        <tableView zebra="yes" autosaveName="allprocedures_tv" id="allprocedures_tv" valueBinding="#CPOwner.proceduresCatController" target="#CPOwner">
           <tableColumn identifier="name" title="name" editable="YES"/>
           <tableColumn identifier="ecrf_name" title="worksheetname" editable="YES"/>
-          <tableColumn identifier="base_cost" title="hauskatalog EUR" editable="YES"/>
+          <tableColumn identifier="base_cost" title="extern EUR" editable="YES"/>
+          <tableColumn identifier="internal_cost" title="intern EUR" editable="YES"/>
           <tableColumn identifier="procedure_time" title="procedure time" editable="YES"/>
           <tableColumn identifier="widgetclassname" title="widgetclass" editable="YES"/>
        </tableView>

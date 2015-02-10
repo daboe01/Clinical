@@ -157,12 +157,14 @@ var _itemcache=[];
     [self loadCalendarForMonth: month andYear: year]
 }
 
-- (void) selectDate: myDate
+- (void) selectDate:(CPString)myDate
 {	var arr=[calendarView content];
 	var i,l=[arr count];
 	for (i=0 ; i<  l ; i++)
-	{	if ([[arr objectAtIndex:i] objectForKey:"day"] === myDate)
-			[calendarView setSelectionIndexes:[CPIndexSet indexSetWithIndex: i] ]
+	{	if ([[arr objectAtIndex:i] objectForKey:"day"] == myDate)
+		{   [calendarView setSelectionIndexes:[CPIndexSet indexSetWithIndex: i]];
+            break;
+        }
 	}
 }
 
@@ -177,16 +179,20 @@ var _itemcache=[];
 
 
 - (void) init
-{	[CPBundle loadRessourceNamed: "Calendar.gsmarkup" owner:self];
-	[calendarView setDelegate: self];
-	var i;
-	var arr=[];
-	for (i=0 ; i<  7 ; i++)
-	{	var header=[[CalendarHeaderItem alloc] initWithDOW:i];
-		arr.push(header)
-	}
-	[calendarHeader setContent:arr];
-	[self selectToday: self];
+{
+    if(self=[super init]){
+        [CPBundle loadRessourceNamed: "Calendar.gsmarkup" owner:self];
+        [calendarView setDelegate: self];
+        var i;
+        var arr=[];
+        for (i=0 ; i<  7 ; i++)
+        {	var header=[[CalendarHeaderItem alloc] initWithDOW:i];
+            arr.push(header)
+        }
+        [calendarHeader setContent:arr];
+        [self selectToday: self];
+    }
+    return self;
 }
 
 -(void) open: sender

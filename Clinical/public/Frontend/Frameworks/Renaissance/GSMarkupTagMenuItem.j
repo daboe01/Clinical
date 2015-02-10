@@ -173,3 +173,21 @@
 }
 
 @end
+
+@implementation GSMarkupTagMenuSeparator:GSMarkupTagMenuItem
++ (CPString) tagName
+{
+  return @"menuSeparator";
+}
+
+- (id) allocPlatformObject
+{
+  return [CPMenuItem separatorItem];
+}
+
+- (id) initPlatformObject: (id)platformObject
+{
+  return platformObject;
+}
+
+@end

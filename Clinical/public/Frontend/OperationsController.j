@@ -436,6 +436,7 @@
             // now query whether this booking generated any conflicts
             var myreq=[CPURLRequest requestWithURL: BaseURL+"CT/check_for_conflict/"+someConnection._bookingDate+'?session='+ window.G_SESSION];
             conflictcheckConnection=[CPURLConnection connectionWithRequest:myreq delegate:self];
+            conflictcheckConnection._bookingDate=someConnection._bookingDate;
             someConnection._bookingDate=nil;
             someConnection._bookingObject=nil;
 
@@ -449,7 +450,8 @@
         }
         bookingConnection=nil;
     } else if (someConnection === conflictcheckConnection)
-    {
+    {   var bookingDate=someConnection._bookingDate;
+        someConnection._bookingDate=nil;
         conflictcheckConnection = nil;
         if (parseInt([data rawString], 10))
         {
@@ -457,7 +459,7 @@
             var txt="Die letzte Buchung hat einen Konflikt generiert!\nBitte den Kalender auf Markierungen checken.";
             [myalert setMessageText:txt];
             [myalert addButtonWithTitle:"OK"];
-            [myalert beginSheetModalForWindow:trialsWindow modalDelegate:self didEndSelector:@selector(_dummyMethod:) contextInfo: nil];
+            [myalert beginSheetModalForWindow:trialsWindow modalDelegate:self didEndSelector:@selector(_bookingDateConflict:returnCode:bookingDate:) contextInfo:bookingDate];
        }
     } else if(someConnection === ibanConnection)
     {
@@ -477,6 +479,13 @@
 }
 -(void) _dummyMethod:(id)sender
 {
+}
+-(void) _bookingDateConflict:(CPAlert)bookingDateAlert returnCode:aCode bookingDate:(CPString)bookingDate
+{
+	var re = new RegExp("^(....-..-..)");
+	var m = re.exec(bookingDate);
+	if(m) bookingDate= m[1];
+    [[CalendarController new] selectDate:bookingDate];
 }
 
 -(void) doBookInDocscal: sender
@@ -578,8 +587,8 @@
 {   var idtrial=[[CPApp delegate].trialsController valueForKeyPath:"selection.id"];
     var myurl='/CT/pdfstamper/'+idtrial+'/'+aName+'?session='+ window.G_SESSION;
     if(withPIZFlag){
-        var piz=[[CPApp delegate].patientsController valueForKeyPath:"selection.piz"];
-        myurl += "&piz="+piz;
+        var pid=[[CPApp delegate].patientsController valueForKeyPath:"selection.id"];
+        myurl += "&pid="+pid;
     }
     if(aFilter){
         myurl += "&filter="+aFilter;
