@@ -1280,14 +1280,25 @@ post '/CT/make_bill/:idtrial'=> [idtrial =>qr/\d+/] => sub
     $idtrial = $idtrial=~/^([0-9]+)$/? $1: undef;
     $idammendbill = $idammendbill=~/^([0-9]+)$/? $1: undef;
     my $where;
+    my $bill;
+    my $table_for_billing=$travelbill? 'list_for_travelbilling':'list_for_billing';
     if($idammendbill)
-    {   $where.=" id in ($1)" if $filter =~/(^[0-9, ]+$)/;
+    {
+        $bill=$self->getObjectFromTable('billings', $idammendbill);
+        if ($filter =~/(^[0-9, ]+$)/){
+            $where.=" id in ($1)" ;
+        } else
+        {   $bill->{visit_ids}=~s/[\s,]+$//ogs;
+            $where=' id in ('.$bill->{visit_ids}.')';
+            $bill->{amount}=0;
+            $table_for_billing='full_billing_list';
+        }
     } else
     {
         $where = "idtrial = $idtrial";
         $where.=" and idpatient in ($1)" if $filter =~/(^[0-9, ]+$)/;
     }
-    my($stmt, @bind) = $sql->select( -columns  => [qw/id idtrial visit_date code1 code2 visit reimbursement/], -from => $travelbill? 'list_for_travelbilling':'list_for_billing', -where => $where, -order_by=>[qw/code1 code2 visit_date/]);
+    my($stmt, @bind) = $sql->select( -columns  => [qw/id idtrial visit_date code1 code2 visit reimbursement/], -from => $table_for_billing, -where => $where, -order_by=>[qw/code1 code2 visit_date/]);
     my $sth = $self->db->prepare($stmt);
     $sth->execute(@bind);
     my $sum=0;
@@ -1299,15 +1310,14 @@ post '/CT/make_bill/:idtrial'=> [idtrial =>qr/\d+/] => sub
     if(!$travelbill){
         my $overhead= $overhead_inclusive? 0: $sum*0.25;    # FIXME: 25% overhead should be a constant
         $sum+=$overhead;
-        my $ust= $requires_ust? $sum*0.19: 0;      # FIXME: 19% UST should be a constant
+        my $ust= $requires_ust? $sum*0.19: 0;               # FIXME: 19% UST should be a constant
         $sum+=$ust;
     }
     if($idammendbill)
     {
-        my $bill=$self->getObjectFromTable('billings', $idammendbill);
         my $update = SQL::Abstract->new;
         my $newamount = sprintf('%4.2f',$sum+$bill->{amount}+0);
-        my ($stmt, @bind) = $update->update( 'billings', {amount=> $newamount, comment=> sprintf('%4.2f EUR',$newamount), visit_ids=>$bill->{visit_ids}.$idstr}, {id=> $idammendbill});
+        my ($stmt, @bind) = $update->update( 'billings', {amount=> $newamount, visit_ids=>$bill->{visit_ids}.$idstr}, {id=> $idammendbill});
         $sth = $self->db->prepare($stmt);
         $sth->execute(@bind);
     } else
@@ -1319,6 +1329,7 @@ post '/CT/make_bill/:idtrial'=> [idtrial =>qr/\d+/] => sub
     }
     $self->render( text=> 'OK' );
 };
+
 get '/CT/iCAL/:ldap'=> [ldap =>qr/[a-z_0-9]+/i] => sub
 {
     my $self=shift;
