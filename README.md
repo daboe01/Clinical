@@ -18,7 +18,7 @@ Features include:
  * RESTful API
  * Full audit trail
 
-[Manual]: https://github.com/daboe01/ClinicalManual/blob/master/manual.pdf?raw=true
+Manual: https://github.com/daboe01/ClinicalManual/blob/master/manual.pdf?raw=true
 =====
 
 INSTALL
