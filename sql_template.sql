@@ -1105,7 +1105,8 @@ ALTER TABLE public.accounts_balanced OWNER TO postgres;
 CREATE TABLE group_assignments (
     id integer NOT NULL,
     idgroup integer,
-    idpersonnel integer
+    idpersonnel integer,
+    permission_level integer
 );
 
 
@@ -1580,7 +1581,7 @@ CREATE VIEW event_overview AS
                      LEFT JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = trial_process_step.idpersonnel)))
                      JOIN all_trials all_trials_1 ON ((all_trials_1.id = trial_process_step.idtrial)))) a
              LEFT JOIN all_trials ON ((a.idtrial = all_trials.id)))
-             LEFT JOIN group_assignments ON ((group_assignments.idgroup = all_trials.idgroup)))
+             LEFT JOIN group_assignments ON (((group_assignments.idgroup = all_trials.idgroup) AND (group_assignments.permission_level > 1))))
              LEFT JOIN personnel_catalogue ON ((personnel_catalogue.id = group_assignments.idpersonnel)))
           WHERE ((a.name IS NOT NULL) AND (a.event_date IS NOT NULL))
           ORDER BY a.type DESC
@@ -1705,7 +1706,8 @@ CREATE TABLE groups_catalogue (
     name text NOT NULL,
     sprechstunde text,
     websitename text,
-    telephone text
+    telephone text,
+    idgroup_owner integer
 );
 
 
@@ -3215,6 +3217,7 @@ SELECT pg_catalog.setval('all_trials_id_seq', 200, true);
 --
 
 COPY audittrail (id, changedate, action, writetable, newdata, whereclause, username) FROM stdin;
+122	2015-02-10 20:59:56.976594	1	trial_visits	{"comment":"Blutentnahme"}	{"id":"7"}	pi
 \.
 
 
@@ -3222,7 +3225,7 @@ COPY audittrail (id, changedate, action, writetable, newdata, whereclause, usern
 -- Name: audittrail_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('audittrail_id_seq', 121, true);
+SELECT pg_catalog.setval('audittrail_id_seq', 122, true);
 
 
 --
@@ -3253,10 +3256,10 @@ SELECT pg_catalog.setval('billings_id_seq', 220, true);
 -- Data for Name: group_assignments; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY group_assignments (id, idgroup, idpersonnel) FROM stdin;
-1	1	1
-100	19	36
-101	1	37
+COPY group_assignments (id, idgroup, idpersonnel, permission_level) FROM stdin;
+1	1	1	\N
+100	19	36	\N
+101	1	37	\N
 \.
 
 
@@ -3271,9 +3274,9 @@ SELECT pg_catalog.setval('group_assignments_id_seq', 101, true);
 -- Data for Name: groups_catalogue; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY groups_catalogue (id, name, sprechstunde, websitename, telephone) FROM stdin;
-19	Other group	\N	\N	\N
-1	Team1	HH-Studien	<a href="http://"</a>	xxx
+COPY groups_catalogue (id, name, sprechstunde, websitename, telephone, idgroup_owner) FROM stdin;
+19	Other group	\N	\N	\N	\N
+1	Team1	HH-Studien	<a href="http://"</a>	xxx	\N
 \.
 
 
@@ -3927,7 +3930,7 @@ COPY trial_visits (id, name, idtrial, idreference_visit, visit_interval, lower_m
 299	\N	196	\N	\N	\N	\N	\N	\N	\N	\N
 300	\N	197	\N	4 days	\N	\N	12	\N	\N	\N
 5	Visit 1	25	8	7 days	3 days	3 days	448	\N	\N	\N
-7	Baseline	25	\N	00:00:00	00:00:00	00:00:00	588	\N	\N	\N
+7	Baseline	25	\N	00:00:00	00:00:00	00:00:00	588	\N	\N	Blutentnahme
 8	Unschelduled	25	\N	00:00:00	-2 years	2 years	154	\N	\N	\N
 6	Visit 2	25	7	30 days	7 days	7 days	448	\N	\N	\N
 9	Vis 3	25	7	60 days	7 days	7 days	448	\N	\N	\N
