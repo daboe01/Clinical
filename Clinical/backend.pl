@@ -422,10 +422,11 @@ put '/DBI/:table/:pk/:key'=> [key=>qr/\d+/] => sub
     my $sql     = SQL::Abstract->new;
     my $jsonR   = decode_json( $self->req->body  || '{}' );
 
-   my  %session;
-   my $sessionid=$self->param('session');
-   tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
-   my $ldap = $session{username};
+    my  %session;
+    my $sessionid=$self->param('session');
+    tie %session, 'Apache::Session::File', $sessionid , {Transaction => 0};
+    my $ldap = $session{username};
+    my $level=$self->getUserlevel($ldap);
 
     my $types = $self->getTypeHashForTable($table);
     for (keys %$jsonR)    ## support for nullifying dates and integers with empty string or special string NULL
@@ -434,7 +435,6 @@ put '/DBI/:table/:pk/:key'=> [key=>qr/\d+/] => sub
     }
     if($table eq 'personnel_catalogue')
     {
-        my $level=$self->getUserlevel($ldap);
         if(exists $jsonR->{level} && $jsonR->{level} > $level)
         {
             $self->render( json=> {err=>'Privilege violation'});
@@ -442,8 +442,7 @@ put '/DBI/:table/:pk/:key'=> [key=>qr/\d+/] => sub
         }
     }
     if($table eq 'group_assignments')
-    {   my $level=$self->getUserlevel($ldap);
-        if($level < 3)
+    {   if($level < 3)
         {   if(exists $jsonR->{idgroup})
             {
                 my $u=$self->getObjectFromTable('personnel_catalogue', $ldap, undef, 'ldap');
@@ -454,8 +453,25 @@ put '/DBI/:table/:pk/:key'=> [key=>qr/\d+/] => sub
                     return;
                 }
             }
+            if(exists $jsonR->{permission_level})
+            {
+                my $a=$self->getObjectFromTable('group_assignments', $key, undef, 'id');
+                my $g=$self->getObjectFromTable('groups_catalogue', $a->{idgroup}, undef, 'id');
+                my $u=$self->getObjectFromTable('personnel_catalogue', $ldap, undef, 'ldap');
+                if($u->{id} ne $g->{idgroup_owner}){
+                    $self->render( json=> {err=>'Privilege violation'});
+                    return;
+                }
+            }
+        }
+    } elsif($table eq 'groups_catalogue')
+    {   if(exists $jsonR->{idgroup_owner} && $level < 3)
+        {
+            $self->render( json=> {err=>'Privilege violation'});
+            return;
         }
     }
+
     $table = 'visit_procedures_name' if $table eq 'visit_procedures' && exists $jsonR->{procedure_name};
     my($stmt, @bind) = $sql->update($table, $jsonR, {$pk=>$key});
     my $sth = $self->db->prepare($stmt);
@@ -468,8 +484,8 @@ put '/DBI/:table/:pk/:key'=> [key=>qr/\d+/] => sub
         if($jsonR->{piz})
         {
             my $ua = Mojo::UserAgent->new;
-            my $data='{}'; # $ua->get('http://auginfo/piz/'.$jsonR->{piz})->res->body;
-            my $a= decode_json( $data );
+            my $data=$ua->get('http://auginfo/piz/'.$jsonR->{piz})->res->body;
+            my $a= decode_json( $data || '{}');
             my $update_d={name=>$a->{name}, givenname=>$a->{vorname}, birthdate=>$a->{geburtsdatum}, telephone=>$a->{tel}, town=>$a->{ort}, zip=>$a->{plz}, street=>$a->{anschrift}, female=>$a->{weiblich}||'0' };
             my($stmt, @bind) = $sql->update($table, $update_d, {$pk=>$key});
             my $sth = $self->db->prepare($stmt);
