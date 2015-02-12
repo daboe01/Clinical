@@ -458,7 +458,7 @@ put '/DBI/:table/:pk/:key'=> [key=>qr/\d+/] => sub
                 my $a=$self->getObjectFromTable('group_assignments', $key, undef, 'id');
                 my $g=$self->getObjectFromTable('groups_catalogue', $a->{idgroup}, undef, 'id');
                 my $u=$self->getObjectFromTable('personnel_catalogue', $ldap, undef, 'ldap');
-                if($u->{id} ne $g->{idgroup_owner}){
+                if($u->{id} ne $g->{idgroup_owner} && $jsonR->{permission_level} > $a->{permission_level}){
                     $self->render( json=> {err=>'Privilege violation'});
                     return;
                 }
