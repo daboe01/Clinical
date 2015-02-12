@@ -126,6 +126,7 @@
     id  timeTV;
     id  visitsTV;
     id  visitsBillingWindow;
+    id  ammendBillTV;
     id  billingsTV;
     id  accountsProgress;
 
@@ -181,8 +182,6 @@
     [button setToolTip:"Download/view document"];
     [button bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"dokusController.selection.@count" options:nil];
     [documentsButtonBar registerWithArrayController:[CPApp delegate].dokusController plusTooltip:"Upload document" minusTooltip:"Delete selected document..."];
-    var button=[documentsButtonBar addButtonWithImageName:"reload.png" target:self action:@selector(_reloadDokus)];
-    [button setToolTip:"Refresh lists"];
 
     button=[propsButtonBar addButtonWithImageName:"edit.png" target:editTextWindow action:@selector(makeKeyAndOrderFront:)];
     [button setToolTip:"Open multiline editor"];
@@ -208,6 +207,11 @@
 {
     [[CPApp delegate].trialsController._entity _invalidatePKCache]
     [[CPApp delegate].trialsController setContent:[[CPApp delegate].trialsController._entity allObjects] ];
+    [[CPApp delegate].processesController reload];
+    [[CPApp delegate].patientsController reload];
+    [[CPApp delegate].billingsController reload];
+    [self _reloadDokus];
+    [self recalcVisits:self];
 }
 
 -(void) _reloadDokus
@@ -371,7 +375,7 @@
 }
 
 - (void)deletePatientWarningDidEnd:(CPAlert)anAlert code:(id)code context:(id)context
-{   var myController= [CPApp delegate].billingsController
+{   var myController= [CPApp delegate].billingsController;
     if(code)
     {   var pController=[CPApp delegate].patientsController;
         [pController remove: self];
@@ -687,7 +691,26 @@
 
 -(void) createBillFilteredVisits:sender
 {
+    [ammendBillTV setSortDescriptors: [[CPSortDescriptor sortDescriptorWithKey:@"creation_date" ascending:NO selector:@selector(compare:)]] ];
+    if([ammendBillTV numberOfRows] > 0)
+        [ammendBillTV selectRowIndexes:[CPIndexSet indexSetWithIndex:0] byExtendingSelection:NO]
+
     [visitsBillingWindow makeKeyAndOrderFront:self];
+}
+
+-(void) _ammendSelectedBillWithFilter:(CPString)filter
+{
+    var idtrial= [[CPApp delegate].trialsController valueForKeyPath:"selection.id"];
+    var idbill = [[CPApp delegate].billingsController valueForKeyPath:"selection.id"];
+    var myreq=[CPURLRequest requestWithURL:"/CT/make_bill/"+idtrial+'?session='+ window.G_SESSION+'&idammendbill='+idbill];
+    [myreq setHTTPMethod:"POST"];
+    [myreq setHTTPBody:filter];
+    [CPURLConnection sendSynchronousRequest: myreq returningResponse:nil];
+    [[[CPApp delegate].billingsController selectedObject] reload];
+}
+-(void) recreateBill:sender
+{
+    [self _ammendSelectedBillWithFilter:""];
 }
 
 -(void) addVisitsToBill:sender
@@ -699,19 +722,13 @@
     {   var pk=[[selected objectAtIndex:i] valueForKey:"id"];
         filter+=pk+',';
     }
-    var idtrial= [[CPApp delegate].trialsController valueForKeyPath:"selection.id"];
-    var idbill = [[CPApp delegate].billingsController valueForKeyPath:"selection.id"]
-    var myreq=[CPURLRequest requestWithURL:"/CT/make_bill/"+idtrial+'?session='+ window.G_SESSION+'&idammendbill='+idbill];
-    [myreq setHTTPMethod:"POST"];
-    [myreq setHTTPBody: filter];
-    [CPURLConnection sendSynchronousRequest: myreq returningResponse: nil];
-    [[[CPApp delegate].billingsController selectedObject] reload];
+    [self _ammendSelectedBillWithFilter:filter];
 }
 
 -(void) validateIBAN:sender
 {   var idpatient=[[CPApp delegate].patientsController valueForKeyPath: "selection.id"];
     var myreq=[CPURLRequest requestWithURL: BaseURL+"CT/validate_iban/"+idpatient];
-    ibanConnection=    [CPURLConnection connectionWithRequest:myreq delegate: self];
+    ibanConnection= [CPURLConnection connectionWithRequest:myreq delegate: self];
 }
 
 -(void) runCalendar: sender
@@ -719,16 +736,15 @@
 }
 
 
--(void) reloadBillings: sender
+-(void) reloadBillings:sender
 {   [[CPApp delegate].billingsController reload];
 }
 
--(void) addBill: sender
+-(void) addBill:sender
 {   var billingsController=[CPApp delegate].billingsController;
     [billingsController insert: sender];
-    [[billingsController selectedObject] reload];
+   [[billingsController selectedObject] reload];
 }
-
 
 -(void) createBillWithFilter:(CPString) filter postfix:(CPString) aPostfix
 {   var trialsController=[CPApp delegate].trialsController;
@@ -964,6 +980,9 @@
 // <!> fixme iterate over selection and open each one in a separate tab
     var trialname=[[CPApp delegate].trialsController valueForKeyPath:"selection.name"];
     window.open("/Frontend/index_deep.html?t=Onsite.gsmarkup&session="+window.G_SESSION+"&trial="+ trialname, 'onsite_window');
+}
+-(void) downloadManual:sender
+{    window.open("https://github.com/daboe01/ClinicalManual/blob/master/manual.pdf?raw=true", 'manual_window');
 }
 
 @end

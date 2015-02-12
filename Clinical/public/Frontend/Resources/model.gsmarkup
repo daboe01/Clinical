@@ -69,6 +69,7 @@
 		<column name="websitename"/>
 		<column name="telephone"/>
 		<column name="sprechstunde"/>
+		<column name="idgroup_owner"/>
 		<relationship type="toMany" name="trials" targetColumn="idgroup" target="all_trials"/>
 		<relationship type="toMany" name="personnel" targetColumn="idgroup" target="group_assignments_name"/>
 		<relationship type="toMany" name="personnel2" targetColumn="idgroup" target="group_assignments"/>
@@ -132,6 +133,7 @@
 		<column name="id" primaryKey="YES"/>
 		<column name="idgroup"/>
 		<column name="idpersonnel"/>
+		<column name="permission_level"/>
 		<relationship type="toOne" name="group" bindingColumn="idgroup" target="groups_catalogue"/>
 		<relationship type="toOne" name="person" bindingColumn ="idpersonnel" target="personnel_catalogue"/>
 	</entity>

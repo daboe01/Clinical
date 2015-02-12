@@ -30,6 +30,7 @@
         <scrollView hasHorizontalScroller="NO">
            <tableView zebra="yes" autosaveName="trialpersonnel2_tv" valueBinding="#CPOwner.groupassignmentController">
                 <tableColumn identifier="idgroup" dataView="#popupdataviewgroup"  title="group"/>
+                <tableColumn identifier="permission_level" title="permission_level" editable="YES"/>
            </tableView>
         </scrollView>
         <ButtonBar target="#CPOwner.groupassignmentController" plusButtonAction="insert:" minusButtonAction="remove:"/>
@@ -80,6 +81,7 @@
                 <tableColumn identifier="telephone" title="telephone" editable="YES"/>
                 <tableColumn identifier="websitename" title="websitename" editable="YES"/>
                 <tableColumn identifier="sprechstunde" title="sprechstunde" editable="YES"/>
+                <tableColumn identifier="idgroup_owner" title="Owner" dataView="#popupdataviewgroupmember"/>
          </tableView>
         </scrollView>
         <ButtonBar target="#myadmincontroller" plusButtonAction="insertGroup:" minusButtonAction="removeGroup:"/>
@@ -116,6 +118,7 @@
            <scrollView hasHorizontalScroller="NO">
              <tableView zebra="yes" autosaveName="groups_members_tv" valueBinding="#CPOwner.groupassignmentController2">
                 <tableColumn identifier="idpersonnel" dataView="#popupdataviewgroupmember"  title="person"/>
+                <tableColumn identifier="permission_level"  title="level"/>
              </tableView>
            </scrollView>
            <ButtonBar target="#CPOwner.groupassignmentController2" plusButtonAction="insert:" minusButtonAction="remove:"/>
