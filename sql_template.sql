@@ -1106,7 +1106,7 @@ CREATE TABLE group_assignments (
     id integer NOT NULL,
     idgroup integer,
     idpersonnel integer,
-    permission_level integer
+    permission_level integer DEFAULT 2 NOT NULL
 );
 
 
@@ -3257,7 +3257,7 @@ SELECT pg_catalog.setval('billings_id_seq', 220, true);
 --
 
 COPY group_assignments (id, idgroup, idpersonnel, permission_level) FROM stdin;
-101	1	37	\N
+101	1	37	2
 1	1	1	2
 100	19	36	2
 \.
