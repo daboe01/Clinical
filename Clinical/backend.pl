@@ -42,7 +42,7 @@ plugin 'database', {
 plugin 'RenderFile';
 
 
-use constant base_path => '/Users/Shared/bin/Clinical/';
+use constant base_path => '/Users/daboe01/src/daboe01_Clinical/Clinical/';
 use constant doku_repo_path  => base_path.'docrepo';
 use constant form_repo_path  => base_path.'forms';
 use constant visit_repo_path => base_path.'visitdocs/';
