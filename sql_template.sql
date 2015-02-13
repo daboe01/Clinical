@@ -1106,7 +1106,7 @@ CREATE TABLE group_assignments (
     id integer NOT NULL,
     idgroup integer,
     idpersonnel integer,
-    permission_level integer
+    permission_level integer DEFAULT 2 NOT NULL
 );
 
 
@@ -3257,9 +3257,9 @@ SELECT pg_catalog.setval('billings_id_seq', 220, true);
 --
 
 COPY group_assignments (id, idgroup, idpersonnel, permission_level) FROM stdin;
-1	1	1	\N
-100	19	36	\N
-101	1	37	\N
+101	1	37	2
+1	1	1	2
+100	19	36	2
 \.
 
 
@@ -3275,8 +3275,8 @@ SELECT pg_catalog.setval('group_assignments_id_seq', 101, true);
 --
 
 COPY groups_catalogue (id, name, sprechstunde, websitename, telephone, idgroup_owner) FROM stdin;
-19	Other group	\N	\N	\N	\N
-1	Team1	HH-Studien	<a href="http://"</a>	xxx	\N
+1	Team1	HH-Studien	<a href="http://"</a>	xxx	1
+19	Other group	\N	\N	\N	1
 \.
 
 
@@ -3365,8 +3365,8 @@ SELECT pg_catalog.setval('patients_id_seq', 614, true);
 COPY personnel_catalogue (id, name, ldap, email, function, tel, level, abrechnungsname, password) FROM stdin;
 36	Mickey Mouse	mm	\N	\N	\N	\N	\N	\N
 37	Icaljoe	ics	\N	\N	\N	\N	\N	\N
-1	I am the PI	pi	my.email@xx.com	Pruefarzt	\N	3	\N	\N
 44	New	\N	\N	\N	\N	\N	\N	\N
+1	ThePI	pi	my.email@xx.com	Pruefarzt	\N	3	\N	\N
 \.
 
 
