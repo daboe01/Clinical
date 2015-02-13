@@ -1352,7 +1352,7 @@ get '/CT/iCAL/:ldap'=> [ldap =>qr/[a-z_0-9]+/i] => sub
     my $personal=$self->param('personal');
     my $ldap = $self->param('ldap');
     my $show_ends = $self->param('show_ends');
-	my $sql="SELECT  distinct name, event_date, tooltip || ' (' || piz ||')' as description  from event_overview where ".($personal?"ldap":"ldap_unfiltered")."=? and not name~*'^dummy '";
+	my $sql="SELECT  distinct name, event_date, tooltip || ' (' || piz ||')' as description, end_time  from event_overview where ".($personal?"ldap":"ldap_unfiltered")."=? and not name~*'^dummy '";
     $sql.="  and not name~*'^Ende: '" unless $show_ends;
 	my $sth = $self->db->prepare( $sql );
 	$sth->execute(($ldap));
@@ -1378,12 +1378,13 @@ get '/CT/iCAL/:ldap'=> [ldap =>qr/[a-z_0-9]+/i] => sub
     {
         my $piz=$1 if $rowarrref->[2]=~/([0-9]{8})/;
         my $vevent = Data::ICal::Entry::Event->new();
+        
         $vevent->add_properties(
-        summary => ucfirst $rowarrref->[2].' '.$rowarrref->[0],
-        uid=> 'iclinical_'. DateTime->now->epoch.'_'.$i++,
-        description => $piz? "http://augimageserver/Viewer/?$piz":$rowarrref->[2],
-        dtstart   =>  icalDateForDate($rowarrref->[1] , 1),
-        dtend   =>  icalDateForDate($rowarrref->[1], 2)
+            summary => ucfirst $rowarrref->[2].' '.$rowarrref->[0],
+            uid=> 'iclinical_'. DateTime->now->epoch.'_'.$i++,
+            description => $piz? "http://augimageserver/Viewer/?$piz":$rowarrref->[2],
+            dtstart   =>  icalDateForDate($rowarrref->[1] , 1),
+            dtend   =>  $rowarrref->[3]? icalDateForDate($rowarrref->[3], 1) : icalDateForDate($rowarrref->[1], 2)
         );
         $calendar->add_entry($vevent);
     }
