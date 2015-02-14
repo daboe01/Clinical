@@ -970,7 +970,7 @@ any '/CT/pdfstamper/:idtrial/:formname'=> [idtrial =>qr/\d+/, formname =>qr/[a-z
     }
     my $data= pdfgen::PDFForTemplateAndRef(TempFileNames::readFile(form_repo_path.'/'. $formname.'.tex'), $keyvaldict);
     $self->render(data=> $data , format =>'pdf' );
-}
+};
 get '/CT/serienbrief_patienten/:propid'=> [ propid =>qr/\d+/] => sub
 {   my $self=shift;
     my $sessionid=$self->param('session');

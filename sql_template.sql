@@ -1447,6 +1447,26 @@ CREATE TABLE personnel_event (
 ALTER TABLE public.personnel_event OWNER TO postgres;
 
 --
+-- Name: procedures_catalogue; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+--
+
+CREATE TABLE procedures_catalogue (
+    id integer NOT NULL,
+    name text,
+    type integer,
+    base_cost double precision,
+    widgetclassname text,
+    widgetparameters text,
+    latex_representation text,
+    ecrf_name text,
+    procedure_time interval,
+    internal_cost double precision
+);
+
+
+ALTER TABLE public.procedures_catalogue OWNER TO root;
+
+--
 -- Name: procedures_personnel; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -1492,6 +1512,29 @@ CREATE TABLE visit_procedures (
 ALTER TABLE public.visit_procedures OWNER TO root;
 
 --
+-- Name: visit_time_interval; Type: VIEW; Schema: public; Owner: root
+--
+
+CREATE VIEW visit_time_interval AS
+ SELECT patient_visits.idvisit,
+    patient_visits.visit_date AS start_time,
+    (patient_visits.visit_date + a.visit_length) AS end_time,
+    a.idpersonnel,
+    patient_visits.id
+   FROM ((patient_visits
+     JOIN trial_visits ON ((patient_visits.idvisit = trial_visits.id)))
+     JOIN ( SELECT visit_procedures.idvisit,
+            procedures_personnel.idpersonnel,
+            sum(procedures_catalogue.procedure_time) AS visit_length
+           FROM ((visit_procedures
+             JOIN procedures_personnel ON ((procedures_personnel.idprocedure = visit_procedures.id)))
+             JOIN procedures_catalogue ON ((visit_procedures.idprocedure = procedures_catalogue.id)))
+          GROUP BY visit_procedures.idvisit, procedures_personnel.idpersonnel) a ON ((a.idvisit = patient_visits.idvisit)));
+
+
+ALTER TABLE public.visit_time_interval OWNER TO root;
+
+--
 -- Name: event_overview; Type: VIEW; Schema: public; Owner: root
 --
 
@@ -1499,6 +1542,7 @@ CREATE VIEW event_overview AS
  WITH collector1 AS (
          SELECT DISTINCT a.name,
             a.event_date,
+            a.end_time,
             COALESCE(a.ldap, personnel_catalogue.ldap) AS ldap,
             a.type,
             a.piz,
@@ -1507,6 +1551,7 @@ CREATE VIEW event_overview AS
            FROM (((( SELECT a_1.idtrial,
                     a_1.name,
                     a_1.event_date,
+                    a_1.end_time,
                     1 AS type,
                     a_1.piz,
                     a_1.tooltip,
@@ -1515,19 +1560,23 @@ CREATE VIEW event_overview AS
                             ((trial_visits.name || ' '::text) || all_trials_1.name) AS name,
                             patient_visits.visit_date AS event_date,
                             patients.piz,
+                            visit_time_interval.end_time,
                             ((((patients.name || ', '::text) || patients.givenname) || ', *'::text) || patients.birthdate) AS tooltip,
                             personnel_catalogue_1.ldap
-                           FROM ((((((patient_visits
+                           FROM (((((patient_visits
                              JOIN patients ON ((patient_visits.idpatient = patients.id)))
                              JOIN all_trials all_trials_1 ON ((patients.idtrial = all_trials_1.id)))
                              JOIN trial_visits ON ((patient_visits.idvisit = trial_visits.id)))
-                             LEFT JOIN visit_procedures ON ((visit_procedures.idvisit = trial_visits.id)))
-                             LEFT JOIN procedures_personnel ON ((procedures_personnel.idprocedure = visit_procedures.id)))
-                             LEFT JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = procedures_personnel.idpersonnel)))) a_1
+                             LEFT JOIN visit_time_interval ON ((visit_time_interval.id = patient_visits.id)))
+                             LEFT JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = visit_time_interval.idpersonnel)))) a_1
                 UNION
                  SELECT trial_process_step.idtrial,
                     ((((COALESCE(process_steps_catalogue.name, ''::text) || ' '::text) || COALESCE(trial_process_step.title, ''::text)) || ' '::text) || all_trials_1.name),
                     trial_process_step.start_date AS event_date,
+                        CASE
+                            WHEN (trial_process_step.end_date < (trial_process_step.start_date + '1 day'::interval)) THEN trial_process_step.end_date
+                            ELSE NULL::date
+                        END AS end_time,
                     2 AS type,
                     NULL::integer AS piz,
                     NULL::text AS tooltip,
@@ -1543,6 +1592,7 @@ CREATE VIEW event_overview AS
                           WHERE (group_assignments_1.idpersonnel = personnel_catalogue_1.id)) AS idtrial,
                     ('Abwesend: '::text || personnel_catalogue_1.ldap),
                     a_1.day AS event_date,
+                    NULL::timestamp without time zone AS end_time,
                     3 AS type,
                     NULL::integer AS piz,
                     personnel_event.comment AS tooltip,
@@ -1559,6 +1609,7 @@ CREATE VIEW event_overview AS
                           WHERE (group_assignments_1.idpersonnel = personnel_catalogue_1.id)) AS idtrial,
                     ('Frei: '::text || personnel_catalogue_1.ldap),
                     a_1.day AS event_date,
+                    NULL::timestamp without time zone AS end_time,
                     3 AS type,
                     NULL::integer AS piz,
                     personnel_event.comment AS tooltip,
@@ -1572,6 +1623,7 @@ CREATE VIEW event_overview AS
                  SELECT trial_process_step.idtrial,
                     (((('Ende: '::text || (COALESCE(process_steps_catalogue.name, ''::text) || ' '::text)) || COALESCE(trial_process_step.title, ''::text)) || ' '::text) || all_trials_1.name),
                     trial_process_step.end_date AS event_date,
+                    trial_process_step.end_date AS end_time,
                     2 AS type,
                     NULL::integer AS piz,
                     NULL::text AS tooltip,
@@ -1581,13 +1633,14 @@ CREATE VIEW event_overview AS
                      LEFT JOIN personnel_catalogue personnel_catalogue_1 ON ((personnel_catalogue_1.id = trial_process_step.idpersonnel)))
                      JOIN all_trials all_trials_1 ON ((all_trials_1.id = trial_process_step.idtrial)))) a
              LEFT JOIN all_trials ON ((a.idtrial = all_trials.id)))
-             LEFT JOIN group_assignments ON (((group_assignments.idgroup = all_trials.idgroup) AND (group_assignments.permission_level > 1))))
+             LEFT JOIN group_assignments ON ((group_assignments.idgroup = all_trials.idgroup)))
              LEFT JOIN personnel_catalogue ON ((personnel_catalogue.id = group_assignments.idpersonnel)))
           WHERE ((a.name IS NOT NULL) AND (a.event_date IS NOT NULL))
           ORDER BY a.type DESC
         )
  SELECT collector1.name,
     collector1.event_date,
+    collector1.end_time,
     collector1.ldap,
     collector1.type,
     collector1.piz,
@@ -1597,6 +1650,7 @@ CREATE VIEW event_overview AS
 UNION
  SELECT ('Meeting: '::text || a.title) AS name,
     COALESCE(a.starttime, (now())::timestamp without time zone) AS event_date,
+    NULL::timestamp without time zone AS end_time,
     personnel_catalogue.ldap,
     3 AS type,
     NULL::integer AS piz,
@@ -2208,26 +2262,6 @@ ALTER TABLE public.personnel_properties_id_seq OWNER TO root;
 
 ALTER SEQUENCE personnel_properties_id_seq OWNED BY personnel_properties.id;
 
-
---
--- Name: procedures_catalogue; Type: TABLE; Schema: public; Owner: root; Tablespace: 
---
-
-CREATE TABLE procedures_catalogue (
-    id integer NOT NULL,
-    name text,
-    type integer,
-    base_cost double precision,
-    widgetclassname text,
-    widgetparameters text,
-    latex_representation text,
-    ecrf_name text,
-    procedure_time interval,
-    internal_cost double precision
-);
-
-
-ALTER TABLE public.procedures_catalogue OWNER TO root;
 
 --
 -- Name: procedure_statistics; Type: VIEW; Schema: public; Owner: root
@@ -3257,9 +3291,9 @@ SELECT pg_catalog.setval('billings_id_seq', 220, true);
 --
 
 COPY group_assignments (id, idgroup, idpersonnel, permission_level) FROM stdin;
-101	1	37	2
 1	1	1	2
 100	19	36	2
+101	1	37	2
 \.
 
 
