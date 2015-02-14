@@ -12,7 +12,7 @@ sub expandPDFDict { my ($block,$dict)=@_;
 		{	$block =~s/<foreach:$key\b([^>]*)>(.+?)<\/foreach:$key>/expandPDFForeachs ($2, $dict->{$key}, $1)/iegs;		# without workaround
 		} else
 		{	$dict->{$key} =~s/([<>])/ \$$1\$ /igs;
-			$dict->{$key} =~s/(?<!\\)%/\\%/gs;	#Negative Lookbehind
+			$dict->{$key} =~s/(?<!\\)([_%&])/\\$1/gs;	#Negative Lookbehind
 			$block =~s/<\Q$key\E>/$dict->{$key}/iegs;
 		} 
 	} return $block;
