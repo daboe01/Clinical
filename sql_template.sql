@@ -1106,7 +1106,7 @@ CREATE TABLE group_assignments (
     id integer NOT NULL,
     idgroup integer,
     idpersonnel integer,
-    permission_level integer DEFAULT 2 NOT NULL
+    permission_level integer DEFAULT 0 NOT NULL
 );
 
 
@@ -1148,7 +1148,7 @@ CREATE VIEW accounts_balanced_ldap AS
      JOIN shadow_accounts ON ((shadow_accounts.id = accounts_balanced.idaccount)))
      JOIN group_assignments ON ((group_assignments.idgroup = shadow_accounts.idgroup)))
      JOIN personnel_catalogue ON ((personnel_catalogue.id = group_assignments.idpersonnel)))
-  WHERE (personnel_catalogue.level > 0);
+  WHERE ((personnel_catalogue.level > 0) AND (group_assignments.permission_level > 0));
 
 
 ALTER TABLE public.accounts_balanced_ldap OWNER TO root;
@@ -1459,7 +1459,7 @@ CREATE TABLE procedures_catalogue (
     widgetparameters text,
     latex_representation text,
     ecrf_name text,
-    procedure_time interval,
+    procedure_time interval DEFAULT '00:15:00'::interval NOT NULL,
     internal_cost double precision
 );
 
@@ -3252,6 +3252,10 @@ SELECT pg_catalog.setval('all_trials_id_seq', 200, true);
 
 COPY audittrail (id, changedate, action, writetable, newdata, whereclause, username) FROM stdin;
 122	2015-02-10 20:59:56.976594	1	trial_visits	{"comment":"Blutentnahme"}	{"id":"7"}	pi
+123	2015-02-14 20:08:55.691043	1	personnel_catalogue	{"level":"1"}	{"id":"37"}	pi
+124	2015-02-14 20:08:56.981243	1	personnel_catalogue	{"level":"1"}	{"id":"36"}	pi
+125	2015-02-14 20:08:58.586187	1	personnel_catalogue	{"level":"1"}	{"id":"44"}	pi
+126	2015-02-14 20:09:07.779045	3	personnel_catalogue	\N	{"id":"44"}	pi
 \.
 
 
@@ -3259,7 +3263,7 @@ COPY audittrail (id, changedate, action, writetable, newdata, whereclause, usern
 -- Name: audittrail_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('audittrail_id_seq', 122, true);
+SELECT pg_catalog.setval('audittrail_id_seq', 126, true);
 
 
 --
@@ -3397,10 +3401,9 @@ SELECT pg_catalog.setval('patients_id_seq', 614, true);
 --
 
 COPY personnel_catalogue (id, name, ldap, email, function, tel, level, abrechnungsname, password) FROM stdin;
-36	Mickey Mouse	mm	\N	\N	\N	\N	\N	\N
-37	Icaljoe	ics	\N	\N	\N	\N	\N	\N
-44	New	\N	\N	\N	\N	\N	\N	\N
 1	ThePI	pi	my.email@xx.com	Pruefarzt	\N	3	\N	\N
+37	Icaljoe	ics	\N	\N	\N	1	\N	\N
+36	Mickey Mouse	mm	\N	\N	\N	1	\N	\N
 \.
 
 
@@ -3475,10 +3478,6 @@ COPY personnel_properties (id, propertydate, idpersonnel, idproperty, value) FRO
 126	\N	37	4	\N
 127	\N	37	5	\N
 128	\N	37	2	\N
-153	\N	44	1	\N
-154	\N	44	4	\N
-155	\N	44	2	\N
-156	\N	44	5	\N
 \.
 
 
