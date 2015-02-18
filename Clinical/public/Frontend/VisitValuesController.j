@@ -16,6 +16,7 @@
 {
     CPWindow _window;
     CPSize   _parentSize;
+    CPButtonBar _buttonBar @accessors(property=buttonBar);
 }
 
 var LABEL_WIDTH     = 200;
@@ -38,10 +39,18 @@ var INTERITEM_SPACE =  20;
     [[_representedObject._entity relationOfName:"visitvalues"] _invalidateCache];
     var visitProcedureValues=[_representedObject valueForKey:"visitvalues" synchronous:YES];
 
-    _view = [[CPScrollView alloc] initWithFrame:CGRectMake(0, 0, 800, _parentSize.height - 32)];
-    [_view setAutoresizingMask: CPViewWidthSizable | CPViewHeightSizable];
+    _view = [[CPView alloc] initWithFrame:CGRectMake(0, 0, 800, _parentSize.height)];
+    var scrollview = [[CPScrollView alloc] initWithFrame:CGRectMake(0, 0, 800, _parentSize.height - 26)];
+    [_view addSubview:scrollview];
+    _buttonBar=[[CPButtonBar alloc] initWithFrame:CGRectMake(0, _parentSize.height-26, 800, 26)];
+    var button=[_buttonBar addButtonWithImageName:"print.png" target:[[CPApp keyWindow] delegate] action:@selector(printECRF:)];
+    [button setToolTip:"Print data..."];
+
+    [_view addSubview:_buttonBar];
+    [scrollview setHasHorizontalScroller:NO];
+    [scrollview setAutoresizingMask: CPViewWidthSizable | CPViewHeightSizable];
     var contentView = [[CPBox alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
-    [_view setDocumentView:contentView]
+    [scrollview setDocumentView:contentView]
 
     var i, l=[visitProcedureValues count];
     var valueCursor= CGPointMake(LABEL_WIDTH + INTERITEM_SPACE, INTERITEM_SPACE);
@@ -70,7 +79,7 @@ var INTERITEM_SPACE =  20;
          contentRect.size.width = MAX(contentRect.size.width, valueCursor.x + widgetSize.width + INTERITEM_SPACE);
     }
     [contentView setFrame:contentRect];
-    [_view scrollToEndOfDocument:self];
+    [scrollview scrollToEndOfDocument:self];
 }
 
 -(void) popoverDidClose:aPopover

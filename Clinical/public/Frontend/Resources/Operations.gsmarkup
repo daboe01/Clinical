@@ -265,6 +265,7 @@
   <tableViewPopup   width="100" height="23" id="column_idpersonnel" itemsController="#CPOwner.groupPersonnelController" itemsValue="arrangedObjects.idpersonnel" itemsFace="arrangedObjects.name"/>
   <iconTableViewControl width="25" height="23"  id="visitsmissingicon"/>
   <datePicker style="graphical" id="graphical_picker"/>
+  <RightAlignedTextField id="rightAlignedText"/>
 </window>
 
  <window id="accountswindow" visible="NO" width="400" height="600">
@@ -272,15 +273,13 @@
     <scrollView hasHorizontalScroller="NO">
      <tableView zebra="yes" id="accountswindowtv" autosaveName="accountswindowtv0" valueBinding="#CPOwner.transactionsController" allowsMultipleSelection="YES">
         <tableColumn identifier="date_transaction" title="date"/>
-        <tableColumn identifier="amount_change" title="amount"/>
+        <tableColumn identifier="amount_change" dataView="#rightAlignedText" title="amount"/>
         <tableColumn identifier="description" title="description" editable="NO"/>
         <tableColumn identifier="receiptid" title="beleg" editable="NO"/>
      </tableView>
     </scrollView>
     <hbox>
-       <ButtonBar target="#myadmincontroller" actionsButton="YES">
-         <popUpButtonItem title="Reload" target="#myadmincontroller" action="reloadAccount:"/>
-       </ButtonBar>
+       <ButtonBar target="#myadmincontroller" id="accounts_bb" actionsButton="NO"/>
        <progresIndicator id="accountsprogress" indeterminate="YES"/>
     </hbox>
    </vbox>
@@ -374,6 +373,8 @@
     <outlet source="myadmincontroller" target="billings_tv" label="billingsTV"/>
     <outlet source="myadmincontroller" target="accountsprogress" label="accountsProgress"/>
     <outlet source="myadmincontroller" target="ammend_bill_tv" label="ammendBillTV"/>
+    <outlet source="myadmincontroller" target="accounts_bb" label="accountsBB"/>
+
 </connectors>
 
 </gsmarkup>

@@ -15,43 +15,6 @@
 
 
 /////////////////////////////////////////////////////////
-@implementation _CPDatePickerMonthView(DisablingExtension)
-- (void)reloadData
-{
-    if (!_date)
-        return;
-
-    var currentMonth = _date,
-        startOfMonthDay = [self startOfWeekForDate:currentMonth],
-        daysInPreviousMonth = [_previousMonth _daysInMonth],
-        firstDayToShowInPreviousMonth = daysInPreviousMonth - startOfMonthDay,
-        currentDate = new Date(_previousMonth.getFullYear(), _previousMonth.getMonth(), firstDayToShowInPreviousMonth),
-        now = [CPDate date],
-        dateValue = [_datePicker dateValue];
-
-    // Update the tiles
-    for (var i = 0; i < [_dayTiles count]; i++)
-    {
-        var dayTile = _dayTiles[i];
-
-        // Increment to next day
-        currentDate.setTime(currentDate.getTime() + 90000000);
-        [currentDate _resetToMidnight];
-
-        var isPresentMonth = (now.getMonth() == currentDate.getMonth()
-                      && now.getFullYear() == currentDate.getFullYear());
-
-        [dayTile setDate:[currentDate copy]];
-        [dayTile setStringValue:currentDate.getDate()];
-        [dayTile setDisabled:![self isEnabled] || currentDate.getMonth() !== currentMonth.getMonth() || currentDate < [_datePicker minDate] || currentDate > [_datePicker maxDate]];
-        [dayTile setHighlighted:isPresentMonth && currentDate.getDate() == now.getDate()];
-    }
-
-    // Select the dates
-    [self _selectDate:[_datePicker dateValue] timeInterval:[_datePicker timeInterval]];
-}
-@end
-
 
 @implementation CPTableView(ColumnFinder)
 -(unsigned) findColumnWithTitle:(CPString) aTitle
@@ -72,7 +35,7 @@
 @end
 @implementation CPDatePicker(StringSupport)
 -(void) setObjectValue:aVal
-{
+{   if(!aVal) return;
     if([aVal isKindOfClass:CPString])
         aVal=[[CPDate alloc] initWithShortString:aVal];
     [self setDateValue:aVal];
@@ -82,6 +45,7 @@
 {
     return [_value stringValue];
 }
+// <!> fixme: does not work
 -(void)cancelOperation:sender
 {
      if(_delegate && [_delegate respondsToSelector:@selector(cancelOperation:)]) 
@@ -129,6 +93,7 @@
     id  ammendBillTV;
     id  billingsTV;
     id  accountsProgress;
+    id  accountsBB;
 
     id  distanceCalcConnection;
     id  serviceConnection;
@@ -176,6 +141,8 @@
     [button setToolTip:"Print visits overview"];
     [button bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"patientVisitsController.arrangedObjects.@count" options:nil];
     [visitsButtonBar registerWithArrayController:[CPApp delegate].patientVisitsController plusTooltip:"Insert visit" minusTooltip:"Delete selected visit"];
+    button=[visitsButtonBar addButtonWithImageName:"play.png" target:self action:@selector(openECRF:)];
+    [button setToolTip:"Open worksheet..."];
 
 
     var button=[documentsButtonBar addButtonWithImageName:"download.png" target:self action:@selector(doDownload:)];
@@ -202,6 +169,11 @@
     
     var button=[travelButtonBar addButtonWithImageName:"print.png" target:self action:@selector(fahrtkostenForm:)];
     [button bind:CPEnabledBinding toObject:[CPApp delegate] withKeyPath:"patientVisitsController2.selectedObjects.@count" options:nil];
+
+    button=[accountsBB addButtonWithImageName:"reload.png" target:self action:@selector(reloadAccount:)];
+    [button setToolTip:"Update from SAP"];
+
+
 }
 -(void) reloadTrialsList:sender
 {
@@ -683,7 +655,7 @@
 {   if(! parseInt([[CPApp delegate].patientsController valueForKeyPath: "selection.travel_distance"], 10)) 
     {   var idpatient=[[CPApp delegate].patientsController valueForKeyPath: "selection.id"];
         var myreq=[CPURLRequest requestWithURL: BaseURL+"CT/travel_distance/"+idpatient];
-        distanceCalcConnection=    [CPURLConnection connectionWithRequest: myreq delegate: self];
+        distanceCalcConnection = [CPURLConnection connectionWithRequest: myreq delegate: self];
         distanceCalcConnection._patient=[[CPApp delegate].patientsController selectedObject];
     }
     [travelWindow makeKeyAndOrderFront:self];
@@ -713,7 +685,7 @@
     [self _ammendSelectedBillWithFilter:""];
 }
 
--(void) addVisitsToBill:sender
+-(void)addVisitsToBill
 {
     var filter="";
     var selected=[[CPApp delegate].patientVisitsController2 selectedObjects];
@@ -725,6 +697,26 @@
     [self _ammendSelectedBillWithFilter:filter];
 }
 
+- (void)ammendBillWarningDidEnd:(CPAlert)anAlert code:(id)code context:(id)context
+{
+    if(code)
+    {   [self addVisitsToBill];
+    }
+}
+
+-(void) addVisitsToBill:sender
+{
+    var date=[[CPDate alloc] initWithShortString:[[CPApp delegate].billingsController valueForKeyPath:"selection.creation_date"]];
+    var interval= [date timeIntervalSinceDate:[CPDate dateWithTimeIntervalSinceNow:0]]/ -(60*60*24);
+    if(interval > 1)
+    {
+        var myalert = [CPAlert new];
+        [myalert setMessageText: "This bill is not from today.\nDo you really want to add the visits?"];
+        [myalert addButtonWithTitle:"Cancel"];
+        [myalert addButtonWithTitle:"Add"];
+        [myalert beginSheetModalForWindow: trialsWindow modalDelegate:self didEndSelector:@selector(ammendBillWarningDidEnd:code:context:) contextInfo: nil];
+    } else [self addVisitsToBill];
+}
 -(void) validateIBAN:sender
 {   var idpatient=[[CPApp delegate].patientsController valueForKeyPath: "selection.id"];
     var myreq=[CPURLRequest requestWithURL: BaseURL+"CT/validate_iban/"+idpatient];
@@ -813,9 +805,9 @@
     var mpackage=[[CPURLConnection sendSynchronousRequest: myreq returningResponse: nil]  rawString];
     var o  = JSON.parse( mpackage );
     var drittmittelnummer=o['Drittmittelnummer'];
-    if(drittmittelnummer);
+    if (drittmittelnummer);
     {
-        var myoptions=[CPDictionary dictionaryWithObject: "1" forKey: "FSSynchronous"];
+        var myoptions=[CPDictionary dictionaryWithObject: "1" forKey:"FSSynchronous"];
         var a=[accountsController._entity._store fetchObjectsWithKey:"account_number" equallingValue:[drittmittelnummer stringByReplacingOccurrencesOfString:" " withString:""] inEntity: accountsController._entity options: myoptions];
         if([a count]==1)
         {   a=[a objectAtIndex: 0];
@@ -844,49 +836,24 @@
         {   [self openAnnotation:self];
              return NO;
         }
-        var frame = [tableView frameOfDataViewAtColumn:[[tableView tableColumns] indexOfObject:column] row:row];
-        var scrollView=[tableView enclosingScrollView];
-        frame=[tableView convertRect:frame toView: scrollView]
-        frame.origin.y-=2;
-        frame.size.height=30
-        frame.size.width+=8;
-        var combobox=[[CPComboBox alloc] initWithFrame:frame];
-         combobox.tableViewEditedRowIndex = row;
-         combobox.tableViewEditedColumnObj = column;
-        [combobox setCompletes:YES];
-        [combobox setAutoresizingMask: CPViewWidthSizable];
-        [combobox setTarget:tableView];
-        [combobox setAction:@selector(_commitDataViewObjectValue:)];
-        var i, l=[[[CPApp delegate].autocompletionController arrangedObjects] count];
-        var arr=[], objects=[[CPApp delegate].autocompletionController arrangedObjects];
-        for(i=0;i<l;i++)
-        {   var val= [[objects objectAtIndex:i] valueForKey:"value"];
-            if(val) arr.push( val );
-        }
-        [combobox setContentValues:arr];
-        [tableView _setObjectValueForTableColumn:column row:row forView:combobox];
-        [scrollView addSubview:combobox]; // positioned:CPWindowAbove relativeTo:tableView
-       [[tableView window] makeFirstResponder:combobox];
-        [combobox setDelegate:self];
-       return NO;
+       return YES;
    } else if (tableView === timeTV || tableView === visitsTV || tableView === billingsTV)
    {
        var identifier= [column identifier];
        if(identifier === 'title' || identifier === 'comment' || identifier === 'amount' || identifier === 'visit_ids')
        {   return YES;
        }
-       datePickerPopover =[CPPopover new];
+        datePickerPopover =[CPPopover new];
        [datePickerPopover setDelegate:self];
        [datePickerPopover setAnimates:NO];
-       [datePickerPopover setBehavior: CPPopoverBehaviorTransient];
-       [datePickerPopover setAppearance: CPPopoverAppearanceMinimal];
+       [datePickerPopover setBehavior:CPPopoverBehaviorTransient];
+       [datePickerPopover setDelegate:self];
+       [datePickerPopover setAppearance:CPPopoverAppearanceMinimal];
        var myViewController=[CPViewController new];
        [datePickerPopover setContentViewController:myViewController];
        [myViewController setView:graphicalPicker];
        [graphicalPicker setLocale: [[CPLocale alloc] initWithLocaleIdentifier:@"de_DE"]];
-       graphicalPicker.tableViewEditedRowIndex = row;
-       graphicalPicker.tableViewEditedColumnObj = column;
-       graphicalPicker._table = tableView;
+        graphicalPicker._table = tableView;
        [tableView _setObjectValueForTableColumn:column row:row forView:graphicalPicker];
        [graphicalPicker setTarget:self];
        [graphicalPicker setAction:@selector(_commitDateValue:)];
@@ -919,8 +886,9 @@
 }
 
 // for combobox
-- (void)_controlTextDidEndEditing:(CPTextField) object
+- (void)_controlTextDidEndEditing:(CPTextField)object
 {
+
     [object setDelegate:nil];
     if(object) [[object target] _commitDataViewObjectValue:object]
     var win=[object window];
@@ -960,13 +928,17 @@
     [visitValuesPopover setBehavior: CPPopoverBehaviorTransient];
     [visitValuesPopover setAppearance: CPPopoverAppearanceMinimal];
     [visitValuesPopover setContentViewController:vvc];
-    [visitValuesPopover setDelegate:vvc]
+    [visitValuesPopover setDelegate:vvc];
+
     var frame = [visitsTV frameOfDataViewAtColumn:0 row:[[visitsTV selectedRowIndexes] firstIndex]];
     [visitValuesPopover showRelativeToRect:frame ofView:visitsTV preferredEdge:nil];
 }
 
 -(void) printECRF:sender
 {
+    if ([[[CPApp keyWindow] firstResponder] respondsToSelector:@selector(_reverseSetBinding)])
+        [[[CPApp keyWindow] firstResponder] _reverseSetBinding]; // flush any typed text before printing
+
     var idvisit= [[CPApp delegate].patientVisitsController valueForKeyPath:"selection.id"];
     var myreq=[CPURLRequest requestWithURL: BaseURL+"CT/new_ecrf/"+ idvisit];
     [myreq setHTTPMethod:"POST"];
@@ -982,7 +954,7 @@
     window.open("/Frontend/index_deep.html?t=Onsite.gsmarkup&session="+window.G_SESSION+"&trial="+ trialname, 'onsite_window');
 }
 -(void) downloadManual:sender
-{    window.open("https://github.com/daboe01/ClinicalManual/blob/master/manual.pdf?raw=true", 'manual_window');
+{    window.open("/clinical_manual.pdf", 'manual_window');
 }
 
 @end
