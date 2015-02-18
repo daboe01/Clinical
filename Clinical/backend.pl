@@ -1064,6 +1064,7 @@ post '/CT/invite_teammeeting/:idteammeeting' => [idteammeeting =>qr/[0-9]+/] => 
     my $i;
     while(my $c=$sth->fetchrow_hashref())
     {
+        next unless $c->{email};
         my $calendar = Data::ICal->new();
         $calendar->add_properties( method => 'REQUEST' );
         my $event = Data::ICal::Entry::Event->new();
