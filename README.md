@@ -34,6 +34,9 @@ cat sql_template.sql | psql aug_clinical
 # perl is already installed on linux and mac but we need quite a bunch of non-core perl modules
 curl -L https://cpanmin.us | perl - -M https://cpan.metacpan.org -n Mojolicious Mojolicious::Plugin::Database Mojolicious::Plugin::RenderFile SQL::Abstract::More Apache::Session::File Spreadsheet::WriteExcel Spreadsheet::ParseExcel Business::IBAN DBD::Pg Date::ICal Data::ICal Data::ICal::Entry::TimeZone Net::LDAP DateTime File::Find::Rule MIME::Lite Net::IMAP::Simple Email::MIME Email::MIME::Attachment::Stripper
 # now download this repo and cd into it
+# change the directory paths and database connection as needed
+vi backend.pl
+# now you are ready to launch
 morbo backend.pl # this starts the testing server
 # now locate your favourite web browser to http://localhost:3000/Frontend/index.html
 # the username is pi with no password
