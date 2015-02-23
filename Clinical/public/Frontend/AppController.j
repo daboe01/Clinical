@@ -405,13 +405,12 @@ var VisitProcedurePBoardType="#VisitProcedurePBoardType";
         frame.size.height=30;
         frame.size.width+=8;
         var combobox=[[CPComboBox alloc] initWithFrame:frame];
-         combobox.tableViewEditedRowIndex = row;
-         combobox.tableViewEditedColumnObj = column;
+        [combobox setTarget:self];
+        [combobox setAction:@selector(_controlTextDidEndEditing:)];
         [combobox setCompletes:YES];
         [combobox setForceSelection:YES];
 	    [combobox setAutoresizingMask: CPViewWidthSizable];
-        [combobox setTarget:tableView];
-        [combobox setAction:@selector(_commitDataViewObjectValue:)];
+        [combobox bind:CPValueBinding  toObject:proceduresVisitController withKeyPath: "selection.procedure_name" options:nil];
         [combobox bind:CPContentValuesBinding  toObject:proceduresCatController withKeyPath: "arrangedObjects.name" options:nil];
         [tableView _setObjectValueForTableColumn:column row:row forView:combobox];
         [scrollView addSubview:combobox]; // positioned:CPWindowAbove relativeTo:tableView
@@ -434,8 +433,6 @@ var VisitProcedurePBoardType="#VisitProcedurePBoardType";
        [datePickerPopover setContentViewController:myViewController];
        [myViewController setView:graphicalPicker];
        [graphicalPicker setLocale: [[CPLocale alloc] initWithLocaleIdentifier:@"de_DE"]];
-       graphicalPicker.tableViewEditedRowIndex = row;
-       graphicalPicker.tableViewEditedColumnObj = column;
        graphicalPicker._table = tableView;
        [tableView _setObjectValueForTableColumn:column row:row forView:graphicalPicker];
        [graphicalPicker setTarget:self];
@@ -461,11 +458,9 @@ var VisitProcedurePBoardType="#VisitProcedurePBoardType";
 // for combobox
 - (void)_controlTextDidEndEditing:(CPTextField) object
 {
-    [object setDelegate:nil];
-    if(object) [[object target] _commitDataViewObjectValue:object]
-    var win=[object window];
-    [win makeFirstResponder:visitProcsTV]
     [object removeFromSuperview];
+    [object unbind:CPValueBinding];
+    [object unbind:CPContentValuesBinding];
 }
 
 - (void)controlTextDidEndEditing:(CPNotification)aNotification
@@ -479,7 +474,10 @@ var VisitProcedurePBoardType="#VisitProcedurePBoardType";
 
 -(void)cancelOperation:sender
 {
-// fixme!
+     if([sender isKindOfClass:CPComboBox])
+     {
+        [self _controlTextDidEndEditing:sender];
+     }
 }
 // END: KOKA und Visit procedures
 

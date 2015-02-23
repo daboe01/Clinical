@@ -140,8 +140,6 @@
 	[datePickerPopover setContentViewController:myViewController];
 	[myViewController setView:graphicalPicker];
 	[graphicalPicker setLocale: [[CPLocale alloc] initWithLocaleIdentifier:@"de_DE"]];
-	graphicalPicker.tableViewEditedRowIndex = row;
-	graphicalPicker.tableViewEditedColumnObj = column;
 	graphicalPicker._table = tableView;
 	[tableView _setObjectValueForTableColumn:column row:row forView:graphicalPicker];
 	[graphicalPicker setTarget:self];

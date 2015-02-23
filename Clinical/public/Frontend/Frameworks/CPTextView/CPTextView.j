@@ -45,6 +45,29 @@ _MidRange = function(a1)
     return FLOOR((CPMaxRange(a1) + a1.location) / 2);
 };
 
+_characterTripletFromStringAtIndex=function(string, index)
+{
+    if([string isKindOfClass:CPAttributedString])
+        string = string._string;
+
+    var tripletRange = _MakeRangeFromAbs(MAX(0, index - 1), MIN(string.length, index + 2)),
+        ret = [string substringWithRange:tripletRange];
+
+    if (tripletRange.length < 3 && index == 0)
+    {
+        ret = " " + ret;
+    }
+
+    return ret;
+}
+_regexMatchesStringAtIndex=function(regex, string, index)
+{
+    var triplet = _characterTripletFromStringAtIndex(string, index);
+
+    return regex.exec(triplet)  !== null;
+}
+
+
 @implementation CPPlatformPasteboard(SafariFix)
 
 - (boolean)nativePasteEvent:(DOMEvent)aDOMEvent
@@ -125,7 +148,6 @@ var kDelegateRespondsTo_textShouldBeginEditing                                  
 
 @implementation CPText : CPControl
 {
-    int _previousSelectionGranularity;
 }
 
 - (void)changeFont:(id)sender
@@ -171,11 +193,6 @@ var kDelegateRespondsTo_textShouldBeginEditing                                  
 
     if (![self isRichText] && [stringForPasting isKindOfClass:[CPAttributedString class]])
         stringForPasting = stringForPasting._string;
-
-    if (_previousSelectionGranularity > 0)
-    {
-        // FIXME: handle smart pasting
-    }
 
     if (stringForPasting)
         [self insertText:stringForPasting];
@@ -341,6 +358,7 @@ var kDelegateRespondsTo_textShouldBeginEditing                                  
     CPDictionary    _selectedTextAttributes;
     int             _selectionGranularity;
     int             _previousSelectionGranularity;
+    int             _copySelectionGranularity;
 
     CPColor         _insertionPointColor;
 
@@ -421,6 +439,31 @@ var kDelegateRespondsTo_textShouldBeginEditing                                  
     [self registerForDraggedTypes:[CPColorDragType]];
 
     return self;
+}
+
+- (void)copy:(id)sender
+{
+   _copySelectionGranularity = _previousSelectionGranularity;
+   [super copy:sender];
+}
+
+- (void)paste:(id)sender
+{
+    if (_copySelectionGranularity > 0)
+    {
+        if (![self _isCharacterAtIndex:MAX(0, _selectionRange.location - 1) granularity:_copySelectionGranularity])
+        {
+            [self insertText:" "];
+        }
+    }
+    [super paste:sender];
+    if (_copySelectionGranularity > 0)
+    {
+        if (![self _isCharacterAtIndex:CPMaxRange(_selectionRange) granularity:_copySelectionGranularity])
+        {
+            [self insertText:" "];
+        }
+    }
 }
 
 - (BOOL)_isFocused
@@ -633,24 +676,31 @@ var kDelegateRespondsTo_textShouldBeginEditing                                  
     return shouldChange;
 }
 
-- (void)_replaceCharactersInRange:aRange withAttributedString:(CPString)aString
+- (void)_fixupReplaceForRange:(CPRange)aRange
 {
-    [_textStorage replaceCharactersInRange:aRange withAttributedString:aString];
-    [self setSelectedRange:CPMakeRange(aRange.location, [aString length])];
+    [self setSelectedRange:aRange];
     [_layoutManager _validateLayoutAndGlyphs];
     [self sizeToFit];
     [self scrollRangeToVisible:_selectionRange];
     [self setNeedsDisplay:YES];
+}
+- (void)_replaceCharactersInRange:aRange withAttributedString:(CPString)aString
+{
+    [[[[self window] undoManager] prepareWithInvocationTarget:self]
+                _replaceCharactersInRange:CPMakeRange(aRange.location, [aString length])
+                withAttributedString:[_textStorage attributedSubstringFromRange:CPMakeRangeCopy(aRange)]];
 
+    [_textStorage replaceCharactersInRange:aRange withAttributedString:aString];
+    [self _fixupReplaceForRange:CPMakeRange(aRange.location, [aString length])];
 }
 - (void)_replaceCharactersInRange:(CPRange)aRange withString:(CPString)aString
 {
+    [[[[self window] undoManager] prepareWithInvocationTarget:self]
+                _replaceCharactersInRange:CPMakeRange(aRange.location, [aString length])
+                withString:[[self string] substringWithRange:CPMakeRangeCopy(aRange)]];
+
     [_textStorage replaceCharactersInRange:CPMakeRangeCopy(aRange) withString:aString];
-    [self setSelectedRange:CPMakeRange(aRange.location, aString.length)];
-    [_layoutManager _validateLayoutAndGlyphs];
-    [self sizeToFit];
-    [self scrollRangeToVisible:_selectionRange];
-    [self setNeedsDisplay:YES];
+    [self _fixupReplaceForRange:CPMakeRange(aRange.location, [aString length])];
 }
 
 - (void)insertText:(CPString)aString
@@ -808,9 +858,9 @@ var kDelegateRespondsTo_textShouldBeginEditing                                  
         if(CPPlatformHasBug(CPJavaScriptPasteRequiresEditableTarget))
         {
             var domelem = _window._platformWindow._platformPasteboard._DOMPasteboardElement;
-            domelem.value=[[self stringValue] substringWithRange:_selectionRange];
-            domelem.select()
+            domelem.value=" ";  // make sure we do not get an empty selection
             domelem.focus()
+            domelem.select()
         }
     }
 }
@@ -921,6 +971,7 @@ var kDelegateRespondsTo_textShouldBeginEditing                                  
 {
     /* will post CPTextViewDidChangeSelectionNotification */
     _previousSelectionGranularity = [self selectionGranularity];
+
     [self setSelectionGranularity:CPSelectByCharacter];
     [self setSelectedRange:[self selectedRange] affinity:0 stillSelecting:NO];
     var point = [_layoutManager locationForGlyphAtIndex:[self selectedRange].location];
@@ -1340,7 +1391,6 @@ var kDelegateRespondsTo_textShouldBeginEditing                                  
     if (![self shouldChangeTextInRange:changedRange replacementString:@""])
         return;
 
-    changedRange = CPIntersectionRange(CPMakeRange(0, [_layoutManager numberOfCharacters]), changedRange);
     [[[[self window] undoManager] prepareWithInvocationTarget:self] _replaceCharactersInRange:CPMakeRange(_selectionRange.location, 0) withAttributedString:[_textStorage attributedSubstringFromRange:CPMakeRangeCopy(changedRange)]];
     [_textStorage deleteCharactersInRange:CPMakeRangeCopy(changedRange)];
 
@@ -1360,10 +1410,12 @@ var kDelegateRespondsTo_textShouldBeginEditing                                  
     else
         changedRange = _selectionRange;
 
-    if (_previousSelectionGranularity > 0 &&
-        changedRange.location > 0 && [self _isCharacterAtIndex:changedRange.location-1 granularity:_previousSelectionGranularity] &&
-        changedRange.location < [[self string] length] && [self _isCharacterAtIndex:CPMaxRange(changedRange) granularity:_previousSelectionGranularity])
+    // smart delete
+    if (_copySelectionGranularity > 0 &&
+        changedRange.location > 0 && [self _isCharacterAtIndex:changedRange.location-1 granularity:_copySelectionGranularity] &&
+        changedRange.location < [[self string] length] && [self _isCharacterAtIndex:CPMaxRange(changedRange) granularity:_copySelectionGranularity])
         changedRange.length++;
+
     [self _deleteForRange:changedRange];
 }
 
@@ -1761,13 +1813,13 @@ var kDelegateRespondsTo_textShouldBeginEditing                                  
             desiredSize.height = maxSize.height;
     }
 
-	if (myClipviewSize)
-	{
-		if (desiredSize.width < myClipviewSize.width)
-			desiredSize.width = myClipviewSize.width;
-		if (desiredSize.height < myClipviewSize.height)
-			desiredSize.height = myClipviewSize.height;
-	}
+    if (myClipviewSize)
+    {
+        if (desiredSize.width < myClipviewSize.width)
+            desiredSize.width = myClipviewSize.width;
+        if (desiredSize.height < myClipviewSize.height)
+            desiredSize.height = myClipviewSize.height;
+    }
 
     [super setFrameSize:desiredSize];
 }
@@ -1799,97 +1851,63 @@ var kDelegateRespondsTo_textShouldBeginEditing                                  
     switch (granularity)
     {
         case CPSelectByWord:
-            characterSet = [[self class] _wordBoundaryCharacterArray];
-        break;
+            characterSet = [[self class] _wordBoundaryRegex];
+            break;
+
         case CPSelectByParagraph:
-            characterSet = [[self class] _paragraphBoundaryCharacterArray];
-        break;
+            characterSet = [[self class] _paragraphBoundaryRegex];
+            break;
+        default:
+            // FIXME if (!characterSet) croak!
     }
-    // FIXME if (!characterSet) croak!
-    return characterSet.join("").indexOf([self string].charAt(index))  !== CPNotFound;
+
+    return _regexMatchesStringAtIndex(characterSet, [_textStorage string], index);
 }
 
-- (CPRange)_characterRangeForUnitAtIndex:(unsigned)index asDefinedByCharArray:(CPArray)characterSet skip:(BOOL)flag
++ (CPArray)_wordBoundaryRegex
 {
-    var wordRange = CPMakeRange(0, 0),
-        lastIndex = CPNotFound,
-        searchIndex,
-        setString = characterSet.join(""),
+    return /^(.|[\r\n])\W/m;
+}
++ (CPArray)_paragraphBoundaryRegex
+{
+    return /^(.|[\r\n])[\n\r]/m;
+}
+
+- (CPRange)_characterRangeForIndex:(unsigned)index inRange:(CPRange) aRange asDefinedByRegex:(JSObject)regex skip:(BOOL)flag
+{
+    var wordRange = CPMakeRange(index, 0),
+        numberOfCharacters = [_layoutManager numberOfCharacters],
         string = [_textStorage string];
 
     // do we start on a boundary character?
-    if (flag && string.charAt(index) && setString.indexOf(string.charAt(index)) !== CPNotFound)
+    if (flag && _regexMatchesStringAtIndex(regex, string, index))
     {
         // -> extend to the left
-        wordRange = CPMakeRange(index, 1);
-        while (setString.indexOf(string.charAt(--index)) !== CPNotFound && index > -1)
+        for (var searchIndex = index - 1; searchIndex > 0 && _regexMatchesStringAtIndex(regex, string, searchIndex); searchIndex--)
         {
-             wordRange = CPMakeRange(index, 1);
-
+            wordRange.location = searchIndex;
         }
         // -> extend to the right
-        for (index = wordRange.location; setString.indexOf(string.charAt(++index)) !== CPNotFound && index < string.length;)
+        searchIndex = index + 1;
+        while (searchIndex < numberOfCharacters && _regexMatchesStringAtIndex(regex, string, searchIndex))
         {
-             wordRange = _MakeRangeFromAbs(wordRange.location, MIN(MAX(0, string.length - 1), index + 1));
-
+            searchIndex++;
         }
-        return wordRange;
+        return _MakeRangeFromAbs(wordRange.location, MIN(MAX(0, numberOfCharacters - 1), searchIndex));
     }
-
-    for (searchIndex = 0; searchIndex < characterSet.length; searchIndex++)
+    // -> extend to the left
+    for (var searchIndex = index - 1; searchIndex >= 0 && !_regexMatchesStringAtIndex (regex, string, searchIndex); searchIndex--)
     {
-        var peek = string.lastIndexOf(characterSet[searchIndex], index);
-
-        if (peek !== CPNotFound)
-        {
-            if (lastIndex === CPNotFound)
-                lastIndex = peek;
-            else
-                lastIndex = MAX(lastIndex, peek);
-        }
+        wordRange.location = searchIndex;
     }
-
-    if (lastIndex !== CPNotFound)
-        wordRange.location = lastIndex + 1;
-
-    lastIndex = CPNotFound;
-
-    for (searchIndex = 0 ; searchIndex < characterSet.length; searchIndex++)
+    // -> extend to the right
+    index++;
+    while (index < numberOfCharacters && !_regexMatchesStringAtIndex (regex, string, index))
     {
-        var peek= string.indexOf(characterSet[searchIndex], index);
-
-        if (peek !== CPNotFound)
-        {
-            if (lastIndex === CPNotFound)
-                lastIndex = peek;
-            else
-                lastIndex = MIN(lastIndex, peek);
-        }
-
+        index++;
     }
-
-    if (lastIndex != CPNotFound)
-        wordRange.length = lastIndex - wordRange.location;
-    else
-        wordRange.length = string.length - wordRange.location;
-
-    return wordRange;
+    return _MakeRangeFromAbs(wordRange.location, MIN(MAX(0, numberOfCharacters), index));
 }
-
-/* <!> FIXME
-    just a testing characterSet 
-    all of this depend of the current language.
-    Need some CPLocale support and maybe even a FSM...
- */
-+ (CPArray)_wordBoundaryCharacterArray
-{
-    return ['\n','\r', ' ', '\t', ',', ';', '.', '!', '?', '\'', '"', '-', ':'];
-}
-+ (CPArray)_paragraphBoundaryCharacterArray
-{
-    return ['\n','\r'];
-}
-
 
 - (CPRange)selectionRangeForProposedRange:(CPRange)proposedRange granularity:(CPSelectionGranularity)granularity
 {
@@ -1909,24 +1927,24 @@ var kDelegateRespondsTo_textShouldBeginEditing                                  
     switch (granularity)
     {
         case CPSelectByWord:
-            var wordRange = [self _characterRangeForUnitAtIndex:proposedRange.location asDefinedByCharArray:[[self class] _wordBoundaryCharacterArray] skip:YES];
+            var wordRange = [self _characterRangeForIndex:proposedRange.location inRange:proposedRange asDefinedByRegex:[[self class] _wordBoundaryRegex] skip:YES];
 
             if (proposedRange.length)
-                wordRange = CPUnionRange(wordRange, [self _characterRangeForUnitAtIndex:CPMaxRange(proposedRange) asDefinedByCharArray:[[self class] _wordBoundaryCharacterArray] skip:NO]);
+                wordRange = CPUnionRange(wordRange, [self _characterRangeForIndex:CPMaxRange(proposedRange) inRange:proposedRange asDefinedByRegex:[[self class] _wordBoundaryRegex] skip:NO]);
 
             return wordRange;
 
         case CPSelectByParagraph:
-            var parRange = [self _characterRangeForUnitAtIndex:proposedRange.location asDefinedByCharArray:[[self class] _paragraphBoundaryCharacterArray] skip:NO];
-
-            if (parRange.length < 2)
-                parRange = [self _characterRangeForUnitAtIndex:proposedRange.location > 0 ? proposedRange.location - 1 : 0 asDefinedByCharArray:[[self class] _paragraphBoundaryCharacterArray] skip:NO];
-            if (parRange.length > 0)
-                parRange.length++;
-
+            var parRange = [self _characterRangeForIndex:proposedRange.location inRange:proposedRange asDefinedByRegex:[[self class] _paragraphBoundaryRegex] skip:YES];
 
             if (proposedRange.length)
-                parRange = CPUnionRange(parRange, [self _characterRangeForUnitAtIndex:CPMaxRange(proposedRange) asDefinedByCharArray: [[self class] _paragraphBoundaryCharacterArray] skip:NO]);
+                parRange = CPUnionRange(parRange, [self _characterRangeForIndex:CPMaxRange(proposedRange)
+                                                                        inRange:proposedRange
+                                                               asDefinedByRegex:[[self class] _paragraphBoundaryRegex]
+                                                                           skip:NO]);
+
+            if (parRange.length > 0 && [self _isCharacterAtIndex:CPMaxRange(parRange) granularity:CPSelectByParagraph])
+                parRange.length++;
 
             return parRange;
 

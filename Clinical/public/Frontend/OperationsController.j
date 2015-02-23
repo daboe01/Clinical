@@ -885,37 +885,6 @@
     [sender._table setNeedsDisplay:YES];
 }
 
-// for combobox
-- (void)_controlTextDidEndEditing:(CPTextField)object
-{
-
-    [object setDelegate:nil];
-    if(object) [[object target] _commitDataViewObjectValue:object]
-    var win=[object window];
-    [win makeFirstResponder:propsTV]
-    [object removeFromSuperview];
-}
-
-- (void)controlTextDidEndEditing:(CPNotification)aNotification
-{
-    [self _controlTextDidEndEditing:[aNotification object]];
-}
-- (void) controlTextDidBlur:(CPNotification)aNotification
-{
-    [self _controlTextDidEndEditing:[aNotification object]];
-}
-
--(void)cancelOperation:sender
-{
-    if([sender isKindOfClass:CPComboBox])
-    {
-        [sender setDelegate:nil];
-        var win=[sender window];
-        [win makeFirstResponder:propsTV]
-        [sender removeFromSuperview];
-    }
-}
-
 -(void) openECRF:sender
 {
     var vvc= [[VisitValuesController alloc] initWithParentSize:[visitsTV frame].size];
@@ -925,8 +894,8 @@
     var visitValuesPopover =[CPPopover new];
     [visitValuesPopover setDelegate:self];
     [visitValuesPopover setAnimates:NO];
-    [visitValuesPopover setBehavior: CPPopoverBehaviorTransient];
-    [visitValuesPopover setAppearance: CPPopoverAppearanceMinimal];
+    [visitValuesPopover setBehavior:CPPopoverBehaviorTransient];
+    [visitValuesPopover setAppearance:CPPopoverAppearanceMinimal];
     [visitValuesPopover setContentViewController:vvc];
     [visitValuesPopover setDelegate:vvc];
 
