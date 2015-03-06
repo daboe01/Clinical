@@ -368,7 +368,7 @@ var kDelegateRespondsTo_textShouldBeginEditing                                  
 
     BOOL            _drawCaret;
     CPTimer         _caretTimer;
-    CPTimer         _scollingTimer;
+    CPTimer         _scrollingTimer;
     CPGect          _caretRect;
 
     CPFont          _font;
@@ -825,7 +825,6 @@ var kDelegateRespondsTo_textShouldBeginEditing                                  
 - (void)setSelectedRange:(CPRange)range
 {
     [self setSelectedRange:range affinity:0 stillSelecting:NO];
-    [self setTypingAttributes:[_textStorage attributesAtIndex:MAX(0, range.location -1) effectiveRange:nil]];
 }
 
 - (void)setSelectedRange:(CPRange)range affinity:(CPSelectionAffinity /* unused */ )affinity stillSelecting:(BOOL)selecting
@@ -851,7 +850,12 @@ var kDelegateRespondsTo_textShouldBeginEditing                                  
         if (_isFirstResponder)
             [self updateInsertionPointStateAndRestartTimer:((_selectionRange.length === 0) && ![_caretTimer isValid])];
 
-        [self setTypingAttributes:[_textStorage attributesAtIndex:MAX(0, range.location -1) effectiveRange:nil]];
+        var peekLoc = MAX(0, range.location - 1);
+
+        if ((_isNewlineCharacter([[_textStorage string] characterAtIndex:peekLoc])))
+            peekLoc++;
+
+        [self setTypingAttributes:[_textStorage attributesAtIndex:peekLoc effectiveRange:nil]];
 
         [[CPNotificationCenter defaultCenter] postNotificationName:CPTextViewDidChangeSelectionNotification object:self];
 
@@ -894,6 +898,9 @@ var kDelegateRespondsTo_textShouldBeginEditing                                  
     if (_startTrackingLocation === CPNotFound)
         _startTrackingLocation = [_layoutManager numberOfCharacters];
 
+    if (fraction[0] > 0.5)
+        _startTrackingLocation++;
+
     var granularities = [-1, CPSelectByCharacter, CPSelectByWord, CPSelectByParagraph];
     [self setSelectionGranularity:granularities[[event clickCount]]];
 
@@ -907,6 +914,14 @@ var kDelegateRespondsTo_textShouldBeginEditing                                  
 
     }
     [self setSelectedRange:setRange affinity:0 stillSelecting:YES];
+
+// fixme: only start if we are in the scrolling areas
+    _scrollingTimer = [CPTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(_supportScrolling:) userInfo:nil repeats:YES];
+
+}
+- (void)_supportScrolling:(CPTimer)aTimer
+{
+    [self mouseDragged:[CPApp currentEvent]];
 }
 
 - (void)_clearRange:(var)range
@@ -940,6 +955,9 @@ var kDelegateRespondsTo_textShouldBeginEditing                                  
 
     if (index == CPNotFound)
         index = _scrollingDownward ? CPMaxRange(oldRange) : oldRange.location;
+
+    if (fraction[0] > 0.5)
+        index++;
 
     if (index > oldRange.location)
     {
@@ -977,6 +995,11 @@ var kDelegateRespondsTo_textShouldBeginEditing                                  
     var point = [_layoutManager locationForGlyphAtIndex:[self selectedRange].location];
     _stickyXLocation= point.x;
     _startTrackingLocation = _selectionRange.location;
+
+    if (_scrollingTimer)
+    {   [_scrollingTimer invalidate];
+        _scrollingTimer = nil;
+    }
 }
 
 - (void)moveDown:(id)sender
@@ -1002,6 +1025,10 @@ var kDelegateRespondsTo_textShouldBeginEditing                                  
 
         var dindex= [_layoutManager glyphIndexForPoint:point inTextContainer:_textContainer fractionOfDistanceThroughGlyph:fraction],
             oldStickyLoc = _stickyXLocation;
+
+        if (fraction[0] > 0.5)
+            dindex++;
+
         [self _establishSelection:CPMakeRange(dindex,0) byExtending:NO];
         _stickyXLocation = oldStickyLoc;
         [self scrollRangeToVisible:CPMakeRange(dindex, 0)]
@@ -1039,6 +1066,10 @@ var kDelegateRespondsTo_textShouldBeginEditing                                  
 
         var dindex= [_layoutManager glyphIndexForPoint:point inTextContainer:_textContainer fractionOfDistanceThroughGlyph:fraction],
             oldStickyLoc = _stickyXLocation;
+
+        if (fraction[0] > 0.5)
+            dindex++;
+
         [self _establishSelection:CPMakeRange(dindex,0) byExtending:NO];
         _stickyXLocation = oldStickyLoc;
         [self scrollRangeToVisible:CPMakeRange(dindex, 0)]

@@ -250,7 +250,8 @@ var _availableTraits= [@"Normal", @"Italic", @"Bold", @"Bold Italic"],
     if ([self isVisible])
     {
         var attribs = [textView typingAttributes],
-            font = [attribs objectForKey:CPFontAttributeName] || [[textView textStorage] font] || [CPFont systemFontOfSize:12.0];
+            font = [attribs objectForKey:CPFontAttributeName] || [[textView textStorage] font] || [CPFont systemFontOfSize:12.0],
+        color = [attribs objectForKey:CPForegroundColorAttributeName];
 
         if (font)
         {
@@ -267,6 +268,9 @@ var _availableTraits= [@"Normal", @"Italic", @"Bold", @"Bold Italic"],
             [self setCurrentTrait:trait];
             [self setCurrentSize:[font size] + ""];  //cast to string
         }
+        if (color)
+            [_textColorWell setColor:color];
+
     }
 }
 

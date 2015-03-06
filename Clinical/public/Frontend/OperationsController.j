@@ -177,8 +177,11 @@
 }
 -(void) reloadTrialsList:sender
 {
+    var idtrial=[[CPApp delegate].trialsController valueForKeyPath:"selection.id"];
     [[CPApp delegate].trialsController._entity _invalidatePKCache]
     [[CPApp delegate].trialsController setContent:[[CPApp delegate].trialsController._entity allObjects] ];
+    [[CPApp delegate].trialsController selectObjectWithPK:idtrial]
+
     [[CPApp delegate].processesController reload];
     [[CPApp delegate].patientsController reload];
     [[CPApp delegate].billingsController reload];
@@ -514,6 +517,10 @@
 -(void) _recalcService: sender
 {
     var idpatient=[[CPApp delegate].patientsController valueForKeyPath: "selection.id"];
+
+    if (idpatient === CPNoSelectionMarker)
+        return;
+
     var myreq=[CPURLRequest requestWithURL:"/DBI/patient_visits_service/idpatient/"+idpatient+'?session='+ window.G_SESSION];
     serviceConnection=[CPURLConnection connectionWithRequest:myreq delegate:self];
 }

@@ -859,6 +859,7 @@ var _objectsInRange = function(aList, aRange)
     }
 }
 
+// fixme: make use of @ref and @deref for partialFraction
 - (unsigned)glyphIndexForPoint:(CGPoint)point inTextContainer:(CPTextContainer)container fractionOfDistanceThroughGlyph:(FloatArray)partialFraction
 {
     var c = [_lineFragments count];
