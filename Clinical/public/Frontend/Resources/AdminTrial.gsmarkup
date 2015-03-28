@@ -11,7 +11,7 @@
        <hbox>
          <vbox>
            <label> Basic data</label>
-           <textField width="200" halign="left" valueBinding="#CPOwner.trialsController.selection.name" title="name" editable="NO"/>
+           <textField width="200" halign="left" valueBinding="#CPOwner.trialsController.selection.name"/>
            <popUpButton width="200" halign="left" valueBinding="#CPOwner.trialsController.selection.idgroup" itemsBinding="#CPOwner.groupsControllerAll.arrangedObjects.name"/>
            <label> Status values </label>
            <scrollView width="200" halign ="min" hasHorizontalScroller="NO">

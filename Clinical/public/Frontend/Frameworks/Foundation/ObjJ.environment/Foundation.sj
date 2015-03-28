@@ -286,7 +286,7 @@ CGAlignCoordinate = function(coord)
 {
     return FLOOR(coord);
 }
-p;27;_CPCollectionKVCOperators.jt;5377;@STATIC;1.0;i;10;CPObject.jt;5343;objj_executeFile("CPObject.j", YES);var _CPCollectionKVCOperatorSimpleRE = /^@(avg|count|m(ax|in)|sum)(\.|$)/;
+p;27;_CPCollectionKVCOperators.jt;10733;@STATIC;1.0;i;10;CPObject.jt;10698;objj_executeFile("CPObject.j", YES);var _CPCollectionKVCOperatorSimpleRE = /^@(avg|count|m(ax|in)|sum|unionOfObjects|distinctUnionOfObjects|unionOfArrays|distinctUnionOfArrays|distinctUnionOfSets)(\.|$)/;
 {var the_class = objj_allocateClassPair(CPObject, "_CPCollectionKVCOperator"),
 meta_class = the_class.isa;objj_registerClassPair(the_class);
 class_addMethods(meta_class, [new objj_method(sel_getUid("isSimpleCollectionOperator:"), function $_CPCollectionKVCOperator__isSimpleCollectionOperator_(self, _cmd, operator)
@@ -362,7 +362,73 @@ class_addMethods(meta_class, [new objj_method(sel_getUid("isSimpleCollectionOper
 {
     return (aCollection == null ? null : aCollection.isa.objj_msgSend0(aCollection, "count"));
 }
-,["int","id","CPString"])]);
+,["int","id","CPString"]), new objj_method(sel_getUid("unionOfObjectsForCollection:propertyPath:"), function $_CPCollectionKVCOperator__unionOfObjectsForCollection_propertyPath_(self, _cmd, aCollection, propertyPath)
+{
+    if (!propertyPath)
+        return (aCollection == null ? null : aCollection.isa.objj_msgSend1(aCollection, "valueForUndefinedKey:", "@unionOfObjects"));
+    var objects = (aCollection == null ? null : aCollection.isa.objj_msgSend1(aCollection, "valueForKeyPath:", propertyPath));
+    if ((objects == null ? null : objects.isa.objj_msgSend1(objects, "isKindOfClass:", (CPSet == null ? null : CPSet.isa.objj_msgSend0(CPSet, "class")))))
+        return (objects == null ? null : objects.isa.objj_msgSend0(objects, "allObjects"));
+    return objects;
+}
+,["CPArray","id","CPString"]), new objj_method(sel_getUid("distinctUnionOfObjectsForCollection:propertyPath:"), function $_CPCollectionKVCOperator__distinctUnionOfObjectsForCollection_propertyPath_(self, _cmd, aCollection, propertyPath)
+{
+    if (!propertyPath)
+        return (aCollection == null ? null : aCollection.isa.objj_msgSend1(aCollection, "valueForUndefinedKey:", "@distinctUnionOfObjects"));
+    var objects = (aCollection == null ? null : aCollection.isa.objj_msgSend1(aCollection, "valueForKeyPath:", propertyPath)),
+        distinctObjects = (CPMutableArray == null ? null : CPMutableArray.isa.objj_msgSend0(CPMutableArray, "new")),
+        enumerator = (objects == null ? null : objects.isa.objj_msgSend0(objects, "objectEnumerator")),
+        object;
+    while ((object = (enumerator == null ? null : enumerator.isa.objj_msgSend0(enumerator, "nextObject"))) !== nil)
+    {
+        if ((distinctObjects == null ? null : distinctObjects.isa.objj_msgSend1(distinctObjects, "indexOfObject:", object)) == CPNotFound)
+            (distinctObjects == null ? null : distinctObjects.isa.objj_msgSend1(distinctObjects, "addObject:", object));
+    }
+    return distinctObjects;
+}
+,["CPArray","id","CPString"]), new objj_method(sel_getUid("unionOfArraysForCollection:propertyPath:"), function $_CPCollectionKVCOperator__unionOfArraysForCollection_propertyPath_(self, _cmd, aCollection, propertyPath)
+{
+    if (!propertyPath)
+        return (aCollection == null ? null : aCollection.isa.objj_msgSend1(aCollection, "valueForUndefinedKey:", "@unionOfArrays"));
+    var objects = [],
+        number = (aCollection == null ? null : aCollection.isa.objj_msgSend0(aCollection, "count"));
+    for (var i = 0; i < number; i++)
+        (objects == null ? null : objects.isa.objj_msgSend1(objects, "addObjectsFromArray:", ((___r1 = aCollection[i]), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKeyPath:", propertyPath))));
+    return objects;
+    var ___r1;
+}
+,["CPArray","id","CPString"]), new objj_method(sel_getUid("distinctUnionOfArraysForCollection:propertyPath:"), function $_CPCollectionKVCOperator__distinctUnionOfArraysForCollection_propertyPath_(self, _cmd, aCollection, propertyPath)
+{
+    if (!propertyPath)
+        return (aCollection == null ? null : aCollection.isa.objj_msgSend1(aCollection, "valueForUndefinedKey:", "@distinctUnionOfArrays"));
+    var objects = [],
+        number = (aCollection == null ? null : aCollection.isa.objj_msgSend0(aCollection, "count"));
+    for (var i = 0; i < number; i++)
+        (objects == null ? null : objects.isa.objj_msgSend1(objects, "addObjectsFromArray:", ((___r1 = aCollection[i]), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "valueForKeyPath:", propertyPath))));
+    var distinctObjects = (CPMutableArray == null ? null : CPMutableArray.isa.objj_msgSend0(CPMutableArray, "new")),
+        enumerator = (objects == null ? null : objects.isa.objj_msgSend0(objects, "objectEnumerator")),
+        object;
+    while ((object = (enumerator == null ? null : enumerator.isa.objj_msgSend0(enumerator, "nextObject"))) !== nil)
+    {
+        if ((distinctObjects == null ? null : distinctObjects.isa.objj_msgSend1(distinctObjects, "indexOfObject:", object)) == CPNotFound)
+            (distinctObjects == null ? null : distinctObjects.isa.objj_msgSend1(distinctObjects, "addObject:", object));
+    }
+    return distinctObjects;
+    var ___r1;
+}
+,["CPArray","id","CPString"]), new objj_method(sel_getUid("distinctUnionOfSetsForCollection:propertyPath:"), function $_CPCollectionKVCOperator__distinctUnionOfSetsForCollection_propertyPath_(self, _cmd, aCollection, propertyPath)
+{
+    if (!propertyPath)
+        return (aCollection == null ? null : aCollection.isa.objj_msgSend1(aCollection, "valueForUndefinedKey:", "@distinctUnionOfSets"));
+    var objects = (CPMutableSet == null ? null : CPMutableSet.isa.objj_msgSend0(CPMutableSet, "new")),
+        number = (aCollection == null ? null : aCollection.isa.objj_msgSend0(aCollection, "count")),
+        sets = (aCollection == null ? null : aCollection.isa.objj_msgSend0(aCollection, "allObjects"));
+    for (var i = 0; i < number; i++)
+        (objects == null ? null : objects.isa.objj_msgSend1(objects, "addObjectsFromArray:", ((___r1 = ((___r2 = sets[i]), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "valueForKeyPath:", propertyPath))), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "allObjects"))));
+    return objects;
+    var ___r1, ___r2;
+}
+,["CPArray","id","CPString"])]);
 }p;20;_CPTypeDefinitions.jt;759;@STATIC;1.0;t;741;{var the_typedef = objj_allocateTypeDef("Class");
 objj_registerTypeDef(the_typedef);
 }{var the_typedef = objj_allocateTypeDef("CPInteger");
@@ -1653,6 +1719,226 @@ var meta_class = the_class.isa;class_addMethods(the_class, [new objj_method(sel_
     (aCoder == null ? null : aCoder.isa.objj_msgSend2(aCoder, "encodeInt:forKey:", self._allowedUnits, CPByteCountFormatterAllowedUnitsKey));
 }
 ,["void","CPCoder"])]);
+}p;9;CPCache.jt;12424;@STATIC;1.0;i;10;CPObject.ji;14;CPDictionary.ji;10;CPString.jt;12355;objj_executeFile("CPObject.j", YES);objj_executeFile("CPDictionary.j", YES);objj_executeFile("CPString.j", YES);{var the_protocol = objj_allocateProtocol("CPCacheDelegate");
+var aProtocol = objj_getProtocol("CPObject");
+if (!aProtocol) throw new SyntaxError("*** Could not find definition for protocol \"CPCacheDelegate\"");
+protocol_addProtocol(the_protocol, aProtocol);
+objj_registerProtocol(the_protocol);
+}var CPCacheDelegate_cache_willEvictObject_ = 1 << 1;
+{var the_class = objj_allocateClassPair(CPObject, "CPCache"),
+meta_class = the_class.isa;class_addIvars(the_class, [new objj_ivar("_items"), new objj_ivar("_currentPosition"), new objj_ivar("_totalCostCache"), new objj_ivar("_implementedDelegateMethods"), new objj_ivar("_name"), new objj_ivar("_countLimit"), new objj_ivar("_totalCostLimit"), new objj_ivar("_delegate")]);objj_registerClassPair(the_class);
+class_addMethods(the_class, [new objj_method(sel_getUid("name"), function $CPCache__name(self, _cmd)
+{
+    return self._name;
+}
+,["CPString"]), new objj_method(sel_getUid("setName:"), function $CPCache__setName_(self, _cmd, newValue)
+{
+    self._name = newValue;
+}
+,["void","CPString"]), new objj_method(sel_getUid("countLimit"), function $CPCache__countLimit(self, _cmd)
+{
+    return self._countLimit;
+}
+,["int"]), new objj_method(sel_getUid("setCountLimit:"), function $CPCache__setCountLimit_(self, _cmd, newValue)
+{
+    self._countLimit = newValue;
+}
+,["void","int"]), new objj_method(sel_getUid("totalCostLimit"), function $CPCache__totalCostLimit(self, _cmd)
+{
+    return self._totalCostLimit;
+}
+,["int"]), new objj_method(sel_getUid("setTotalCostLimit:"), function $CPCache__setTotalCostLimit_(self, _cmd, newValue)
+{
+    self._totalCostLimit = newValue;
+}
+,["void","int"]), new objj_method(sel_getUid("delegate"), function $CPCache__delegate(self, _cmd)
+{
+    return self._delegate;
+}
+,["id"]), new objj_method(sel_getUid("setDelegate:"), function $CPCache__setDelegate_(self, _cmd, newValue)
+{
+    self._delegate = newValue;
+}
+,["void","id"]), new objj_method(sel_getUid("init"), function $CPCache__init(self, _cmd)
+{
+    if (self = objj_msgSendSuper({ receiver:self, super_class:objj_getClass("CPCache").super_class }, "init"))
+    {
+        self._items = ((___r1 = CPDictionary.isa.objj_msgSend0(CPDictionary, "alloc")), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "init"));
+        self._currentPosition = 0;
+        self._totalCostCache = -1;
+        self._implementedDelegateMethods = 0;
+        self._name = "";
+        self._countLimit = 0;
+        self._totalCostLimit = 0;
+        self._delegate = nil;
+    }
+    return self;
+    var ___r1;
+}
+,["id"]), new objj_method(sel_getUid("objectForKey:"), function $CPCache__objectForKey_(self, _cmd, aKey)
+{
+    return ((___r1 = ((___r2 = self._items), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "objectForKey:", aKey))), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "object"));
+    var ___r1, ___r2;
+}
+,["id","id"]), new objj_method(sel_getUid("setObject:forKey:"), function $CPCache__setObject_forKey_(self, _cmd, anObject, aKey)
+{
+    self.isa.objj_msgSend3(self, "setObject:forKey:cost:", anObject, aKey, 0);
+}
+,["void","id","id"]), new objj_method(sel_getUid("setObject:forKey:cost:"), function $CPCache__setObject_forKey_cost_(self, _cmd, anObject, aKey, aCost)
+{
+    if (((___r1 = self._items), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "objectForKey:", aKey)))
+        self.isa.objj_msgSend1(self, "removeObjectForKey:", aKey);
+    ((___r1 = self._items), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "setObject:forKey:", (_CPCacheItem == null ? null : _CPCacheItem.isa.objj_msgSend3(_CPCacheItem, "cacheItemWithObject:cost:position:", anObject, aCost, ++self._currentPosition)), aKey));
+    self._totalCostCache = -1;
+    self.isa.objj_msgSend0(self, "_cleanCache");
+    var ___r1;
+}
+,["void","id","id","int"]), new objj_method(sel_getUid("removeObjectForKey:"), function $CPCache__removeObjectForKey_(self, _cmd, aKey)
+{
+    self.isa.objj_msgSend1(self, "_sendDelegateWillEvictObjectForKey:", aKey);
+    ((___r1 = self._items), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "removeObjectForKey:", aKey));
+    self._totalCostCache = -1;
+    var ___r1;
+}
+,["void","id"]), new objj_method(sel_getUid("removeAllObjects"), function $CPCache__removeAllObjects(self, _cmd)
+{
+    var enumerator = ((___r1 = self._items), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "keyEnumerator")),
+        key;
+    while (key = (enumerator == null ? null : enumerator.isa.objj_msgSend0(enumerator, "nextObject")))
+        self.isa.objj_msgSend1(self, "_sendDelegateWillEvictObjectForKey:", key);
+    ((___r1 = self._items), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "removeAllObjects"));
+    self._totalCostCache = -1;
+    self._currentPosition = 0;
+    var ___r1;
+}
+,["void"]), new objj_method(sel_getUid("setCountLimit:"), function $CPCache__setCountLimit_(self, _cmd, aCountLimit)
+{
+    self._countLimit = aCountLimit;
+    self.isa.objj_msgSend0(self, "_cleanCache");
+}
+,["void","int"]), new objj_method(sel_getUid("setTotalCostLimit:"), function $CPCache__setTotalCostLimit_(self, _cmd, aTotalCostLimit)
+{
+    self._totalCostLimit = aTotalCostLimit;
+    self.isa.objj_msgSend0(self, "_cleanCache");
+}
+,["void","int"]), new objj_method(sel_getUid("setDelegate:"), function $CPCache__setDelegate_(self, _cmd, aDelegate)
+{
+    if (self._delegate === aDelegate)
+        return;
+    self._delegate = aDelegate;
+    self._implementedDelegateMethods = 0;
+    if (((___r1 = self._delegate), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "respondsToSelector:", sel_getUid("cache:willEvictObject:"))))
+        self._implementedDelegateMethods |= CPCacheDelegate_cache_willEvictObject_;
+    var ___r1;
+}
+,["void","id"]), new objj_method(sel_getUid("_count"), function $CPCache___count(self, _cmd)
+{
+    return ((___r1 = self._items), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "count"));
+    var ___r1;
+}
+,["int"]), new objj_method(sel_getUid("_totalCost"), function $CPCache___totalCost(self, _cmd)
+{
+    if (self._totalCostCache >= 0)
+        return self._totalCostCache;
+    var enumerator = ((___r1 = self._items), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "objectEnumerator")),
+        value;
+    self._totalCostCache = 0;
+    while (value = (enumerator == null ? null : enumerator.isa.objj_msgSend0(enumerator, "nextObject")))
+        self._totalCostCache += (value == null ? null : value.isa.objj_msgSend0(value, "cost"));
+    return self._totalCostCache;
+    var ___r1;
+}
+,["int"]), new objj_method(sel_getUid("_resequencePosition"), function $CPCache___resequencePosition(self, _cmd)
+{
+    self._currentPosition = 1;
+    var sortedKeys = ((___r1 = ((___r2 = self._items), ___r2 == null ? null : ___r2.isa.objj_msgSend0(___r2, "allKeys"))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "sortedArrayUsingFunction:", function(k1, k2)
+    {
+        return ((___r1 = ((___r2 = ((___r3 = self._items), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", k1))), ___r2 == null ? null : ___r2.isa.objj_msgSend0(___r2, "position"))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "compare:", ((___r2 = ((___r3 = self._items), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", k2))), ___r2 == null ? null : ___r2.isa.objj_msgSend0(___r2, "position"))));
+        var ___r1, ___r2, ___r3;
+    }));
+    for (var i = 0; i < sortedKeys.length; ++i)
+        ((___r1 = ((___r2 = self._items), ___r2 == null ? null : ___r2.isa.objj_msgSend1(___r2, "objectForKey:", sortedKeys[i]))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "setPosition:", self._currentPosition++));
+    var ___r1, ___r2;
+}
+,["void"]), new objj_method(sel_getUid("_isTotalCostLimitExceeded"), function $CPCache___isTotalCostLimitExceeded(self, _cmd)
+{
+    return self.isa.objj_msgSend0(self, "_totalCost") > self._totalCostLimit && self._totalCostLimit > 0;
+}
+,["BOOL"]), new objj_method(sel_getUid("_isCountLimitExceeded"), function $CPCache___isCountLimitExceeded(self, _cmd)
+{
+    return self.isa.objj_msgSend0(self, "_count") > self._countLimit && self._countLimit > 0;
+}
+,["BOOL"]), new objj_method(sel_getUid("_cleanCache"), function $CPCache___cleanCache(self, _cmd)
+{
+    if (!self.isa.objj_msgSend0(self, "_isTotalCostLimitExceeded") && !self.isa.objj_msgSend0(self, "_isCountLimitExceeded"))
+        return;
+    var sortedKeys = ((___r1 = ((___r2 = self._items), ___r2 == null ? null : ___r2.isa.objj_msgSend0(___r2, "allKeys"))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "sortedArrayUsingFunction:", function(k1, k2)
+    {
+        return ((___r1 = ((___r2 = ((___r3 = self._items), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", k1))), ___r2 == null ? null : ___r2.isa.objj_msgSend0(___r2, "position"))), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "compare:", ((___r2 = ((___r3 = self._items), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", k2))), ___r2 == null ? null : ___r2.isa.objj_msgSend0(___r2, "position"))));
+        var ___r1, ___r2, ___r3;
+    }));
+    for (var i = 0; i < sortedKeys.length; ++i)
+    {
+        if (!self.isa.objj_msgSend0(self, "_isTotalCostLimitExceeded") && !self.isa.objj_msgSend0(self, "_isCountLimitExceeded"))
+            break;
+        self.isa.objj_msgSend1(self, "_sendDelegateWillEvictObjectForKey:", sortedKeys[i]);
+        ((___r1 = self._items), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "removeObjectForKey:", sortedKeys[i]));
+        self._totalCostCache = -1;
+    }
+    self.isa.objj_msgSend0(self, "_resequencePosition");
+    var ___r1, ___r2;
+}
+,["void"])]);
+}{
+var the_class = objj_getClass("CPCache")
+if(!the_class) throw new SyntaxError("*** Could not find definition for class \"CPCache\"");
+var meta_class = the_class.isa;class_addMethods(the_class, [new objj_method(sel_getUid("_sendDelegateWillEvictObjectForKey:"), function $CPCache___sendDelegateWillEvictObjectForKey_(self, _cmd, aKey)
+{
+    if (self._implementedDelegateMethods & CPCacheDelegate_cache_willEvictObject_)
+        ((___r1 = self._delegate), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "cache:willEvictObject:", self, ((___r2 = ((___r3 = self._items), ___r3 == null ? null : ___r3.isa.objj_msgSend1(___r3, "objectForKey:", aKey))), ___r2 == null ? null : ___r2.isa.objj_msgSend0(___r2, "object"))));
+    var ___r1, ___r2, ___r3;
+}
+,["void","id"])]);
+}{var the_class = objj_allocateClassPair(CPObject, "_CPCacheItem"),
+meta_class = the_class.isa;class_addIvars(the_class, [new objj_ivar("_object"), new objj_ivar("_cost"), new objj_ivar("_position")]);objj_registerClassPair(the_class);
+class_addMethods(the_class, [new objj_method(sel_getUid("object"), function $_CPCacheItem__object(self, _cmd)
+{
+    return self._object;
+}
+,["CPObject"]), new objj_method(sel_getUid("setObject:"), function $_CPCacheItem__setObject_(self, _cmd, newValue)
+{
+    self._object = newValue;
+}
+,["void","CPObject"]), new objj_method(sel_getUid("cost"), function $_CPCacheItem__cost(self, _cmd)
+{
+    return self._cost;
+}
+,["int"]), new objj_method(sel_getUid("setCost:"), function $_CPCacheItem__setCost_(self, _cmd, newValue)
+{
+    self._cost = newValue;
+}
+,["void","int"]), new objj_method(sel_getUid("position"), function $_CPCacheItem__position(self, _cmd)
+{
+    return self._position;
+}
+,["int"]), new objj_method(sel_getUid("setPosition:"), function $_CPCacheItem__setPosition_(self, _cmd, newValue)
+{
+    self._position = newValue;
+}
+,["void","int"])]);
+class_addMethods(meta_class, [new objj_method(sel_getUid("cacheItemWithObject:cost:position:"), function $_CPCacheItem__cacheItemWithObject_cost_position_(self, _cmd, anObject, aCost, aPosition)
+{
+    var cacheItem = ((___r1 = self.isa.objj_msgSend0(self, "alloc")), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "init"));
+    if (cacheItem)
+    {
+        (cacheItem == null ? null : cacheItem.isa.objj_msgSend1(cacheItem, "setObject:", anObject));
+        (cacheItem == null ? null : cacheItem.isa.objj_msgSend1(cacheItem, "setCost:", aCost));
+        (cacheItem == null ? null : cacheItem.isa.objj_msgSend1(cacheItem, "setPosition:", aPosition));
+    }
+    return cacheItem;
+    var ___r1;
+}
+,["id","CPObject","int","int"])]);
 }p;16;CPCharacterSet.jt;41730;@STATIC;1.0;i;9;CPArray.ji;13;CPException.ji;10;CPObject.ji;10;CPString.ji;7;CPURL.jt;41638;objj_executeFile("CPArray.j", YES);objj_executeFile("CPException.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPString.j", YES);objj_executeFile("CPURL.j", YES);var _builtInCharacterSets = {};
 {var the_class = objj_allocateClassPair(CPObject, "CPCharacterSet"),
 meta_class = the_class.isa;class_addIvars(the_class, [new objj_ivar("_inverted")]);objj_registerClassPair(the_class);
@@ -14649,7 +14935,7 @@ var parsePROPFINDResponse = function(anXMLString)
 var mapURLsAndProperties = function(properties, ignoredURL)
 {
 };
-p;12;Foundation.jt;3586;@STATIC;1.0;i;13;_CGGeometry.ji;9;CPArray.ji;10;CPBundle.ji;22;CPByteCountFormatter.ji;16;CPCharacterSet.ji;9;CPCoder.ji;23;CPComparisonPredicate.ji;21;CPCompoundPredicate.ji;8;CPData.ji;8;CPDate.ji;17;CPDateFormatter.ji;11;CPDecimal.ji;17;CPDecimalNumber.ji;18;CPDelayedPerform.ji;14;CPDictionary.ji;14;CPEnumerator.ji;9;CPError.ji;13;CPException.ji;14;CPExpression.ji;13;CPFormatter.ji;13;CPIndexPath.ji;12;CPIndexSet.ji;14;CPInvocation.ji;19;CPJSONPConnection.ji;17;CPKeyedArchiver.ji;19;CPKeyedUnarchiver.ji;18;CPKeyValueCoding.ji;21;CPKeyValueObserving.ji;10;CPLocale.ji;16;CPMutableArray.ji;14;CPMutableSet.ji;16;CPNotification.ji;22;CPNotificationCenter.ji;8;CPNull.ji;10;CPNumber.ji;19;CPNumberFormatter.ji;10;CPObject.ji;15;CPObjJRuntime.ji;13;CPOperation.ji;18;CPOperationQueue.ji;13;CPPredicate.ji;29;CPPropertyListSerialization.ji;9;CPRange.ji;11;CPRunLoop.ji;11;CPScanner.ji;7;CPSet.ji;18;CPSortDescriptor.ji;10;CPString.ji;9;CPTimer.ji;12;CPTimeZone.ji;15;CPUndoManager.ji;7;CPURL.ji;17;CPURLConnection.ji;12;CPURLError.ji;14;CPURLRequest.ji;15;CPURLResponse.ji;16;CPUserDefaults.ji;22;CPUserSessionManager.ji;9;CPValue.ji;20;CPValueTransformer.jt;2419;objj_executeFile("_CGGeometry.j", YES);objj_executeFile("CPArray.j", YES);objj_executeFile("CPBundle.j", YES);objj_executeFile("CPByteCountFormatter.j", YES);objj_executeFile("CPCharacterSet.j", YES);objj_executeFile("CPCoder.j", YES);objj_executeFile("CPComparisonPredicate.j", YES);objj_executeFile("CPCompoundPredicate.j", YES);objj_executeFile("CPData.j", YES);objj_executeFile("CPDate.j", YES);objj_executeFile("CPDateFormatter.j", YES);objj_executeFile("CPDecimal.j", YES);objj_executeFile("CPDecimalNumber.j", YES);objj_executeFile("CPDelayedPerform.j", YES);objj_executeFile("CPDictionary.j", YES);objj_executeFile("CPEnumerator.j", YES);objj_executeFile("CPError.j", YES);objj_executeFile("CPException.j", YES);objj_executeFile("CPExpression.j", YES);objj_executeFile("CPFormatter.j", YES);objj_executeFile("CPIndexPath.j", YES);objj_executeFile("CPIndexSet.j", YES);objj_executeFile("CPInvocation.j", YES);objj_executeFile("CPJSONPConnection.j", YES);objj_executeFile("CPKeyedArchiver.j", YES);objj_executeFile("CPKeyedUnarchiver.j", YES);objj_executeFile("CPKeyValueCoding.j", YES);objj_executeFile("CPKeyValueObserving.j", YES);objj_executeFile("CPLocale.j", YES);objj_executeFile("CPMutableArray.j", YES);objj_executeFile("CPMutableSet.j", YES);objj_executeFile("CPNotification.j", YES);objj_executeFile("CPNotificationCenter.j", YES);objj_executeFile("CPNull.j", YES);objj_executeFile("CPNumber.j", YES);objj_executeFile("CPNumberFormatter.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPObjJRuntime.j", YES);objj_executeFile("CPOperation.j", YES);objj_executeFile("CPOperationQueue.j", YES);objj_executeFile("CPPredicate.j", YES);objj_executeFile("CPPropertyListSerialization.j", YES);objj_executeFile("CPRange.j", YES);objj_executeFile("CPRunLoop.j", YES);objj_executeFile("CPScanner.j", YES);objj_executeFile("CPSet.j", YES);objj_executeFile("CPSortDescriptor.j", YES);objj_executeFile("CPString.j", YES);objj_executeFile("CPTimer.j", YES);objj_executeFile("CPTimeZone.j", YES);objj_executeFile("CPUndoManager.j", YES);objj_executeFile("CPURL.j", YES);objj_executeFile("CPURLConnection.j", YES);objj_executeFile("CPURLError.j", YES);objj_executeFile("CPURLRequest.j", YES);objj_executeFile("CPURLResponse.j", YES);objj_executeFile("CPUserDefaults.j", YES);objj_executeFile("CPUserSessionManager.j", YES);objj_executeFile("CPValue.j", YES);objj_executeFile("CPValueTransformer.j", YES);p;10;_CPArray.jt;28830;@STATIC;1.0;i;14;CPEnumerator.ji;13;CPException.ji;10;CPObject.ji;9;CPRange.ji;18;CPSortDescriptor.jt;28722;objj_executeFile("CPEnumerator.j", YES);objj_executeFile("CPException.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPRange.j", YES);objj_executeFile("CPSortDescriptor.j", YES);CPEnumerationNormal = 0;
+p;12;Foundation.jt;3634;@STATIC;1.0;i;13;_CGGeometry.ji;9;CPArray.ji;10;CPBundle.ji;22;CPByteCountFormatter.ji;9;CPCache.ji;16;CPCharacterSet.ji;9;CPCoder.ji;23;CPComparisonPredicate.ji;21;CPCompoundPredicate.ji;8;CPData.ji;8;CPDate.ji;17;CPDateFormatter.ji;11;CPDecimal.ji;17;CPDecimalNumber.ji;18;CPDelayedPerform.ji;14;CPDictionary.ji;14;CPEnumerator.ji;9;CPError.ji;13;CPException.ji;14;CPExpression.ji;13;CPFormatter.ji;13;CPIndexPath.ji;12;CPIndexSet.ji;14;CPInvocation.ji;19;CPJSONPConnection.ji;17;CPKeyedArchiver.ji;19;CPKeyedUnarchiver.ji;18;CPKeyValueCoding.ji;21;CPKeyValueObserving.ji;10;CPLocale.ji;16;CPMutableArray.ji;14;CPMutableSet.ji;16;CPNotification.ji;22;CPNotificationCenter.ji;8;CPNull.ji;10;CPNumber.ji;19;CPNumberFormatter.ji;10;CPObject.ji;15;CPObjJRuntime.ji;13;CPOperation.ji;18;CPOperationQueue.ji;13;CPPredicate.ji;29;CPPropertyListSerialization.ji;9;CPRange.ji;11;CPRunLoop.ji;11;CPScanner.ji;7;CPSet.ji;18;CPSortDescriptor.ji;10;CPString.ji;9;CPTimer.ji;12;CPTimeZone.ji;15;CPUndoManager.ji;7;CPURL.ji;17;CPURLConnection.ji;12;CPURLError.ji;14;CPURLRequest.ji;15;CPURLResponse.ji;16;CPUserDefaults.ji;22;CPUserSessionManager.ji;9;CPValue.ji;20;CPValueTransformer.jt;2454;objj_executeFile("_CGGeometry.j", YES);objj_executeFile("CPArray.j", YES);objj_executeFile("CPBundle.j", YES);objj_executeFile("CPByteCountFormatter.j", YES);objj_executeFile("CPCache.j", YES);objj_executeFile("CPCharacterSet.j", YES);objj_executeFile("CPCoder.j", YES);objj_executeFile("CPComparisonPredicate.j", YES);objj_executeFile("CPCompoundPredicate.j", YES);objj_executeFile("CPData.j", YES);objj_executeFile("CPDate.j", YES);objj_executeFile("CPDateFormatter.j", YES);objj_executeFile("CPDecimal.j", YES);objj_executeFile("CPDecimalNumber.j", YES);objj_executeFile("CPDelayedPerform.j", YES);objj_executeFile("CPDictionary.j", YES);objj_executeFile("CPEnumerator.j", YES);objj_executeFile("CPError.j", YES);objj_executeFile("CPException.j", YES);objj_executeFile("CPExpression.j", YES);objj_executeFile("CPFormatter.j", YES);objj_executeFile("CPIndexPath.j", YES);objj_executeFile("CPIndexSet.j", YES);objj_executeFile("CPInvocation.j", YES);objj_executeFile("CPJSONPConnection.j", YES);objj_executeFile("CPKeyedArchiver.j", YES);objj_executeFile("CPKeyedUnarchiver.j", YES);objj_executeFile("CPKeyValueCoding.j", YES);objj_executeFile("CPKeyValueObserving.j", YES);objj_executeFile("CPLocale.j", YES);objj_executeFile("CPMutableArray.j", YES);objj_executeFile("CPMutableSet.j", YES);objj_executeFile("CPNotification.j", YES);objj_executeFile("CPNotificationCenter.j", YES);objj_executeFile("CPNull.j", YES);objj_executeFile("CPNumber.j", YES);objj_executeFile("CPNumberFormatter.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPObjJRuntime.j", YES);objj_executeFile("CPOperation.j", YES);objj_executeFile("CPOperationQueue.j", YES);objj_executeFile("CPPredicate.j", YES);objj_executeFile("CPPropertyListSerialization.j", YES);objj_executeFile("CPRange.j", YES);objj_executeFile("CPRunLoop.j", YES);objj_executeFile("CPScanner.j", YES);objj_executeFile("CPSet.j", YES);objj_executeFile("CPSortDescriptor.j", YES);objj_executeFile("CPString.j", YES);objj_executeFile("CPTimer.j", YES);objj_executeFile("CPTimeZone.j", YES);objj_executeFile("CPUndoManager.j", YES);objj_executeFile("CPURL.j", YES);objj_executeFile("CPURLConnection.j", YES);objj_executeFile("CPURLError.j", YES);objj_executeFile("CPURLRequest.j", YES);objj_executeFile("CPURLResponse.j", YES);objj_executeFile("CPUserDefaults.j", YES);objj_executeFile("CPUserSessionManager.j", YES);objj_executeFile("CPValue.j", YES);objj_executeFile("CPValueTransformer.j", YES);p;10;_CPArray.jt;28830;@STATIC;1.0;i;14;CPEnumerator.ji;13;CPException.ji;10;CPObject.ji;9;CPRange.ji;18;CPSortDescriptor.jt;28722;objj_executeFile("CPEnumerator.j", YES);objj_executeFile("CPException.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPRange.j", YES);objj_executeFile("CPSortDescriptor.j", YES);CPEnumerationNormal = 0;
 CPEnumerationConcurrent = 1 << 0;
 CPEnumerationReverse = 1 << 1;
 CPBinarySearchingFirstEqual = 1 << 8;

@@ -124,13 +124,6 @@
 
 @implementation FSPopUpButton:CPPopUpButton
 
-//<!> fixme: does not work -> _CPMenuManager.j
-- (void)deleteBackward:sender
-{
-alert("hello")
-        [self setObjectValue:[CPNull null]];
-}
-
 -(void) _consolidateItemArrayLengthToArray:(CPArray) someArray
 {	var myCurrentArr=[self itemArray];
 	var l=myCurrentArr.length;
@@ -186,7 +179,7 @@ alert("hello")
 		for (i = 0; i < l; i++)
 		{	var curr_obj= [sourceArray objectAtIndex:i];
 			someArray.push([curr_obj valueForKey: mykey]);
-			if(myvalkey) tagArray.push([curr_obj valueForKey: myvalkey]);
+			if(myvalkey) tagArray.push([curr_obj valueForKey:myvalkey]);
 		}
 	}
 	[self _consolidateItemArrayLengthToArray: someArray];
@@ -197,24 +190,14 @@ alert("hello")
 	{	[myCurrentArr[j] setTitle: someArray[j]];
 		if(tagArray) [myCurrentArr[j] setTag: tagArray[j]];
 	}
-	if(_value)
-	{	[self selectItemWithTag: _value];
-	} else
-	{	[self selectItemWithTag:-1];
-	}
-	[self synchronizeTitleAndSelectedItem];
-}
-
--(void) selectItemWithTag:(int) someValue
-{	_value= someValue;
-	[super selectItemWithTag: _value];
+    [self synchronizeTitleAndSelectedItem]
 }
 
 -(int) selectedTag
 {	return [[self selectedItem] tag];
 }
--(int) setSelectedTag: aTag
-{	[self selectItemWithTag: aTag];
+-(void) setSelectedTag:(id)aTag
+{	[self selectItemWithTag:aTag];
 }
 
 @end

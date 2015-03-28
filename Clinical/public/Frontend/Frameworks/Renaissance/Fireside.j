@@ -443,17 +443,18 @@ var _allRelationships;
 {	CPString _baseURL @accessors(property=baseURL);
 	unsigned _fetchLimit @accessors(property=fetchLimit);
 }
+
 -(CPURLRequest) requestForInsertingObjectInEntity:(FSEntity) someEntity
 {   var request = [CPURLRequest requestWithURL: [self baseURL]+"/"+[someEntity name]+"/"+ [someEntity pk]];
     [request setHTTPMethod:"POST"];
     return request;
 }
--(CPURLRequest) requestForAddressingObjectsWithKey: aKey equallingValue: (id) someval inEntity:(FSEntity) someEntity
-{	var request = [CPURLRequest requestWithURL: [self baseURL]+"/"+[someEntity name]+"/"+aKey+"/"+someval];
+-(CPURLRequest) requestForAddressingObjectsWithKey:(CPString)aKey equallingValue: (id) someval inEntity:(FSEntity) someEntity
+{	var request = [CPURLRequest requestWithURL: [self baseURL]+"/"+[someEntity name]+"/"+aKey+"/"+encodeURIComponent(someval)];
 	return request;
 }
--(CPURLRequest) requestForFuzzilyAddressingObjectsWithKey: aKey equallingValue: (id) someval inEntity:(FSEntity) someEntity
-{	var request = [CPURLRequest requestWithURL: [self baseURL]+"/"+[someEntity name]+"/"+aKey+"/like/"+someval];
+-(CPURLRequest) requestForFuzzilyAddressingObjectsWithKey:(CPString)aKey equallingValue:(id) someval inEntity:(FSEntity)someEntity
+{	var request = [CPURLRequest requestWithURL: [self baseURL]+"/"+[someEntity name]+"/"+aKey+"/like/"+encodeURIComponent(someval)];
 	return request;
 }
 -(CPURLRequest) requestForAddressingAllObjectsInEntity:(FSEntity) someEntity
@@ -545,7 +546,7 @@ var _allRelationships;
 	[obj reload];
 }
 
--(void) insertObject: someObj 
+-(void) insertObject:(id)someObj 
 {	var entity=[someObj entity];
 	var request=[self requestForInsertingObjectInEntity:entity];
 	[request setHTTPBody:[someObj._changes toJSON] ];
@@ -555,6 +556,7 @@ var _allRelationships;
 	[someObj willChangeValueForKey: [entity pk]];
 	if(!someObj._data) someObj._data=[CPMutableDictionary new];
 	[someObj._data setObject: pk forKey: [entity pk]];
+    [entity _registerObjectInPKCache:someObj];
 	[someObj didChangeValueForKey: [entity pk]];
 }
 
