@@ -187,7 +187,7 @@
 	var  j, l1 = someArray.length;
 
 	for (j = 0; j < l1; j++)
-	{	[myCurrentArr[j] setTitle: someArray[j]];
+	{	[myCurrentArr[j] setTitle:someArray[j]];
 		if(tagArray) [myCurrentArr[j] setTag: tagArray[j]];
 	}
     [self synchronizeTitleAndSelectedItem]

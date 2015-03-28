@@ -76,7 +76,7 @@
 
 <window visible="NO">
   <tableViewPopup width="100" height="23" id="column_idvisit" itemsController="#CPOwner.visitsController" itemsValue="arrangedObjects.id" itemsFace="arrangedObjects.name"/>
-  <tableViewPopup   width="100" height="23" id="column_idpersonnel" itemsController="#CPOwner.groupPersonnelController" itemsValue="arrangedObjects.idpersonnel" itemsFace="arrangedObjects.name"/>
+  <tableViewPopup width="100" height="23" id="column_idpersonnel" itemsController="#CPOwner.groupPersonnelController" itemsValue="arrangedObjects.idpersonnel" itemsFace="arrangedObjects.name"/>
 </window>
 
 
