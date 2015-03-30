@@ -26,6 +26,23 @@
 
 @import "GSMarkupTagView.j"
 
+@implementation CPSplitView(AutosaveFix)
+- (void)setFrameSize:(CGSize)aSize
+{
+    if (_shouldRestoreFromAutosaveUnlessFrameSize)
+        _shouldAutosave = NO;
+    else
+        [self _adjustSubviewsWithCalculatedSize];
+
+    [super setFrameSize:aSize];
+
+    if (_shouldRestoreFromAutosaveUnlessFrameSize)
+        _shouldAutosave = YES;
+
+    [self setNeedsDisplay:YES];
+    [self _restoreFromAutosaveIfNeeded]
+}
+@end
 
 @implementation GSMarkupTagSplitView: GSMarkupTagView
 
@@ -81,6 +98,8 @@
 -(void) _restoreFromAutosave: platformObject
 {	[platformObject setAutosaveName: [_attributes objectForKey: "autosaveName"] ];
 	[platformObject _restoreFromAutosave];
+    platformObject._shouldRestoreFromAutosaveUnlessFrameSize = CGSizeMakeCopy([platformObject frameSize]);
+
 }
 - (id) postInitPlatformObject: (id)platformObject
 {
