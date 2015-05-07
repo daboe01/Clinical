@@ -6,6 +6,16 @@
 
 <adminController id="mycontroller"/>
 
+<window visible="NO">
+ <vbox>
+  <popUpButton width="200" id="popupdataviewgroup" itemsBinding="#CPOwner.groupsControllerAll.arrangedObjects.name"/>
+  <popUpButton width="200" id="popupdataviewaccount" itemsBinding="#CPOwner.accountsController.arrangedObjects.name"/>
+  <tableViewPopup width="100" height="23" id="popupdataviewattendee" itemsController="#CPOwner.groupPersonnelController2" itemsValue="arrangedObjects.idpersonnel" itemsFace="arrangedObjects.name"/>
+  <tableViewPopup width="100" height="23" id="popupdataviewgroupmember" itemsController="#CPOwner.personnelController" itemsValue="arrangedObjects.id" itemsFace="arrangedObjects.name"/>
+  <datePicker style="graphical" id="graphical_picker"/>
+ </vbox>
+</window>
+
 <window id="personnelwindow" bridge="YES" delegate="mycontroller">
   <tabView type="topBezel">
    <tabViewItem title="Personnel">
@@ -169,16 +179,6 @@
   </tabViewItem>
  </tabView>
 
-</window>
-
-<window visible="NO">
- <vbox>
-  <popUpButton width="200" id="popupdataviewgroup" itemsBinding="#CPOwner.groupsControllerAll.arrangedObjects.name"/>
-  <popUpButton width="200" id="popupdataviewaccount" itemsBinding="#CPOwner.accountsController.arrangedObjects.name"/>
-  <tableViewPopup width="100" height="23" id="popupdataviewattendee" itemsController="#CPOwner.groupPersonnelController2" itemsValue="arrangedObjects.idpersonnel" itemsFace="arrangedObjects.name"/>
-  <tableViewPopup width="100" height="23" id="popupdataviewgroupmember" itemsController="#CPOwner.personnelController" itemsValue="arrangedObjects.id" itemsFace="arrangedObjects.name"/>
-  <datePicker style="graphical" id="graphical_picker"/>
- </vbox>
 </window>
 
 

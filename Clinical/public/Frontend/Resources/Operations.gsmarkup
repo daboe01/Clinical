@@ -35,6 +35,17 @@
     </menu>
    </menu>
 
+<window visible="NO">
+  <popUpButton width="200" id="popupdataviewstates" itemsBinding="#CPOwner.statesController.arrangedObjects.name"/>
+  <popUpButton width="200" id="popupdataviewdoctags" itemsBinding="#CPOwner.doctagsController.arrangedObjects.name"/>
+  <tableViewPopup   width="100" height="23"  id="column_idvisit" itemsController="#CPOwner.visitsController" itemsValue="arrangedObjects.id" itemsFace="arrangedObjects.name"/>
+  <tableViewPopup   width="100" height="23"  id="column_state" itemsController="#CPOwner.statusController" itemsValue="arrangedObjects.id" itemsFace="arrangedObjects.name"/>
+  <tableViewPopup   width="100" height="23" id="column_idpersonnel" itemsController="#CPOwner.groupPersonnelController" itemsValue="arrangedObjects.idpersonnel" itemsFace="arrangedObjects.name"/>
+  <iconTableViewControl width="25" height="23"  id="visitsmissingicon"/>
+  <datePicker style="graphical" id="graphical_picker"/>
+  <RightAlignedTextField id="rightAlignedText"/>
+</window>
+
 <window bridge="YES" visible="YES" id="trialswindow" delegate="#myadmincontroller">
 <vbox>
    <splitView vertical="YES" autosaveName="vsplitter_main0">
@@ -257,16 +268,6 @@
 </window>
 
 
-<window visible="NO">
-  <popUpButton width="200" id="popupdataviewstates" itemsBinding="#CPOwner.statesController.arrangedObjects.name"/>
-  <popUpButton width="200" id="popupdataviewdoctags" itemsBinding="#CPOwner.doctagsController.arrangedObjects.name"/>
-  <tableViewPopup   width="100" height="23"  id="column_idvisit" itemsController="#CPOwner.visitsController" itemsValue="arrangedObjects.id" itemsFace="arrangedObjects.name"/>
-  <tableViewPopup   width="100" height="23"  id="column_state" itemsController="#CPOwner.statusController" itemsValue="arrangedObjects.id" itemsFace="arrangedObjects.name"/>
-  <tableViewPopup   width="100" height="23" id="column_idpersonnel" itemsController="#CPOwner.groupPersonnelController" itemsValue="arrangedObjects.idpersonnel" itemsFace="arrangedObjects.name"/>
-  <iconTableViewControl width="25" height="23"  id="visitsmissingicon"/>
-  <datePicker style="graphical" id="graphical_picker"/>
-  <RightAlignedTextField id="rightAlignedText"/>
-</window>
 
  <window id="accountswindow" visible="NO" width="400" height="600">
    <vbox>

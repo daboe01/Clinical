@@ -4,6 +4,12 @@
 
 <objects>
 
+<window visible="NO">
+  <tableViewPopup width="100" height="23" id="column_idvisit" itemsController="#CPOwner.visitsController" itemsValue="arrangedObjects.id" itemsFace="arrangedObjects.name"/>
+  <tableViewPopup width="100" height="23" id="column_idpersonnel" itemsController="#CPOwner.groupPersonnelController" itemsValue="arrangedObjects.idpersonnel" itemsFace="arrangedObjects.name"/>
+</window>
+
+
 <window id="configwindow" x="5" y="35" width="1500" height="600">
   <vbox>
     <hbox>
@@ -73,12 +79,6 @@
    </hbox>
  </vbox>
 </window>
-
-<window visible="NO">
-  <tableViewPopup width="100" height="23" id="column_idvisit" itemsController="#CPOwner.visitsController" itemsValue="arrangedObjects.id" itemsFace="arrangedObjects.name"/>
-  <tableViewPopup width="100" height="23" id="column_idpersonnel" itemsController="#CPOwner.groupPersonnelController" itemsValue="arrangedObjects.idpersonnel" itemsFace="arrangedObjects.name"/>
-</window>
-
 
 </objects>
 
