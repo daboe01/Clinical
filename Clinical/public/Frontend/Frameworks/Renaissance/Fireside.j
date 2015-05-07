@@ -99,7 +99,7 @@
 			var peek;
 			if (peek=[self formatterForColumnName: aKey])
 			{	someval= [peek objectValueForString: someval error: nil];	//<!> fixme handle errors somehow
-				[myDict setObject:someval? someval:'' forKey: aKey];
+				[myDict setObject:someval forKey: aKey];
 			}
 		}
 	}
