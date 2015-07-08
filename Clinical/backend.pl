@@ -431,7 +431,11 @@ put '/DBI/:table/:pk/:key'=> [key=>qr/\d+/] => sub
     my $types = $self->getTypeHashForTable($table);
     for (keys %$jsonR)    ## support for nullifying dates and integers with empty string or special string NULL
     {
-        $jsonR->{$_}= ($jsonR->{$_} =~/(^NULL$)|(^\s*$)/o && $types->{$_} !~/text|varchar/o )? undef : $jsonR->{$_} ;
+        $jsonR->{$_}= ($jsonR->{$_} =~/(^NULL$)|(^\s*$)/o && $types->{$_} !~/text|varchar/o )? undef : $jsonR->{$_};
+        if ($types->{$_} =~/timestamp|date/o)
+        {   $jsonR->{$_}=~s/^([0-9]{1,2})\.([0-9]{1,2})\.([0-9]{2,4})(.*)$/$3-$2-$1$4/ogs;
+        }
+
     }
     if($table eq 'personnel_catalogue')
     {
