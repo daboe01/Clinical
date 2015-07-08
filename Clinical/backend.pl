@@ -1334,7 +1334,7 @@ post '/CT/make_bill/:idtrial'=> [idtrial =>qr/\d+/] => sub
     {
         my $update = SQL::Abstract->new;
         my $newamount = sprintf('%4.2f',$sum+$bill->{amount}+0);
-        my ($stmt, @bind) = $update->update( 'billings', {amount=> $newamount, visit_ids=>$bill->{visit_ids}.$idstr}, {id=> $idammendbill});
+        my ($stmt, @bind) = $update->update( 'billings', {amount=> $newamount, visit_ids=>$bill->{visit_ids}.', '.$idstr}, {id=> $idammendbill});
         $sth = $self->db->prepare($stmt);
         $sth->execute(@bind);
     } else

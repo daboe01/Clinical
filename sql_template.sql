@@ -1272,7 +1272,7 @@ ALTER TABLE public.trial_visits OWNER TO root;
 --
 
 CREATE VIEW billing_print AS
- SELECT a.idbilling,
+ SELECT DISTINCT a.idbilling,
     patients.idtrial,
     patient_visits.visit_date,
     patients.code1,
@@ -3233,9 +3233,9 @@ SELECT pg_catalog.setval('account_transaction_id_seq', 610, true);
 
 COPY all_trials (id, idgroup, name, codename, infotext) FROM stdin;
 195	100	New trial 2	\N	\N
-196	19	New trial 3	\N	\N
+196	1	New trial 3	\N	\N
 197	1	Demo 11002Xa	\N	\N
-25	1	Demo 11001Xxx	\N	\N
+25	19	Demo 11001Xxx	\N	\N
 \.
 
 
@@ -3251,11 +3251,6 @@ SELECT pg_catalog.setval('all_trials_id_seq', 200, true);
 --
 
 COPY audittrail (id, changedate, action, writetable, newdata, whereclause, username) FROM stdin;
-122	2015-02-10 20:59:56.976594	1	trial_visits	{"comment":"Blutentnahme"}	{"id":"7"}	pi
-123	2015-02-14 20:08:55.691043	1	personnel_catalogue	{"level":"1"}	{"id":"37"}	pi
-124	2015-02-14 20:08:56.981243	1	personnel_catalogue	{"level":"1"}	{"id":"36"}	pi
-125	2015-02-14 20:08:58.586187	1	personnel_catalogue	{"level":"1"}	{"id":"44"}	pi
-126	2015-02-14 20:09:07.779045	3	personnel_catalogue	\N	{"id":"44"}	pi
 \.
 
 
@@ -3263,7 +3258,7 @@ COPY audittrail (id, changedate, action, writetable, newdata, whereclause, usern
 -- Name: audittrail_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('audittrail_id_seq', 126, true);
+SELECT pg_catalog.setval('audittrail_id_seq', 342, true);
 
 
 --
@@ -3345,10 +3340,11 @@ SELECT pg_catalog.setval('meeting_attendees_id_seq', 1, false);
 --
 
 COPY patient_visits (id, idpatient, idvisit, visit_date, state, travel_costs, date_reimbursed, travel_comment, travel_additional_costs, actual_costs) FROM stdin;
-3822	608	7	2014-12-27 00:00:00	\N	\N	\N	\N	\N	\N
-3825	608	6	\N	\N	\N	\N	\N	\N	\N
 3826	608	9	\N	\N	\N	\N	\N	\N	\N
 3787	609	\N	2014-11-05 00:00:00	\N	\N	\N	\N	\N	\N
+3822	608	7	2014-12-27 00:00:00	\N	\N	\N	\N	\N	\N
+3824	608	6	2015-04-01 00:00:00	\N	\N	\N	\N	\N	\N
+3825	608	6	2015-04-01 00:00:00	\N	\N	\N	\N	\N	\N
 3798	612	7	2014-11-17 00:00:00	\N	\N	\N	\N	\N	\N
 3800	612	6	\N	\N	\N	\N	\N	\N	\N
 3801	612	9	\N	\N	\N	\N	\N	\N	\N
@@ -3365,7 +3361,6 @@ COPY patient_visits (id, idpatient, idvisit, visit_date, state, travel_costs, da
 3812	614	10	\N	\N	\N	\N	\N	\N	\N
 3799	612	5	2014-11-18 00:00:00	\N	\N	\N	\N	\N	\N
 3823	608	5	\N	\N	\N	\N	\N	\N	\N
-3824	608	6	\N	\N	\N	\N	\N	\N	\N
 \.
 
 
@@ -3385,7 +3380,7 @@ COPY patients (id, idtrial, piz, code1, code2, comment, state, name, givenname, 
 613	25	5	\N	\N	\N	\N	test5	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
 614	25	6	\N	\N	\N	\N	test6	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
 612	25	\N	\N	\N	\N	\N	test43	\N	\N	\N	\N	\N	\N	2014-11-17	\N	\N	\N	\N	\N
-608	25	1	0001	0001/A	\N	4	Bö	Da	1972-01-01	\N	\N	\N	\N	2014-11-13	\N	\N	\N	\N	10
+608	25	1	0001 a	0001/A	\N	4	Bö	Da	1972-01-01	\N	\N	\N	\N	2014-11-13	\N	\N	\N	\N	10
 \.
 
 
@@ -3592,14 +3587,15 @@ SELECT pg_catalog.setval('procedures_catalogue_id_seq', 168, true);
 --
 
 COPY procedures_personnel (id, idpersonnel, idprocedure) FROM stdin;
+18	36	181
 3	36	136
-5	37	139
 7	37	140
 4	37	133
-9	1	139
-11	1	144
 13	37	141
 12	37	141
+11	1	144
+9	1	139
+5	1	139
 \.
 
 
@@ -3607,7 +3603,7 @@ COPY procedures_personnel (id, idpersonnel, idprocedure) FROM stdin;
 -- Name: procedures_personnel_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('procedures_personnel_id_seq', 17, true);
+SELECT pg_catalog.setval('procedures_personnel_id_seq', 18, true);
 
 
 --
@@ -3737,9 +3733,9 @@ SELECT pg_catalog.setval('trial_personnel_id_seq', 14, true);
 --
 
 COPY trial_process_step (id, idtrial, type, start_date, end_date, deadline, idpersonnel, title) FROM stdin;
-417	25	7	2013-09-01	2014-02-28	\N	1	
-465	25	12	2014-02-25	\N	\N	1	\N
 749	25	11	2014-09-01	2014-07-31	\N	1	\N
+465	25	12	2014-02-25	\N	\N	37	\N
+417	25	11	2013-09-01	2014-02-27	\N	1	test
 850	195	11	2014-11-16	\N	\N	\N	\N
 851	196	11	2014-11-16	\N	\N	\N	\N
 852	197	11	2014-11-17	\N	\N	\N	\N
@@ -3794,9 +3790,8 @@ COPY trial_properties (id, idtrial, idproperty, value) FROM stdin;
 5428	195	7	\N
 5414	195	24	
 5476	197	18	\N
-5477	197	34	\N
-5478	197	12	\N
-5508	25	24	Teststudie 1
+5498	197	63	
+5501	197	22	
 5430	196	17	\N
 5431	196	33	\N
 5432	196	11	\N
@@ -3813,7 +3808,6 @@ COPY trial_properties (id, idtrial, idproperty, value) FROM stdin;
 5457	196	16	\N
 5442	196	24	fdffddf
 5456	196	4	
-5480	197	33	\N
 5458	196	22	
 5445	196	21	
 5436	196	18	
@@ -3830,19 +3824,20 @@ COPY trial_properties (id, idtrial, idproperty, value) FROM stdin;
 5444	196	15	mmm
 5451	196	14	
 5482	197	11	
-5486	197	38	\N
-5490	197	21	\N
-5491	197	13	\N
-5492	197	15	\N
-5496	197	8	\N
-5498	197	63	\N
-5500	197	3	\N
-5501	197	22	\N
-5502	197	1	\N
+5492	197	15	
+5508	25	24	Teststudie 2
+5478	197	12	
+5500	197	3	
+5491	197	13	
+5502	197	1	
+5496	197	8	
 5475	197	2	
 5489	197	37	
 5505	197	16	
+5477	197	34	
+5490	197	21	
 5488	197	32	
+5480	197	33	
 5483	197	27	dsssss
 5499	197	14	
 5504	197	4	
@@ -3852,12 +3847,14 @@ COPY trial_properties (id, idtrial, idproperty, value) FROM stdin;
 5507	25	62	
 5487	197	24	2134aaa
 5503	197	23	
+5486	197	38	
 5513	25	25	
 5562	25	42	
 5563	25	43	\\documentclass{scrreprt}\r\\usepackage[ngerman]{babel}\r\\usepackage[utf8]{inputenc}\r\\usepackage[T1]{fontenc}\r\\usepackage{graphicx}\r\\usepackage{wallpaper}\r\\usepackage{tabularx}\r\r\r\\renewcommand{\\familydefault}{\\sfdefault}\r\\usepackage{helvet}\r\r\\pagenumbering{none}\r\r\r\\begin{document}\r\\baselineskip15pt\r\\setlength{\\headheight}{7\\baselineskip}\r\\setlength{\\oddsidemargin}{-3mm}\r\\addtolength{\\textwidth}{2cm}\r\r<foreach:patients>\r\r\\ThisCenterWallPaper{1}{<copytex:briefkopfAdresszeile3.pdf>}\r\r\\noindent <anrede1>\\\\\r\\noindent <givenname> <name>\\\\\r\\noindent <street> \\\\\r\\noindent <zip> <town> \\\\\r\\\\ \\\\\r\\hspace*{11.0cm}  Freiburg, <today>\\\\\r\r\\noindent Datenschutzerkl"arung in der klinischen Studie {\\it <Voller Titel>}\\\\\r\r\\noindent  Sehr geehrte<anrede2>, <name>,\\\\\r\r\\noindent hiermit m"ochten wir Sie dar"uber informieren, dass ....\\\\\\\\\r\r\\noindent Mit freundlichen Gr"u"sen, \\\\ \\\\\r\r\\hspace*{-7mm}  \\begin{tabularx}{20cm}{XX}\r<_Loginname_>\\\\\r<_Loginrole_> \\\\\r\\end{tabularx}\r\r\\newpage\r\r</foreach:patients>\r\r\r\\end{document}\r
 5479	197	31	
 5659	25	28	
 5660	25	49	
+5661	197	43	\\documentclass{scrreprt}\r\\usepackage[ngerman]{babel}\r\\usepackage[utf8]{inputenc}\r\\usepackage[T1]{fontenc}\r\\usepackage{graphicx}\r\\usepackage{wallpaper}\r\\usepackage{tabularx}\r\r\r\\renewcommand{\\familydefault}{\\sfdefaul}\r\\usepackage{helvet}\r\r\\pagenumbering{none}\r\r\\begin{document}\r\\baselineskip15pt\r\\setlength{\\headheight}{7\\baselineskip}\r\\setlength{\\oddsidemargin}{-3mm}\r\\addtolength{\\textwidth}{2cm}\r\r<foreach:patients>\r\r\\ThisCenterWallPaper{1}{<copytex:briefkopfAdresszeile3.pdf>}\r\r\\noindent <anrede1>\\\\\r\\noindent <givenname> <name>\\\\\r\\noindent <street> \\\\\r\\noindent <zip> <town> \\\\\r\\\\ \\\\\r\\hspace*{11.0cm}  Freiburg, <today>\\\\\r\r\\noindent Datenschutzerkl"arung in der klinischen Studie {\\it <Voller Titel>}\\\\\r\r\\noindent  Sehr geehrte<anrede2>, <name>,\\\\\r\r\\noindent hiermit m"ochten wir Sie dar"uber informieren, dass ....\\\\\\\\ \\noindent hiermit m"ochten wir Sie dar"uber informieren, dass ....\\\\\\\\ \\noindent hiermit m"ochte \\noindent hiermit m"ochten wir Sie dar"uber informieren, dass ....\\\\\\\\  \\noindent hiermit m"ochten wir Sie dar"uber informieren, dass ....\\\\\\\\  \\noindent hiermit m"ochten wir Sie dar"uber informieren, dass ....\\\\\\\\  \\noindent hiermit m"ochten wir Sie dar"uber informieren, dass ....\\\\\\\\  \\noindent hiermit m"ochten wir Sie dar"uber informieren, dass ....\\\\\\\\  \\noindent hiermit m"ochten wir Sie dar"uber informieren, dass ....\\\\\\\\  \\noindent hiermit m"ochten wir Sie dar"uber informieren, dass ....\\\\\\\\  \\noindent hiermit m"ochten wir Sie dar"uber informieren, dass ....\\\\\\\\ n wir Sie dar"uber informieren, dass ....\\\\\\\\ \\noindent hiermit m"ochten wir Sie dar"uber informieren, dass ....\\\\\\\\ \\noindent hiermit m"ochten wir Sie dar"uber informieren, dass ....\\\\\\\\\r\\noindent Mit freundlichen Gr"u"sen, \\\\ \\\\\r\r\\hspace*{-7mm}  \\begin{tabularx}{20cm}{XX}\r<_Loginname_>\\\\\r<_Loginrole_> \\\\\r\\end{tabularx}\r\r\\newpage\r\r</foreach:patients>\r\r\r\\end{document}\r
 \.
 
 
@@ -3937,7 +3934,7 @@ SELECT pg_catalog.setval('trial_properties_catalogue_id_seq', 65, true);
 -- Name: trial_properties_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('trial_properties_id_seq', 5660, true);
+SELECT pg_catalog.setval('trial_properties_id_seq', 5661, true);
 
 
 --
@@ -3961,9 +3958,9 @@ SELECT pg_catalog.setval('trial_property_annotations_id_seq', 48, true);
 
 COPY trial_visits (id, name, idtrial, idreference_visit, visit_interval, lower_margin, upper_margin, reimbursement, additional_docscal_booking_name, ordering, comment) FROM stdin;
 299	\N	196	\N	\N	\N	\N	\N	\N	\N	\N
-300	\N	197	\N	4 days	\N	\N	12	\N	\N	\N
-5	Visit 1	25	8	7 days	3 days	3 days	448	\N	\N	\N
 7	Baseline	25	\N	00:00:00	00:00:00	00:00:00	588	\N	\N	Blutentnahme
+300	visit1	197	\N	4 days	\N	\N	12	\N	\N	\N
+5	Visit 1	25	8	6 days	3 days	3 days	448	\N	\N	\N
 8	Unschelduled	25	\N	00:00:00	-2 years	2 years	154	\N	\N	\N
 6	Visit 2	25	7	30 days	7 days	7 days	448	\N	\N	\N
 9	Vis 3	25	7	60 days	7 days	7 days	448	\N	\N	\N
@@ -4019,8 +4016,9 @@ COPY visit_procedures (id, idvisit, idprocedure, actual_cost, ordering, paramete
 158	10	168	\N	\N	\N
 159	10	162	\N	\N	\N
 160	10	45	\N	\N	\N
-139	5	15	\N	\N	\N
 140	5	162	\N	\N	\N
+181	300	162	\N	\N	\N
+139	5	14	\N	\N	\N
 \.
 
 
@@ -4028,7 +4026,7 @@ COPY visit_procedures (id, idvisit, idprocedure, actual_cost, ordering, paramete
 -- Name: visit_procedures_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('visit_procedures_id_seq', 180, true);
+SELECT pg_catalog.setval('visit_procedures_id_seq', 181, true);
 
 
 --
