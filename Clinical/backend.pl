@@ -916,7 +916,7 @@ any '/CT/pdfstamper/:idtrial/:formname'=> [idtrial =>qr/\d+/, formname =>qr/[a-z
     if($piz)
     {
         my $ua = Mojo::UserAgent->new;
-        my $data=$ua->get('http://auginfo/piz/'.$piz.'?history=4')->res->body;
+        my $data= '[]'; # $ua->get('http://auginfo/piz/'.$piz.'?history=4')->res->body;
         my $jsonR   = decode_json( $data  || '[]' );
         for my $curr_address (@$jsonR) {
             my @name_arr=split/\^/o,$curr_address->{name};
@@ -931,7 +931,7 @@ any '/CT/pdfstamper/:idtrial/:formname'=> [idtrial =>qr/\d+/, formname =>qr/[a-z
             $keyvaldict->{$curr_address->{type}.'_street'}="$addr_arr[0]";
             $keyvaldict->{$curr_address->{type}.'_ort'}="$addr_arr[4] $addr_arr[2]";
         }
-        $data=$ua->get('http://auginfo/piz/'.$piz)->res->body;
+        $data='{}'; # $ua->get('http://auginfo/piz/'.$piz)->res->body;
         $jsonR   = decode_json( $data  || '{}');
         for my $ckey (keys %$jsonR) {
             $keyvaldict->{"PAT_".$ckey}=$jsonR->{$ckey};
