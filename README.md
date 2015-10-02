@@ -23,6 +23,7 @@ Manual: https://github.com/daboe01/ClinicalManual/blob/master/manual.pdf?raw=tru
 INSTALL
 =====
 ```bash
+# you need build-essentials (linux) or XCode (mac)
 # the easiest way to get Postgres up and running on a mac is Postgres.app
 # (on linux do not forget to additionally install the postgres-dev package)
 createdb  aug_clinical
@@ -32,7 +33,7 @@ cat sql_template.sql | psql aug_clinical
 #
 # we need a current TeX distribution such as <https://tug.org/mactex/>
 # perl is already installed on linux and mac but we need quite a bunch of non-core perl modules
-curl -L https://cpanmin.us | perl - -M https://cpan.metacpan.org -n Mojolicious Mojolicious::Plugin::Database Mojolicious::Plugin::RenderFile SQL::Abstract::More Apache::Session::File Spreadsheet::WriteExcel Spreadsheet::ParseExcel Business::IBAN DBD::Pg Date::ICal Data::ICal Data::ICal::Entry::TimeZone Net::LDAP DateTime File::Find::Rule MIME::Lite Net::IMAP::Simple Email::MIME Email::MIME::Attachment::Stripper
+cpan Mojolicious Mojolicious::Plugin::Database Mojolicious::Plugin::RenderFile SQL::Abstract::More Apache::Session::File Spreadsheet::WriteExcel Spreadsheet::ParseExcel Business::IBAN DBD::Pg Date::ICal Data::ICal Data::ICal::Entry::TimeZone Net::LDAP DateTime File::Find::Rule MIME::Lite Net::IMAP::Simple Email::MIME Email::MIME::Attachment::Stripper
 # now download this repo and cd into it
 # change the constants on the top of this file as needed
 # this includes the directory paths, passwords and the database connection string:
