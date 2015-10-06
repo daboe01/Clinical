@@ -97,15 +97,25 @@ ALTER TYPE public.tablefunc_crosstab_4 OWNER TO postgres;
 -- Name: calendar_function(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE FUNCTION calendar_function(integer, integer) RETURNS TABLE(day date, weekday integer)
-    LANGUAGE sql ROWS 35
-    AS $_$
+CREATE OR REPLACE FUNCTION calendar_function(IN integer, IN integer)
+  RETURNS TABLE(day date, weekday integer) AS
+$BODY$
 
 select day, wd from (
 select day::date, to_char(day,'D')::integer as wd, to_char(day,'IW')::integer as kw   from (
 select generate_series( ($2::text||'-12-31')::timestamp-'14 months'::interval , (($2+1)::text||'-1-31')::timestamp, '1 day') as day) a order by 1) a where 
 ((kw  between to_char( ($2::text||'-'|| $1::text ||'-1')::date,'IW')::integer and to_char( ($2::text||'-'|| $1::text ||'-1')::date+'1 month'::interval,'IW')::integer)
-or $1=12 and (kw>=48 or kw=1))
+or  (($1=12 ) and (kw>=48 or kw=1)) or ($1 =1 and ( kw>=53 or kw<5)) ) 
+
+ and ( abs(day - ($2::text||'-'|| $1::text ||'-1')::date) < 60)
+ -- and (abs(date_part('month', day)-$1)<2 or date_part('year', day)<$2 )
+  order by 1 ; 
+$BODY$
+  LANGUAGE sql VOLATILE
+  COST 100
+  ROWS 35;
+ALTER FUNCTION calendar_function(integer, integer)
+  OWNER TO postgres;
 
  and ( abs(day - ($2::text||'-'|| $1::text ||'-1')::date) < 60)
  -- and (abs(date_part('month', day)-$1)<2 or date_part('year', day)<$2 )
