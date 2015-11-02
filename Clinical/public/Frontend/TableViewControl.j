@@ -135,7 +135,8 @@
 
 - (void)setEditable:(BOOL)isEditable
 {	_editable = isEditable;
-	[_myView setEditable:_editable];
+    if([_myView respondsToSelector:@selector(setEditable:)])
+	    [_myView setEditable:_editable];
 }
 
 @end
@@ -172,7 +173,8 @@ var _itemsControllerHash;
 }
 
 -(id) viewClass
-{	return FSPopUpButton;
+{
+	return FSPopUpButton;
 }
 
 - (id)initWithCoder:(id)aCoder
@@ -216,7 +218,16 @@ var _itemsControllerHash;
 	if (!_itemsController)
 	{	[_myView setItemArray:[]];
 	} else
-    {   var options= @{"PredicateFormat": _itemsPredicateFormat, "valueFace":_itemsValue, "Owner":_value};
+    {   var options= @{};
+        if(_value!== nil)
+        {   [options setObject:_value forKey:"Owner"]
+        }
+        if(_itemsValue!== nil)
+        {   [options setObject: _itemsValue forKey:"valueFace"]
+        }
+        if(_itemsPredicateFormat!== nil)
+        {   [options setObject: _itemsPredicateFormat forKey:"PredicateFormat"]
+        }
         [_myView bind:"itemArray" toObject: _itemsController withKeyPath:_itemsFace options:options];
     }
     if (!_face)   // cell based
@@ -283,7 +294,8 @@ var TableViewJanusControl_typeArray;
 		[_myView setItemsPredicateFormat:_itemsPredicateFormat];
 		[_myView setItemsController:_itemsController];
 	} else
-	{	[_myView setEditable:_editable];
+	{    if([_myView respondsToSelector:@selector(setEditable:)])
+            [_myView setEditable:_editable];
 	}
 }
 
@@ -355,7 +367,7 @@ var TableViewJanusControl_typeArray;
 {	platformObject = [super initPlatformObject: platformObject];
   
 	var editable = [self boolValueForAttribute: @"editable"];
-	if (editable == 1) [platformObject setEditable: YES];
+	if (editable == 1 && [platformObject respondsToSelector:@selector(setEditable:)] ) [platformObject setEditable: YES];
 	var face = [self stringValueForAttribute: @"face"];
 	if (face != nil) [platformObject setFace: face];
 	var disabled_face = [self stringValueForAttribute: @"disabledFace"];

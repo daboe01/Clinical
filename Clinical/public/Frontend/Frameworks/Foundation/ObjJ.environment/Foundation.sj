@@ -5288,7 +5288,8 @@ CPDecimalString = function(dcm, locale)
     }
     return string;
 }
-p;17;CPDecimalNumber.jt;37416;@STATIC;1.0;i;11;CPDecimal.ji;13;CPException.ji;10;CPNumber.ji;10;CPObject.ji;10;CPString.jt;37317;objj_executeFile("CPDecimal.j", YES);objj_executeFile("CPException.j", YES);objj_executeFile("CPNumber.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPString.j", YES);var CPDefaultDcmHandler = nil;
+p;17;CPDecimalNumber.jt;37762;@STATIC;1.0;i;11;CPDecimal.ji;13;CPException.ji;10;CPNumber.ji;10;CPObject.ji;10;CPString.jt;37663;objj_executeFile("CPDecimal.j", YES);objj_executeFile("CPException.j", YES);objj_executeFile("CPNumber.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPString.j", YES);var CPDefaultDcmHandler = nil,
+    CPDecimalNumberUIDs = new CFMutableDictionary();
 {var the_class = objj_allocateClassPair(CPObject, "CPDecimalNumberHandler"),
 meta_class = the_class.isa;class_addIvars(the_class, [new objj_ivar("_roundingMode"), new objj_ivar("_scale"), new objj_ivar("_raiseOnExactness"), new objj_ivar("_raiseOnOverflow"), new objj_ivar("_raiseOnUnderflow"), new objj_ivar("_raiseOnDivideByZero")]);objj_registerClassPair(the_class);
 class_addMethods(the_class, [new objj_method(sel_getUid("init"), function $CPDecimalNumberHandler__init(self, _cmd)
@@ -5436,7 +5437,17 @@ class_addMethods(the_class, [new objj_method(sel_getUid("init"), function $CPDec
     }
     return self;
 }
-,["id","CPString","CPDictionary"]), new objj_method(sel_getUid("decimalNumberByAdding:"), function $CPDecimalNumber__decimalNumberByAdding_(self, _cmd, decimalNumber)
+,["id","CPString","CPDictionary"]), new objj_method(sel_getUid("UID"), function $CPDecimalNumber__UID(self, _cmd)
+{
+    var UID = CPDecimalNumberUIDs.valueForKey(self);
+    if (!UID)
+    {
+        UID = objj_generateObjectUID();
+        CPDecimalNumberUIDs.setValueForKey(self, UID);
+    }
+    return UID + "";
+}
+,["CPString"]), new objj_method(sel_getUid("decimalNumberByAdding:"), function $CPDecimalNumber__decimalNumberByAdding_(self, _cmd, decimalNumber)
 {
     return self.isa.objj_msgSend2(self, "decimalNumberByAdding:withBehavior:", decimalNumber, CPDecimalNumber.isa.objj_msgSend0(CPDecimalNumber, "defaultBehavior"));
 }
@@ -5935,8 +5946,7 @@ class_addMethods(meta_class, [new objj_method(sel_getUid("cancelPreviousPerformR
     var ___r1;
 }
 ,["void","id","SEL","id","CPTimeInterval","CPArray"])]);
-}p;14;CPDictionary.jt;21374;@STATIC;1.0;i;9;CPArray.ji;14;CPEnumerator.ji;13;CPException.ji;8;CPNull.ji;10;CPObject.jt;21277;objj_executeFile("CPArray.j", YES);objj_executeFile("CPEnumerator.j", YES);objj_executeFile("CPException.j", YES);objj_executeFile("CPNull.j", YES);objj_executeFile("CPObject.j", YES);var CPDictionaryShowNilDeprecationMessage = YES,
-    CPDictionaryMaxDescriptionRecursion = 10;
+}p;14;CPDictionary.jt;19731;@STATIC;1.0;i;9;CPArray.ji;14;CPEnumerator.ji;13;CPException.ji;8;CPNull.ji;10;CPObject.jt;19634;objj_executeFile("CPArray.j", YES);objj_executeFile("CPEnumerator.j", YES);objj_executeFile("CPException.j", YES);objj_executeFile("CPNull.j", YES);objj_executeFile("CPObject.j", YES);var CPDictionaryMaxDescriptionRecursion = 10;
 {var the_class = objj_allocateClassPair(CPObject, "CPDictionary"),
 meta_class = the_class.isa;objj_registerClassPair(the_class);
 class_addMethods(the_class, [new objj_method(sel_getUid("initWithDictionary:"), function $CPDictionary__initWithDictionary_(self, _cmd, aDictionary)
@@ -5961,19 +5971,9 @@ class_addMethods(the_class, [new objj_method(sel_getUid("initWithDictionary:"), 
             var value = objects[i],
                 key = keyArray[i];
             if (value === nil)
-            {
-                CPDictionaryShowNilDeprecationMessage = NO;
-                CPLog.warn(CPString.isa.objj_msgSend(CPString, "stringWithFormat:", "[%s %s] DEPRECATED: Attempt to insert nil object from objects[%d]", (self == null ? null : self.isa.objj_msgSend0(self, "className")), _cmd, i));
-                if (typeof objj_backtrace_print === "function")
-                    objj_backtrace_print(CPLog.warn);
-            }
+                CPException.isa.objj_msgSend2(CPException, "raise:reason:", CPInvalidArgumentException, "Attempt to insert nil object from objects[" + i + "]");
             if (key === nil)
-            {
-                CPDictionaryShowNilDeprecationMessage = NO;
-                CPLog.warn(CPString.isa.objj_msgSend(CPString, "stringWithFormat:", "[%s %s] DEPRECATED: Attempt to insert nil key from keys[%d]", (self == null ? null : self.isa.objj_msgSend0(self, "className")), _cmd, i));
-                if (typeof objj_backtrace_print === "function")
-                    objj_backtrace_print(CPLog.warn);
-            }
+                CPException.isa.objj_msgSend2(CPException, "raise:reason:", CPInvalidArgumentException, "Attempt to insert nil key from keys[" + i + "]");
             (self == null ? null : self.isa.objj_msgSend2(self, "setObject:forKey:", value, key));
         }
     }
@@ -5993,19 +5993,9 @@ class_addMethods(the_class, [new objj_method(sel_getUid("initWithDictionary:"), 
             var value = arguments[index],
                 key = arguments[index + 1];
             if (value === nil)
-            {
-                CPDictionaryShowNilDeprecationMessage = NO;
-                CPLog.warn(CPString.isa.objj_msgSend(CPString, "stringWithFormat:", "[%s %s] DEPRECATED: Attempt to insert nil object from objects[%d]", (self == null ? null : self.isa.objj_msgSend0(self, "className")), _cmd, index / 2 - 1));
-                if (typeof objj_backtrace_print === "function")
-                    objj_backtrace_print(CPLog.warn);
-            }
+                CPException.isa.objj_msgSend2(CPException, "raise:reason:", CPInvalidArgumentException, "Attempt to insert nil object from objects[" + (index / 2 - 1) + "]");
             if (key === nil)
-            {
-                CPDictionaryShowNilDeprecationMessage = NO;
-                CPLog.warn(CPString.isa.objj_msgSend(CPString, "stringWithFormat:", "[%s %s] DEPRECATED: Attempt to insert nil key from keys[%d]", (self == null ? null : self.isa.objj_msgSend0(self, "className")), _cmd, index / 2 - 1));
-                if (typeof objj_backtrace_print === "function")
-                    objj_backtrace_print(CPLog.warn);
-            }
+                CPException.isa.objj_msgSend2(CPException, "raise:reason:", CPInvalidArgumentException, "Attempt to insert nil key from keys[" + (index / 2 - 1) + "]");
             (self == null ? null : self.isa.objj_msgSend2(self, "setObject:forKey:", value, key));
         }
     }
@@ -6168,23 +6158,10 @@ class_addMethods(the_class, [new objj_method(sel_getUid("initWithDictionary:"), 
 }
 ,["void","CPArray"]), new objj_method(sel_getUid("setObject:forKey:"), function $CPDictionary__setObject_forKey_(self, _cmd, anObject, aKey)
 {
-    if (CPDictionaryShowNilDeprecationMessage)
-    {
-        if (aKey === nil)
-        {
-            CPLog.warn(CPString.isa.objj_msgSend3(CPString, "stringWithFormat:", "[%s %s] DEPRECATED: key cannot be nil", self.isa.objj_msgSend0(self, "className"), _cmd));
-            if (typeof objj_backtrace_print === "function")
-                objj_backtrace_print(CPLog.warn);
-        }
-        if (anObject === nil)
-        {
-            CPLog.warn(CPString.isa.objj_msgSend(CPString, "stringWithFormat:", "[%s %s] DEPRECATED: object cannot be nil (key: %s)", self.isa.objj_msgSend0(self, "className"), _cmd, aKey));
-            if (typeof objj_backtrace_print === "function")
-                objj_backtrace_print(CPLog.warn);
-        }
-    }
-    else
-        CPDictionaryShowNilDeprecationMessage = YES;
+    if (aKey === nil)
+        CPException.isa.objj_msgSend2(CPException, "raise:reason:", CPInvalidArgumentException, "key cannot be nil");
+    if (anObject === nil)
+        CPException.isa.objj_msgSend2(CPException, "raise:reason:", CPInvalidArgumentException, "object cannot be nil (key: " + aKey + ")");
     self.setValueForKey(aKey, anObject);
 }
 ,["void","id","id"]), new objj_method(sel_getUid("addEntriesFromDictionary:"), function $CPDictionary__addEntriesFromDictionary_(self, _cmd, aDictionary)
@@ -13843,7 +13820,18 @@ var meta_class = the_class.isa;class_addMethods(the_class, [new objj_method(sel_
 }
 ,["void","CPCoder"])]);
 }CFURL.prototype.isa = CPURL.isa.objj_msgSend0(CPURL, "class");
-p;17;CPURLConnection.jt;10926;@STATIC;1.0;i;8;CPData.ji;10;CPObject.ji;11;CPRunLoop.ji;14;CPURLRequest.ji;15;CPURLResponse.jt;10824;objj_executeFile("CPData.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPRunLoop.j", YES);objj_executeFile("CPURLRequest.j", YES);objj_executeFile("CPURLResponse.j", YES);{var the_typedef = objj_allocateTypeDef("HTTPRequest");
+p;17;CPURLConnection.jt;12764;@STATIC;1.0;i;8;CPData.ji;10;CPObject.ji;11;CPRunLoop.ji;14;CPURLRequest.ji;15;CPURLResponse.jt;12662;objj_executeFile("CPData.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPRunLoop.j", YES);objj_executeFile("CPURLRequest.j", YES);objj_executeFile("CPURLResponse.j", YES);{var the_protocol = objj_allocateProtocol("CPURLConnectionDelegate");
+var aProtocol = objj_getProtocol("CPObject");
+if (!aProtocol) throw new SyntaxError("*** Could not find definition for protocol \"CPURLConnectionDelegate\"");
+protocol_addProtocol(the_protocol, aProtocol);
+objj_registerProtocol(the_protocol);
+protocol_addMethodDescriptions(the_protocol, [new objj_method(sel_getUid("connection:didFailWithError:"), Nil
+,["void","CPURLConnection","CPException"]), new objj_method(sel_getUid("connection:didReceiveData:"), Nil
+,["void","CPURLConnection","CPString"]), new objj_method(sel_getUid("connection:didReceiveResponse:"), Nil
+,["void","CPURLConnection","CPString"]), new objj_method(sel_getUid("connectionDidFinishLoading:"), Nil
+,["void","CPURLConnection"]), new objj_method(sel_getUid("connectionDidReceiveAuthenticationChallenge:"), Nil
+,["void","CPURLConnection"])], true, true);
+}{var the_typedef = objj_allocateTypeDef("HTTPRequest");
 objj_registerTypeDef(the_typedef);
 }var CPURLConnectionDelegate = nil;
 {var the_class = objj_allocateClassPair(CPObject, "CPURLConnection"),
@@ -13869,6 +13857,7 @@ class_addMethods(the_class, [new objj_method(sel_getUid("originalRequest"), func
             scheme = (URL == null ? null : URL.isa.objj_msgSend0(URL, "scheme"));
         self._isLocalFileConnection = scheme === "file" || (scheme === "http" || scheme === "https") && window.location && (window.location.protocol === "file:" || window.location.protocol === "app:");
         self._HTTPRequest = new CFHTTPRequest();
+        self._HTTPRequest.setTimeout((aRequest == null ? null : aRequest.isa.objj_msgSend0(aRequest, "timeoutInterval")) * 1000);
         self._HTTPRequest.setWithCredentials((aRequest == null ? null : aRequest.isa.objj_msgSend0(aRequest, "withCredentials")));
         if (shouldStartImmediately)
             (self == null ? null : self.isa.objj_msgSend0(self, "start"));
@@ -13893,6 +13882,10 @@ class_addMethods(the_class, [new objj_method(sel_getUid("originalRequest"), func
         {
             self.isa.objj_msgSend0(self, "_readyStateDidChange");
         };
+        self._HTTPRequest.ontimeout = function()
+        {
+            self.isa.objj_msgSend0(self, "_didTimeout");
+        };
         var fields = ((___r1 = self._request), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "allHTTPHeaderFields")),
             key = nil,
             keys = (fields == null ? null : fields.isa.objj_msgSend0(fields, "keyEnumerator"));
@@ -13901,12 +13894,16 @@ class_addMethods(the_class, [new objj_method(sel_getUid("originalRequest"), func
         self._HTTPRequest.send(((___r1 = self._request), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "HTTPBody")));
     }
     catch(anException)     {
-        if (((___r1 = self._delegate), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "respondsToSelector:", sel_getUid("connection:didFailWithError:"))))
-            ((___r1 = self._delegate), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "connection:didFailWithError:", self, anException));
-        var ___r1;
+        self.isa.objj_msgSend1(self, "_sendDelegateDidFailWithError:", anException);
     }    var ___r1, ___r2;
 }
-,["void"]), new objj_method(sel_getUid("cancel"), function $CPURLConnection__cancel(self, _cmd)
+,["void"]), new objj_method(sel_getUid("_sendDelegateDidFailWithError:"), function $CPURLConnection___sendDelegateDidFailWithError_(self, _cmd, anException)
+{
+    if (((___r1 = self._delegate), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "respondsToSelector:", sel_getUid("connection:didFailWithError:"))))
+        ((___r1 = self._delegate), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "connection:didFailWithError:", self, anException));
+    var ___r1;
+}
+,["void","CPException"]), new objj_method(sel_getUid("cancel"), function $CPURLConnection__cancel(self, _cmd)
 {
     self._isCanceled = YES;
     try    {
@@ -13918,9 +13915,14 @@ class_addMethods(the_class, [new objj_method(sel_getUid("originalRequest"), func
 {
     return self._isLocalFileConnection;
 }
-,["BOOL"]), new objj_method(sel_getUid("_readyStateDidChange"), function $CPURLConnection___readyStateDidChange(self, _cmd)
+,["BOOL"]), new objj_method(sel_getUid("_didTimeout"), function $CPURLConnection___didTimeout(self, _cmd)
 {
-    if (self._HTTPRequest.readyState() === CFHTTPRequest.CompleteState)
+    var exception = CPException.isa.objj_msgSend3(CPException, "exceptionWithName:reason:userInfo:", "Timeout exception", "The request timed out.", objj_msgSend(objj_msgSend(CPDictionary, "alloc"), "init"));
+    self.isa.objj_msgSend1(self, "_sendDelegateDidFailWithError:", exception);
+}
+,["void"]), new objj_method(sel_getUid("_readyStateDidChange"), function $CPURLConnection___readyStateDidChange(self, _cmd)
+{
+    if (self._HTTPRequest.readyState() === CFHTTPRequest.CompleteState && !self._HTTPRequest.isTimeoutRequest())
     {
         var statusCode = self._HTTPRequest.status(),
             URL = ((___r1 = self._request), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "URL"));
@@ -14029,8 +14031,14 @@ CPURLErrorFileDoesNotExist = kCFURLErrorFileDoesNotExist;
 CPURLErrorFileIsDirectory = kCFURLErrorFileIsDirectory;
 CPURLErrorNoPermissionsToReadFile = kCFURLErrorNoPermissionsToReadFile;
 CPURLErrorDataLengthExceedsMaximum = kCFURLErrorDataLengthExceedsMaximum;
-p;14;CPURLRequest.jt;5120;@STATIC;1.0;i;14;CPDictionary.ji;10;CPObject.ji;10;CPString.ji;7;CPURL.jt;5041;objj_executeFile("CPDictionary.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPString.j", YES);objj_executeFile("CPURL.j", YES);{var the_class = objj_allocateClassPair(CPObject, "CPURLRequest"),
-meta_class = the_class.isa;class_addIvars(the_class, [new objj_ivar("_URL"), new objj_ivar("_HTTPBody"), new objj_ivar("_HTTPMethod"), new objj_ivar("_withCredentials"), new objj_ivar("_HTTPHeaderFields")]);objj_registerClassPair(the_class);
+p;14;CPURLRequest.jt;7684;@STATIC;1.0;i;14;CPDictionary.ji;10;CPObject.ji;10;CPString.ji;7;CPURL.jt;7605;objj_executeFile("CPDictionary.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPString.j", YES);objj_executeFile("CPURL.j", YES);{var the_typedef = objj_allocateTypeDef("CPURLRequestCachePolicy");
+objj_registerTypeDef(the_typedef);
+}CPURLRequestUseProtocolCachePolicy = 0;
+CPURLRequestReloadIgnoringLocalCacheData = 1;
+CPURLRequestReturnCacheDataElseLoad = 2;
+CPURLRequestReturnCacheDataDontLoad = 3;
+{var the_class = objj_allocateClassPair(CPObject, "CPURLRequest"),
+meta_class = the_class.isa;class_addIvars(the_class, [new objj_ivar("_URL"), new objj_ivar("_HTTPBody"), new objj_ivar("_HTTPMethod"), new objj_ivar("_withCredentials"), new objj_ivar("_HTTPHeaderFields"), new objj_ivar("_timeoutInterval"), new objj_ivar("_cachePolicy")]);objj_registerClassPair(the_class);
 class_addMethods(the_class, [new objj_method(sel_getUid("URL"), function $CPURLRequest__URL(self, _cmd)
 {
     return self._URL;
@@ -14067,22 +14075,55 @@ class_addMethods(the_class, [new objj_method(sel_getUid("URL"), function $CPURLR
 {
     return self._HTTPHeaderFields;
 }
-,["CPDictionary"]), new objj_method(sel_getUid("init"), function $CPURLRequest__init(self, _cmd)
+,["CPDictionary"]), new objj_method(sel_getUid("timeoutInterval"), function $CPURLRequest__timeoutInterval(self, _cmd)
+{
+    return self._timeoutInterval;
+}
+,["CPTimeInterval"]), new objj_method(sel_getUid("cachePolicy"), function $CPURLRequest__cachePolicy(self, _cmd)
+{
+    return self._cachePolicy;
+}
+,["CPURLRequestCachePolicy"]), new objj_method(sel_getUid("init"), function $CPURLRequest__init(self, _cmd)
 {
     return self.isa.objj_msgSend1(self, "initWithURL:", nil);
 }
-,["id"]), new objj_method(sel_getUid("initWithURL:"), function $CPURLRequest__initWithURL_(self, _cmd, aURL)
+,["id"]), new objj_method(sel_getUid("initWithURL:cachePolicy:timeoutInterval:"), function $CPURLRequest__initWithURL_cachePolicy_timeoutInterval_(self, _cmd, anURL, aCachePolicy, aTimeoutInterval)
 {
-    self = objj_msgSendSuper({ receiver:self, super_class:objj_getClass("CPURLRequest").super_class }, "init");
-    if (self)
+    if (self = (self == null ? null : self.isa.objj_msgSend1(self, "initWithURL:", anURL)))
+    {
+        self._cachePolicy = aCachePolicy;
+        self._timeoutInterval = aTimeoutInterval;
+    }
+    return self;
+}
+,["id","CPURL","CPURLRequestCachePolicy","CPTimeInterval"]), new objj_method(sel_getUid("initWithURL:"), function $CPURLRequest__initWithURL_(self, _cmd, aURL)
+{
+    if (self = objj_msgSendSuper({ receiver:self, super_class:objj_getClass("CPURLRequest").super_class }, "init"))
     {
         (self == null ? null : self.isa.objj_msgSend1(self, "setURL:", aURL));
         self._HTTPBody = "";
         self._HTTPMethod = "GET";
         self._HTTPHeaderFields = objj_msgSend(objj_msgSend(CPDictionary, "alloc"), "init");
         self._withCredentials = NO;
+        self._timeoutInterval = 60.0;
+        self._cachePolicy = CPURLRequestUseProtocolCachePolicy;
         (self == null ? null : self.isa.objj_msgSend2(self, "setValue:forHTTPHeaderField:", "Thu, 01 Jan 1970 00:00:00 GMT", "If-Modified-Since"));
-        (self == null ? null : self.isa.objj_msgSend2(self, "setValue:forHTTPHeaderField:", "no-cache", "Cache-Control"));
+        switch(self._cachePolicy) {
+        case CPURLRequestUseProtocolCachePolicy:
+            (self == null ? null : self.isa.objj_msgSend2(self, "setValue:forHTTPHeaderField:", "no-cache", "Cache-Control"));
+            break;
+        case CPURLRequestReturnCacheDataElseLoad:
+            (self == null ? null : self.isa.objj_msgSend2(self, "setValue:forHTTPHeaderField:", "max-stale=31536000", "Cache-Control"));
+            break;
+        case CPURLRequestReturnCacheDataDontLoad:
+            (self == null ? null : self.isa.objj_msgSend2(self, "setValue:forHTTPHeaderField:", "only-if-cached", "Cache-Control"));
+            break;
+        case CPURLRequestReloadIgnoringLocalCacheData:
+            (self == null ? null : self.isa.objj_msgSend2(self, "setValue:forHTTPHeaderField:", "no-cache", "Cache-Control"));
+            break;
+default:
+            (self == null ? null : self.isa.objj_msgSend2(self, "setValue:forHTTPHeaderField:", "no-cache", "Cache-Control"));
+        }
         (self == null ? null : self.isa.objj_msgSend2(self, "setValue:forHTTPHeaderField:", "XMLHttpRequest", "X-Requested-With"));
     }
     return self;
@@ -14107,7 +14148,12 @@ class_addMethods(meta_class, [new objj_method(sel_getUid("requestWithURL:"), fun
     return ((___r1 = CPURLRequest.isa.objj_msgSend0(CPURLRequest, "alloc")), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "initWithURL:", aURL));
     var ___r1;
 }
-,["id","CPURL"])]);
+,["id","CPURL"]), new objj_method(sel_getUid("requestWithURL:cachePolicy:timeoutInterval:"), function $CPURLRequest__requestWithURL_cachePolicy_timeoutInterval_(self, _cmd, anURL, aCachePolicy, aTimeoutInterval)
+{
+    return ((___r1 = CPURLRequest.isa.objj_msgSend0(CPURLRequest, "alloc")), ___r1 == null ? null : ___r1.isa.objj_msgSend3(___r1, "initWithURL:cachePolicy:timeoutInterval:", anURL, aCachePolicy, aTimeoutInterval));
+    var ___r1;
+}
+,["id","CPURL","CPURLRequestCachePolicy","CPTimeInterval"])]);
 }{
 var the_class = objj_getClass("CPURLRequest")
 if(!the_class) throw new SyntaxError("*** Could not find definition for class \"CPURLRequest\"");
@@ -14571,6 +14617,291 @@ class_addMethods(meta_class, [new objj_method(sel_getUid("supportsLocalStorage")
     }    return YES;
 }
 ,["BOOL"])]);
+}p;20;CPUserNotification.jt;5783;@STATIC;1.0;i;20;CPAttributedString.ji;9;CPArray.ji;8;CPDate.ji;14;CPDictionary.ji;10;CPObject.ji;12;CPTimeZone.jt;5663;objj_executeFile("CPAttributedString.j", YES);objj_executeFile("CPArray.j", YES);objj_executeFile("CPDate.j", YES);objj_executeFile("CPDictionary.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPTimeZone.j", YES);{var the_typedef = objj_allocateTypeDef("CPUserNotificationAction");
+objj_registerTypeDef(the_typedef);
+}{var the_typedef = objj_allocateTypeDef("CPUserNotificationActivationType");
+objj_registerTypeDef(the_typedef);
+}CPUserNotificationActivationTypeNone = 0;
+CPUserNotificationActivationTypeContentsClicked = 1;
+CPUserNotificationActivationTypeActionButtonClicked = 2;
+(CPUserNotificationActivationTypeReplied = 3, CPUserNotificationActivationTypeAdditionalActionClicked = 4);
+{var the_class = objj_allocateClassPair(CPObject, "CPUserNotification"),
+meta_class = the_class.isa;class_addIvars(the_class, [new objj_ivar("_presented"), new objj_ivar("_remote"), new objj_ivar("_actualDeliveryDate"), new objj_ivar("_deliveryDate"), new objj_ivar("_userInfo"), new objj_ivar("_contentImage"), new objj_ivar("_identifier"), new objj_ivar("_informativeText"), new objj_ivar("_title"), new objj_ivar("_deliveryRepeatInterval"), new objj_ivar("_deliveryTimeZone"), new objj_ivar("_activationType")]);objj_registerClassPair(the_class);
+class_addMethods(the_class, [new objj_method(sel_getUid("isPresented"), function $CPUserNotification__isPresented(self, _cmd)
+{
+    return self._presented;
+}
+,["BOOL"]), new objj_method(sel_getUid("_setPresented:"), function $CPUserNotification___setPresented_(self, _cmd, newValue)
+{
+    self._presented = newValue;
+}
+,["void","BOOL"]), new objj_method(sel_getUid("isRemote"), function $CPUserNotification__isRemote(self, _cmd)
+{
+    return self._remote;
+}
+,["BOOL"]), new objj_method(sel_getUid("_setRemote:"), function $CPUserNotification___setRemote_(self, _cmd, newValue)
+{
+    self._remote = newValue;
+}
+,["void","BOOL"]), new objj_method(sel_getUid("actualDeliveryDate"), function $CPUserNotification__actualDeliveryDate(self, _cmd)
+{
+    return self._actualDeliveryDate;
+}
+,["CPDate"]), new objj_method(sel_getUid("_setActualDeliveryDate:"), function $CPUserNotification___setActualDeliveryDate_(self, _cmd, newValue)
+{
+    self._actualDeliveryDate = newValue;
+}
+,["void","CPDate"]), new objj_method(sel_getUid("deliveryDate"), function $CPUserNotification__deliveryDate(self, _cmd)
+{
+    return self._deliveryDate;
+}
+,["CPDate"]), new objj_method(sel_getUid("setDeliveryDate:"), function $CPUserNotification__setDeliveryDate_(self, _cmd, newValue)
+{
+    self._deliveryDate = newValue;
+}
+,["void","CPDate"]), new objj_method(sel_getUid("userInfo"), function $CPUserNotification__userInfo(self, _cmd)
+{
+    return self._userInfo;
+}
+,["CPDictionary"]), new objj_method(sel_getUid("setUserInfo:"), function $CPUserNotification__setUserInfo_(self, _cmd, newValue)
+{
+    self._userInfo = newValue;
+}
+,["void","CPDictionary"]), new objj_method(sel_getUid("contentImage"), function $CPUserNotification__contentImage(self, _cmd)
+{
+    return self._contentImage;
+}
+,["CPImage"]), new objj_method(sel_getUid("setContentImage:"), function $CPUserNotification__setContentImage_(self, _cmd, newValue)
+{
+    self._contentImage = newValue;
+}
+,["void","CPImage"]), new objj_method(sel_getUid("identifier"), function $CPUserNotification__identifier(self, _cmd)
+{
+    return self._identifier;
+}
+,["CPString"]), new objj_method(sel_getUid("setIdentifier:"), function $CPUserNotification__setIdentifier_(self, _cmd, newValue)
+{
+    self._identifier = newValue;
+}
+,["void","CPString"]), new objj_method(sel_getUid("informativeText"), function $CPUserNotification__informativeText(self, _cmd)
+{
+    return self._informativeText;
+}
+,["CPString"]), new objj_method(sel_getUid("setInformativeText:"), function $CPUserNotification__setInformativeText_(self, _cmd, newValue)
+{
+    self._informativeText = newValue;
+}
+,["void","CPString"]), new objj_method(sel_getUid("title"), function $CPUserNotification__title(self, _cmd)
+{
+    return self._title;
+}
+,["CPString"]), new objj_method(sel_getUid("setTitle:"), function $CPUserNotification__setTitle_(self, _cmd, newValue)
+{
+    self._title = newValue;
+}
+,["void","CPString"]), new objj_method(sel_getUid("deliveryRepeatInterval"), function $CPUserNotification__deliveryRepeatInterval(self, _cmd)
+{
+    return self._deliveryRepeatInterval;
+}
+,["CPTimeInterval"]), new objj_method(sel_getUid("setDeliveryRepeatInterval:"), function $CPUserNotification__setDeliveryRepeatInterval_(self, _cmd, newValue)
+{
+    self._deliveryRepeatInterval = newValue;
+}
+,["void","CPTimeInterval"]), new objj_method(sel_getUid("deliveryTimeZone"), function $CPUserNotification__deliveryTimeZone(self, _cmd)
+{
+    return self._deliveryTimeZone;
+}
+,["CPTimeZone"]), new objj_method(sel_getUid("setDeliveryTimeZone:"), function $CPUserNotification__setDeliveryTimeZone_(self, _cmd, newValue)
+{
+    self._deliveryTimeZone = newValue;
+}
+,["void","CPTimeZone"]), new objj_method(sel_getUid("activationType"), function $CPUserNotification__activationType(self, _cmd)
+{
+    return self._activationType;
+}
+,["CPUserNotificationActivationType"]), new objj_method(sel_getUid("_setActivationType:"), function $CPUserNotification___setActivationType_(self, _cmd, newValue)
+{
+    self._activationType = newValue;
+}
+,["void","CPUserNotificationActivationType"]), new objj_method(sel_getUid("init"), function $CPUserNotification__init(self, _cmd)
+{
+    self = objj_msgSendSuper({ receiver:self, super_class:objj_getClass("CPUserNotification").super_class }, "init");
+    if (self)
+    {
+        self._identifier = (self == null ? null : self.isa.objj_msgSend0(self, "UID"));
+    }
+    return self;
+}
+,["id"])]);
+}p;26;CPUserNotificationCenter.jt;12869;@STATIC;1.0;i;9;CPArray.ji;10;CPObject.ji;9;CPTimer.ji;20;CPUserNotification.jt;12783;objj_executeFile("CPArray.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPTimer.j", YES);objj_executeFile("CPUserNotification.j", YES);{var the_protocol = objj_allocateProtocol("CPUserNotificationCenterDelegate");
+var aProtocol = objj_getProtocol("CPObject");
+if (!aProtocol) throw new SyntaxError("*** Could not find definition for protocol \"CPUserNotificationCenterDelegate\"");
+protocol_addProtocol(the_protocol, aProtocol);
+objj_registerProtocol(the_protocol);
+}var CPUserNotificationCenterDelegate_userNotificationCenter_shouldPresentNotification_ = 1 << 0,
+    CPUserNotificationCenterDelegate_userNotificationCenter_didDeliverNotification_ = 1 << 1,
+    CPUserNotificationCenterDelegate_userNotificationCenter_didActivateNotification_ = 1 << 2;
+var CPUserNotificationDefaultCenter = nil;
+{var the_class = objj_allocateClassPair(CPObject, "CPUserNotificationCenter"),
+meta_class = the_class.isa;class_addIvars(the_class, [new objj_ivar("_deliveredNotifications"), new objj_ivar("_scheduledNotifications"), new objj_ivar("_delegate"), new objj_ivar("_implementedDelegateMethods"), new objj_ivar("_timersForUserNotification")]);objj_registerClassPair(the_class);
+class_addMethods(the_class, [new objj_method(sel_getUid("deliveredNotifications"), function $CPUserNotificationCenter__deliveredNotifications(self, _cmd)
+{
+    return self._deliveredNotifications;
+}
+,["CPArray"]), new objj_method(sel_getUid("setDeliveredNotifications:"), function $CPUserNotificationCenter__setDeliveredNotifications_(self, _cmd, newValue)
+{
+    self._deliveredNotifications = newValue;
+}
+,["void","CPArray"]), new objj_method(sel_getUid("scheduledNotifications"), function $CPUserNotificationCenter__scheduledNotifications(self, _cmd)
+{
+    return self._scheduledNotifications;
+}
+,["CPArray"]), new objj_method(sel_getUid("setScheduledNotifications:"), function $CPUserNotificationCenter__setScheduledNotifications_(self, _cmd, newValue)
+{
+    self._scheduledNotifications = newValue;
+}
+,["void","CPArray"]), new objj_method(sel_getUid("init"), function $CPUserNotificationCenter__init(self, _cmd)
+{
+    self = objj_msgSendSuper({ receiver:self, super_class:objj_getClass("CPUserNotificationCenter").super_class }, "init");
+    if (self)
+    {
+        self._deliveredNotifications = [];
+        self._scheduledNotifications = [];
+        self._timersForUserNotification = objj_msgSend(objj_msgSend(CPDictionary, "alloc"), "init");
+    }
+    return self;
+}
+,["id"]), new objj_method(sel_getUid("setDelegate:"), function $CPUserNotificationCenter__setDelegate_(self, _cmd, aDelegate)
+{
+    if (self._delegate === aDelegate)
+        return;
+    self._delegate = aDelegate;
+    self._implementedDelegateMethods = 0;
+    if (((___r1 = self._delegate), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "respondsToSelector:", sel_getUid("userNotificationCenter:shouldPresentNotification:"))))
+        self._implementedDelegateMethods |= CPUserNotificationCenterDelegate_userNotificationCenter_shouldPresentNotification_;
+    if (((___r1 = self._delegate), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "respondsToSelector:", sel_getUid("userNotificationCenter:didDeliverNotification:"))))
+        self._implementedDelegateMethods |= CPUserNotificationCenterDelegate_userNotificationCenter_didDeliverNotification_;
+    if (((___r1 = self._delegate), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "respondsToSelector:", sel_getUid("userNotificationCenter:didActivateNotification:"))))
+        self._implementedDelegateMethods |= CPUserNotificationCenterDelegate_userNotificationCenter_didActivateNotification_;
+    var ___r1;
+}
+,["void","id"]), new objj_method(sel_getUid("scheduleNotification:"), function $CPUserNotificationCenter__scheduleNotification_(self, _cmd, anUserNotification)
+{
+    var scheduledDate = ((___r1 = (anUserNotification == null ? null : anUserNotification.isa.objj_msgSend0(anUserNotification, "deliveryDate"))), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "copy"));
+    (scheduledDate == null ? null : scheduledDate.isa.objj_msgSend1(scheduledDate, "_dateWithTimeZone:", (anUserNotification == null ? null : anUserNotification.isa.objj_msgSend0(anUserNotification, "deliveryTimeZone"))));
+    var timer = ((___r1 = CPTimer.isa.objj_msgSend0(CPTimer, "alloc")), ___r1 == null ? null : ___r1.isa.objj_msgSend(___r1, "initWithFireDate:interval:target:selector:userInfo:repeats:", scheduledDate, (anUserNotification == null ? null : anUserNotification.isa.objj_msgSend0(anUserNotification, "deliveryRepeatInterval")), self, sel_getUid("_scheduledUserNotificationTimerDidFire:"), anUserNotification, (anUserNotification == null ? null : anUserNotification.isa.objj_msgSend0(anUserNotification, "deliveryRepeatInterval")) ? YES : NO));
+    ((___r1 = self._scheduledNotifications), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "addObject:", anUserNotification));
+    self._timersForUserNotification[(anUserNotification == null ? null : anUserNotification.isa.objj_msgSend0(anUserNotification, "UID"))] = timer;
+    ((___r1 = CPRunLoop.isa.objj_msgSend0(CPRunLoop, "currentRunLoop")), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "addTimer:forMode:", timer, CPDefaultRunLoopMode));
+    var ___r1;
+}
+,["void","CPUserNotification"]), new objj_method(sel_getUid("_scheduledUserNotificationTimerDidFire:"), function $CPUserNotificationCenter___scheduledUserNotificationTimerDidFire_(self, _cmd, aTimer)
+{
+    self.isa.objj_msgSend1(self, "deliverNotification:", (aTimer == null ? null : aTimer.isa.objj_msgSend0(aTimer, "userInfo")));
+}
+,["void","CPTimer"]), new objj_method(sel_getUid("removeScheduledNotification:"), function $CPUserNotificationCenter__removeScheduledNotification_(self, _cmd, anUserNotification)
+{
+    if (((___r1 = self._scheduledNotifications), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "indexOfObject:", anUserNotification)) != CPNotFound)
+    {
+        ((___r1 = self._scheduledNotifications), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "removeObject:", anUserNotification));
+        ((___r1 = self._timersForUserNotification[(anUserNotification == null ? null : anUserNotification.isa.objj_msgSend0(anUserNotification, "UID"))]), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "invalidate"));
+        delete self._timersForUserNotification[(anUserNotification == null ? null : anUserNotification.isa.objj_msgSend0(anUserNotification, "UID"))];
+    }
+    var ___r1;
+}
+,["void","CPUserNotification"]), new objj_method(sel_getUid("deliverNotification:"), function $CPUserNotificationCenter__deliverNotification_(self, _cmd, aNotification)
+{
+    self.isa.objj_msgSend1(self, "_launchUserNotification:", aNotification);
+}
+,["void","CPUserNotification"]), new objj_method(sel_getUid("removeDeliveredNotification:"), function $CPUserNotificationCenter__removeDeliveredNotification_(self, _cmd, aNotification)
+{
+    ((___r1 = self._deliveredNotifications), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "removeObject:", aNotification));
+    var ___r1;
+}
+,["void","CPUserNotification"]), new objj_method(sel_getUid("removeAllDeliveredNotifications"), function $CPUserNotificationCenter__removeAllDeliveredNotifications(self, _cmd)
+{
+    ((___r1 = self._deliveredNotifications), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "removeAllObjects"));
+    var ___r1;
+}
+,["void"]), new objj_method(sel_getUid("_askPermissionForUserNotification:"), function $CPUserNotificationCenter___askPermissionForUserNotification_(self, _cmd, anUserNotification)
+{
+    Notification.requestPermission(function(permission)
+    {
+        if (permission == "granted")
+            self.isa.objj_msgSend1(self, "_launchUserNotification:", anUserNotification);
+    });
+}
+,["void","CPUserNotification"]), new objj_method(sel_getUid("_launchUserNotification:"), function $CPUserNotificationCenter___launchUserNotification_(self, _cmd, anUserNotification)
+{
+    if (!window || !'Notification' in window)
+        return;
+    if (Notification.permission === 'default')
+        self.isa.objj_msgSend1(self, "_askPermissionForUserNotification:", anUserNotification);
+    if (Notification.permission === 'granted')
+    {
+        if (self.isa.objj_msgSend0(self, "_delegateRespondsToShouldPresentNotification") && self.isa.objj_msgSend1(self, "_sendDelegateShouldPresentNotification:", anUserNotification) || !(CPApp == null ? null : CPApp.isa.objj_msgSend0(CPApp, "isActive")))
+        {
+            var notification = new Notification((anUserNotification == null ? null : anUserNotification.isa.objj_msgSend0(anUserNotification, "title")), {'body': (anUserNotification == null ? null : anUserNotification.isa.objj_msgSend0(anUserNotification, "informativeText")), 'icon': ((___r1 = (anUserNotification == null ? null : anUserNotification.isa.objj_msgSend0(anUserNotification, "contentImage"))), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "filename")), 'tag': (anUserNotification == null ? null : anUserNotification.isa.objj_msgSend0(anUserNotification, "identifier"))});
+            anUserNotification._presented = YES;
+            notification.onclick = function()
+            {
+                anUserNotification._activationType = CPUserNotificationActivationTypeContentsClicked;
+                self.isa.objj_msgSend1(self, "_sendDelegateDidActivateNotification:", anUserNotification);
+                this.close();
+            };
+            notification.onclose = function()
+            {
+            };
+        }
+        else
+        {
+            anUserNotification._presented = NO;
+        }
+        anUserNotification._activationType = CPUserNotificationActivationTypeNone;
+        anUserNotification._actualDeliveryDate = CPDate.isa.objj_msgSend0(CPDate, "date");
+        ((___r1 = self._deliveredNotifications), ___r1 == null ? null : ___r1.isa.objj_msgSend1(___r1, "addObject:", anUserNotification));
+        if (!(anUserNotification == null ? null : anUserNotification.isa.objj_msgSend0(anUserNotification, "deliveryRepeatInterval")))
+            self.isa.objj_msgSend1(self, "removeScheduledNotification:", anUserNotification);
+        self.isa.objj_msgSend1(self, "_sendDelegateDidDeliverNotification:", anUserNotification);
+    }
+    var ___r1;
+}
+,["void","CPUserNotification"])]);
+class_addMethods(meta_class, [new objj_method(sel_getUid("defaultUserNotificationCenter"), function $CPUserNotificationCenter__defaultUserNotificationCenter(self, _cmd)
+{
+    if (!CPUserNotificationDefaultCenter)
+        CPUserNotificationDefaultCenter = ((___r1 = CPUserNotificationCenter.isa.objj_msgSend0(CPUserNotificationCenter, "alloc")), ___r1 == null ? null : ___r1.isa.objj_msgSend0(___r1, "init"));
+    return CPUserNotificationDefaultCenter;
+    var ___r1;
+}
+,["CPNotificationCenter"])]);
+}{
+var the_class = objj_getClass("CPUserNotificationCenter")
+if(!the_class) throw new SyntaxError("*** Could not find definition for class \"CPUserNotificationCenter\"");
+var meta_class = the_class.isa;class_addMethods(the_class, [new objj_method(sel_getUid("_delegateRespondsToShouldPresentNotification"), function $CPUserNotificationCenter___delegateRespondsToShouldPresentNotification(self, _cmd)
+{
+    return self._implementedDelegateMethods & CPUserNotificationCenterDelegate_userNotificationCenter_shouldPresentNotification_;
+}
+,["BOOL"]), new objj_method(sel_getUid("_sendDelegateShouldPresentNotification:"), function $CPUserNotificationCenter___sendDelegateShouldPresentNotification_(self, _cmd, aNotification)
+{
+    return ((___r1 = self._delegate), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "userNotificationCenter:shouldPresentNotification:", self, aNotification));
+    var ___r1;
+}
+,["BOOL","CPUserNotification"]), new objj_method(sel_getUid("_sendDelegateDidActivateNotification:"), function $CPUserNotificationCenter___sendDelegateDidActivateNotification_(self, _cmd, aNotification)
+{
+    if (!(self._implementedDelegateMethods & CPUserNotificationCenterDelegate_userNotificationCenter_didActivateNotification_))
+        return;
+    ((___r1 = self._delegate), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "userNotificationCenter:didActivateNotification:", self, aNotification));
+    var ___r1;
+}
+,["void","CPUserNotification"]), new objj_method(sel_getUid("_sendDelegateDidDeliverNotification:"), function $CPUserNotificationCenter___sendDelegateDidDeliverNotification_(self, _cmd, aNotification)
+{
+    if (!(self._implementedDelegateMethods & CPUserNotificationCenterDelegate_userNotificationCenter_didDeliverNotification_))
+        return;
+    ((___r1 = self._delegate), ___r1 == null ? null : ___r1.isa.objj_msgSend2(___r1, "userNotificationCenter:didDeliverNotification:", self, aNotification));
+    var ___r1;
+}
+,["void","CPUserNotification"])]);
 }p;22;CPUserSessionManager.jt;3059;@STATIC;1.0;i;22;CPNotificationCenter.ji;10;CPObject.ji;10;CPString.jt;2983;objj_executeFile("CPNotificationCenter.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPString.j", YES);{var the_typedef = objj_allocateTypeDef("CPUserSessionStatus");
 objj_registerTypeDef(the_typedef);
 }CPUserSessionUndeterminedStatus = 0;
@@ -14935,7 +15266,7 @@ var parsePROPFINDResponse = function(anXMLString)
 var mapURLsAndProperties = function(properties, ignoredURL)
 {
 };
-p;12;Foundation.jt;3634;@STATIC;1.0;i;13;_CGGeometry.ji;9;CPArray.ji;10;CPBundle.ji;22;CPByteCountFormatter.ji;9;CPCache.ji;16;CPCharacterSet.ji;9;CPCoder.ji;23;CPComparisonPredicate.ji;21;CPCompoundPredicate.ji;8;CPData.ji;8;CPDate.ji;17;CPDateFormatter.ji;11;CPDecimal.ji;17;CPDecimalNumber.ji;18;CPDelayedPerform.ji;14;CPDictionary.ji;14;CPEnumerator.ji;9;CPError.ji;13;CPException.ji;14;CPExpression.ji;13;CPFormatter.ji;13;CPIndexPath.ji;12;CPIndexSet.ji;14;CPInvocation.ji;19;CPJSONPConnection.ji;17;CPKeyedArchiver.ji;19;CPKeyedUnarchiver.ji;18;CPKeyValueCoding.ji;21;CPKeyValueObserving.ji;10;CPLocale.ji;16;CPMutableArray.ji;14;CPMutableSet.ji;16;CPNotification.ji;22;CPNotificationCenter.ji;8;CPNull.ji;10;CPNumber.ji;19;CPNumberFormatter.ji;10;CPObject.ji;15;CPObjJRuntime.ji;13;CPOperation.ji;18;CPOperationQueue.ji;13;CPPredicate.ji;29;CPPropertyListSerialization.ji;9;CPRange.ji;11;CPRunLoop.ji;11;CPScanner.ji;7;CPSet.ji;18;CPSortDescriptor.ji;10;CPString.ji;9;CPTimer.ji;12;CPTimeZone.ji;15;CPUndoManager.ji;7;CPURL.ji;17;CPURLConnection.ji;12;CPURLError.ji;14;CPURLRequest.ji;15;CPURLResponse.ji;16;CPUserDefaults.ji;22;CPUserSessionManager.ji;9;CPValue.ji;20;CPValueTransformer.jt;2454;objj_executeFile("_CGGeometry.j", YES);objj_executeFile("CPArray.j", YES);objj_executeFile("CPBundle.j", YES);objj_executeFile("CPByteCountFormatter.j", YES);objj_executeFile("CPCache.j", YES);objj_executeFile("CPCharacterSet.j", YES);objj_executeFile("CPCoder.j", YES);objj_executeFile("CPComparisonPredicate.j", YES);objj_executeFile("CPCompoundPredicate.j", YES);objj_executeFile("CPData.j", YES);objj_executeFile("CPDate.j", YES);objj_executeFile("CPDateFormatter.j", YES);objj_executeFile("CPDecimal.j", YES);objj_executeFile("CPDecimalNumber.j", YES);objj_executeFile("CPDelayedPerform.j", YES);objj_executeFile("CPDictionary.j", YES);objj_executeFile("CPEnumerator.j", YES);objj_executeFile("CPError.j", YES);objj_executeFile("CPException.j", YES);objj_executeFile("CPExpression.j", YES);objj_executeFile("CPFormatter.j", YES);objj_executeFile("CPIndexPath.j", YES);objj_executeFile("CPIndexSet.j", YES);objj_executeFile("CPInvocation.j", YES);objj_executeFile("CPJSONPConnection.j", YES);objj_executeFile("CPKeyedArchiver.j", YES);objj_executeFile("CPKeyedUnarchiver.j", YES);objj_executeFile("CPKeyValueCoding.j", YES);objj_executeFile("CPKeyValueObserving.j", YES);objj_executeFile("CPLocale.j", YES);objj_executeFile("CPMutableArray.j", YES);objj_executeFile("CPMutableSet.j", YES);objj_executeFile("CPNotification.j", YES);objj_executeFile("CPNotificationCenter.j", YES);objj_executeFile("CPNull.j", YES);objj_executeFile("CPNumber.j", YES);objj_executeFile("CPNumberFormatter.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPObjJRuntime.j", YES);objj_executeFile("CPOperation.j", YES);objj_executeFile("CPOperationQueue.j", YES);objj_executeFile("CPPredicate.j", YES);objj_executeFile("CPPropertyListSerialization.j", YES);objj_executeFile("CPRange.j", YES);objj_executeFile("CPRunLoop.j", YES);objj_executeFile("CPScanner.j", YES);objj_executeFile("CPSet.j", YES);objj_executeFile("CPSortDescriptor.j", YES);objj_executeFile("CPString.j", YES);objj_executeFile("CPTimer.j", YES);objj_executeFile("CPTimeZone.j", YES);objj_executeFile("CPUndoManager.j", YES);objj_executeFile("CPURL.j", YES);objj_executeFile("CPURLConnection.j", YES);objj_executeFile("CPURLError.j", YES);objj_executeFile("CPURLRequest.j", YES);objj_executeFile("CPURLResponse.j", YES);objj_executeFile("CPUserDefaults.j", YES);objj_executeFile("CPUserSessionManager.j", YES);objj_executeFile("CPValue.j", YES);objj_executeFile("CPValueTransformer.j", YES);p;10;_CPArray.jt;28830;@STATIC;1.0;i;14;CPEnumerator.ji;13;CPException.ji;10;CPObject.ji;9;CPRange.ji;18;CPSortDescriptor.jt;28722;objj_executeFile("CPEnumerator.j", YES);objj_executeFile("CPException.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPRange.j", YES);objj_executeFile("CPSortDescriptor.j", YES);CPEnumerationNormal = 0;
+p;12;Foundation.jt;3788;@STATIC;1.0;i;13;_CGGeometry.ji;9;CPArray.ji;10;CPBundle.ji;22;CPByteCountFormatter.ji;9;CPCache.ji;16;CPCharacterSet.ji;9;CPCoder.ji;23;CPComparisonPredicate.ji;21;CPCompoundPredicate.ji;8;CPData.ji;8;CPDate.ji;17;CPDateFormatter.ji;11;CPDecimal.ji;17;CPDecimalNumber.ji;18;CPDelayedPerform.ji;14;CPDictionary.ji;14;CPEnumerator.ji;9;CPError.ji;13;CPException.ji;14;CPExpression.ji;13;CPFormatter.ji;13;CPIndexPath.ji;12;CPIndexSet.ji;14;CPInvocation.ji;19;CPJSONPConnection.ji;17;CPKeyedArchiver.ji;19;CPKeyedUnarchiver.ji;18;CPKeyValueCoding.ji;21;CPKeyValueObserving.ji;10;CPLocale.ji;16;CPMutableArray.ji;14;CPMutableSet.ji;16;CPNotification.ji;22;CPNotificationCenter.ji;8;CPNull.ji;10;CPNumber.ji;19;CPNumberFormatter.ji;10;CPObject.ji;15;CPObjJRuntime.ji;13;CPOperation.ji;18;CPOperationQueue.ji;13;CPPredicate.ji;29;CPPropertyListSerialization.ji;9;CPRange.ji;11;CPRunLoop.ji;11;CPScanner.ji;7;CPSet.ji;18;CPSortDescriptor.ji;10;CPString.ji;9;CPTimer.ji;12;CPTimeZone.ji;15;CPUndoManager.ji;7;CPURL.ji;17;CPURLConnection.ji;12;CPURLError.ji;14;CPURLRequest.ji;15;CPURLResponse.ji;16;CPUserDefaults.ji;20;CPUserNotification.ji;26;CPUserNotificationCenter.ji;22;CPUserSessionManager.ji;9;CPValue.ji;20;CPValueTransformer.jt;2552;objj_executeFile("_CGGeometry.j", YES);objj_executeFile("CPArray.j", YES);objj_executeFile("CPBundle.j", YES);objj_executeFile("CPByteCountFormatter.j", YES);objj_executeFile("CPCache.j", YES);objj_executeFile("CPCharacterSet.j", YES);objj_executeFile("CPCoder.j", YES);objj_executeFile("CPComparisonPredicate.j", YES);objj_executeFile("CPCompoundPredicate.j", YES);objj_executeFile("CPData.j", YES);objj_executeFile("CPDate.j", YES);objj_executeFile("CPDateFormatter.j", YES);objj_executeFile("CPDecimal.j", YES);objj_executeFile("CPDecimalNumber.j", YES);objj_executeFile("CPDelayedPerform.j", YES);objj_executeFile("CPDictionary.j", YES);objj_executeFile("CPEnumerator.j", YES);objj_executeFile("CPError.j", YES);objj_executeFile("CPException.j", YES);objj_executeFile("CPExpression.j", YES);objj_executeFile("CPFormatter.j", YES);objj_executeFile("CPIndexPath.j", YES);objj_executeFile("CPIndexSet.j", YES);objj_executeFile("CPInvocation.j", YES);objj_executeFile("CPJSONPConnection.j", YES);objj_executeFile("CPKeyedArchiver.j", YES);objj_executeFile("CPKeyedUnarchiver.j", YES);objj_executeFile("CPKeyValueCoding.j", YES);objj_executeFile("CPKeyValueObserving.j", YES);objj_executeFile("CPLocale.j", YES);objj_executeFile("CPMutableArray.j", YES);objj_executeFile("CPMutableSet.j", YES);objj_executeFile("CPNotification.j", YES);objj_executeFile("CPNotificationCenter.j", YES);objj_executeFile("CPNull.j", YES);objj_executeFile("CPNumber.j", YES);objj_executeFile("CPNumberFormatter.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPObjJRuntime.j", YES);objj_executeFile("CPOperation.j", YES);objj_executeFile("CPOperationQueue.j", YES);objj_executeFile("CPPredicate.j", YES);objj_executeFile("CPPropertyListSerialization.j", YES);objj_executeFile("CPRange.j", YES);objj_executeFile("CPRunLoop.j", YES);objj_executeFile("CPScanner.j", YES);objj_executeFile("CPSet.j", YES);objj_executeFile("CPSortDescriptor.j", YES);objj_executeFile("CPString.j", YES);objj_executeFile("CPTimer.j", YES);objj_executeFile("CPTimeZone.j", YES);objj_executeFile("CPUndoManager.j", YES);objj_executeFile("CPURL.j", YES);objj_executeFile("CPURLConnection.j", YES);objj_executeFile("CPURLError.j", YES);objj_executeFile("CPURLRequest.j", YES);objj_executeFile("CPURLResponse.j", YES);objj_executeFile("CPUserDefaults.j", YES);objj_executeFile("CPUserNotification.j", YES);objj_executeFile("CPUserNotificationCenter.j", YES);objj_executeFile("CPUserSessionManager.j", YES);objj_executeFile("CPValue.j", YES);objj_executeFile("CPValueTransformer.j", YES);p;10;_CPArray.jt;28970;@STATIC;1.0;i;14;CPEnumerator.ji;13;CPException.ji;10;CPObject.ji;9;CPRange.ji;18;CPSortDescriptor.jt;28862;objj_executeFile("CPEnumerator.j", YES);objj_executeFile("CPException.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPRange.j", YES);objj_executeFile("CPSortDescriptor.j", YES);CPEnumerationNormal = 0;
 CPEnumerationConcurrent = 1 << 0;
 CPEnumerationReverse = 1 << 1;
 CPBinarySearchingFirstEqual = 1 << 8;
@@ -15013,7 +15344,11 @@ class_addMethods(the_class, [new objj_method(sel_getUid("init"), function $CPArr
 {
     _CPRaiseInvalidAbstractInvocation(self, _cmd);
 }
-,["CPUInteger"]), new objj_method(sel_getUid("firstObject"), function $CPArray__firstObject(self, _cmd)
+,["CPUInteger"]), new objj_method(sel_getUid("hash"), function $CPArray__hash(self, _cmd)
+{
+    return self.isa.objj_msgSend0(self, "UID");
+}
+,["unsigned"]), new objj_method(sel_getUid("firstObject"), function $CPArray__firstObject(self, _cmd)
 {
     var count = self.isa.objj_msgSend0(self, "count");
     if (count > 0)
@@ -16608,7 +16943,7 @@ var meta_class = the_class.isa;class_addMethods(the_class, [new objj_method(sel_
     return self.isa.objj_msgSend0(self, "constantValue");
 }
 ,["CPString"])]);
-}p;14;_CPPredicate.jt;39830;@STATIC;1.0;i;9;CPArray.ji;13;CPException.ji;8;CPNull.ji;10;CPObject.ji;11;CPScanner.ji;7;CPSet.ji;9;CPValue.ji;16;CPCharacterSet.ji;33;CPComparisonPredicate_Constants.ji;31;CPCompoundPredicate_Constants.ji;15;_CPExpression.jt;39597;objj_executeFile("CPArray.j", YES);objj_executeFile("CPException.j", YES);objj_executeFile("CPNull.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPScanner.j", YES);objj_executeFile("CPSet.j", YES);objj_executeFile("CPValue.j", YES);objj_executeFile("CPCharacterSet.j", YES);objj_executeFile("CPComparisonPredicate_Constants.j", YES);objj_executeFile("CPCompoundPredicate_Constants.j", YES);objj_executeFile("_CPExpression.j", YES);{var the_class = objj_allocateClassPair(CPObject, "CPPredicate"),
+}p;14;_CPPredicate.jt;39716;@STATIC;1.0;i;9;CPArray.ji;13;CPException.ji;8;CPNull.ji;10;CPObject.ji;11;CPScanner.ji;7;CPSet.ji;9;CPValue.ji;16;CPCharacterSet.ji;33;CPComparisonPredicate_Constants.ji;31;CPCompoundPredicate_Constants.ji;15;_CPExpression.jt;39483;objj_executeFile("CPArray.j", YES);objj_executeFile("CPException.j", YES);objj_executeFile("CPNull.j", YES);objj_executeFile("CPObject.j", YES);objj_executeFile("CPScanner.j", YES);objj_executeFile("CPSet.j", YES);objj_executeFile("CPValue.j", YES);objj_executeFile("CPCharacterSet.j", YES);objj_executeFile("CPComparisonPredicate_Constants.j", YES);objj_executeFile("CPCompoundPredicate_Constants.j", YES);objj_executeFile("_CPExpression.j", YES);{var the_class = objj_allocateClassPair(CPObject, "CPPredicate"),
 meta_class = the_class.isa;objj_registerClassPair(the_class);
 class_addMethods(the_class, [new objj_method(sel_getUid("predicateWithSubstitutionVariables:"), function $CPPredicate__predicateWithSubstitutionVariables_(self, _cmd, variables)
 {
@@ -17008,11 +17343,11 @@ class_addMethods(the_class, [new objj_method(sel_getUid("initWithString:args:"),
     }
     if (self.isa.objj_msgSend1(self, "scanPredicateKeyword:", "TRUE") || self.isa.objj_msgSend1(self, "scanPredicateKeyword:", "YES"))
     {
-        return CPExpression.isa.objj_msgSend1(CPExpression, "expressionForConstantValue:", CPNumber.isa.objj_msgSend1(CPNumber, "numberWithBool:", YES));
+        return CPExpression.isa.objj_msgSend1(CPExpression, "expressionForConstantValue:", YES);
     }
     if (self.isa.objj_msgSend1(self, "scanPredicateKeyword:", "FALSE") || self.isa.objj_msgSend1(self, "scanPredicateKeyword:", "NO"))
     {
-        return CPExpression.isa.objj_msgSend1(CPExpression, "expressionForConstantValue:", CPNumber.isa.objj_msgSend1(CPNumber, "numberWithBool:", NO));
+        return CPExpression.isa.objj_msgSend1(CPExpression, "expressionForConstantValue:", NO);
     }
     if (self.isa.objj_msgSend1(self, "scanPredicateKeyword:", "SELF"))
     {

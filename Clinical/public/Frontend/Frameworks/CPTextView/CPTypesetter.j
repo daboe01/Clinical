@@ -9,9 +9,6 @@
  *  Emmanuel Maillard on 27/02/2010.
  *  Copyright Emmanuel Maillard 2010.
  *
- *  FIXME: paragraphStyle indent information is currently not properly respected
- *         collect all run heights per line for proper baseline alignment
- *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -47,10 +44,14 @@ var _measuringContext,
     _measuringContextFont,
     _isCanvasSizingInvalid,
     _didTestCanvasSizingValid,
-    _sharedSimpleTypesetter;
+    _sharedSimpleTypesetter,
+    _sizingCache;
 
 function _widthOfStringForFont(aString, aFont)
 {
+    var peek,
+        cssString = [aFont cssString];
+
     if (!_measuringContext)
         _measuringContext = CGBitmapGraphicsContextCreate();
 
@@ -58,20 +59,29 @@ function _widthOfStringForFont(aString, aFont)
     {
         var teststring = "0123456879abcdefghiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,.-()";
         _didTestCanvasSizingValid = YES;
-        _measuringContext.font = [aFont cssString];
+        _measuringContext.font = cssString;
         _isCanvasSizingInvalid = ABS([teststring sizeWithFont:aFont].width -_measuringContext.measureText(teststring).width) > 2;
     }
 
+    if (!_sizingCache)
+        _sizingCache = [];
+
+    if (_sizingCache[cssString] !== undefined && (peek = _sizingCache[cssString][aString]) !== undefined)
+        return peek;
+
+    if (_sizingCache[cssString] === undefined)
+        _sizingCache[cssString] = [];
+
     if (!CPFeatureIsCompatible(CPHTMLCanvasFeature) || _isCanvasSizingInvalid)  // measuring with canvas is _much_ faster on chrome
-        return [aString sizeWithFont:aFont];
+        return _sizingCache[cssString][aString] = [aString sizeWithFont:aFont];
 
     if (_measuringContextFont !== aFont)
     {
         _measuringContextFont = aFont;
-        _measuringContext.font = [aFont cssString];
+        _measuringContext.font = cssString;
     }
 
-    return _measuringContext.measureText(aString);
+    return _sizingCache[cssString][aString] = _measuringContext.measureText(aString);
 }
 
 var CPSystemTypesetterFactory;
@@ -143,7 +153,8 @@ var CPSystemTypesetterFactory;
     float               _lineWidth;
 
     unsigned            _indexOfCurrentContainer;
-    CPArray             _thisLineFragments;
+
+    CPArray             _lineFragments;
 }
 
 
@@ -192,14 +203,18 @@ var CPSystemTypesetterFactory;
         currentContainer:(CPTextContainer)aContainer
         advancements:(CPArray)advancements
         lineCount:(unsigned)lineCount
+        sameLine:(BOOL)sameLine
 {
     var myX = 0,
         rect = CGRectMake(lineOrigin.x, lineOrigin.y, _lineWidth, _lineHeight),
         containerSize=aContainer._size;
 
     [_layoutManager setTextContainer:_currentTextContainer forGlyphRange:lineRange];  // creates a new lineFragment
+
+    var fragment = [_layoutManager._lineFragments lastObject];
+    fragment._isLast = !sameLine;
+    _lineFragments.push(fragment);
     [_layoutManager setLineFragmentRect:rect forGlyphRange:lineRange usedRect:rect];
-    _thisLineFragments.push([_layoutManager._lineFragments lastObject]);
 
     switch ([_currentParagraph alignment])
     {
@@ -219,6 +234,14 @@ var CPSystemTypesetterFactory;
     [_layoutManager setLocation:CPMakePoint(myX, _lineBase) forStartOfGlyphRange:lineRange];
     [_layoutManager _setAdvancements:advancements forGlyphRange:lineRange];
 
+    if (!sameLine) //fix the _lineFragments when fontsizes differ
+    {
+        var l = _lineFragments.length;
+
+        for (var i = 0 ; i < l ; i++)
+            [_lineFragments[i] _adjustForHeight:_lineHeight];
+    }
+
     if (!lineCount)  // do not rescue on first line
         return NO;
 
@@ -226,29 +249,6 @@ var CPSystemTypesetterFactory;
         return NO;
 
     return ([_layoutManager _rescuingInvalidFragmentsWasPossibleForGlyphRange:lineRange]);
-}
-
-- (void)_fixupLineFragmentsOfCurrentLine
-{
-    var rect,
-        l = _thisLineFragments.length;
-
-    for (var i = 0; i < l; i++)
-    {
-        if (rect)
-            rect = CGRectUnion(rect, _thisLineFragments[i]._usedRect);
-        else
-            rect = CGRectCreateCopy(_thisLineFragments[i]._usedRect);
-    }
-
-    for (var i = 0; i < l; i++)
-    {
-        var diff = rect.size.height - _thisLineFragments[i]._usedRect.size.height;
-       // _thisLineFragments[i]._fragmentRect.origin.y += diff;
-       // _thisLineFragments[i]._fragmentRect.size.height = rect.size.height;
-    }
-
-    _thisLineFragments = [];
 }
 
 - (void)layoutGlyphsInLayoutManager:(CPLayoutManager)layoutManager
@@ -285,7 +285,7 @@ var CPSystemTypesetterFactory;
         prevRangeWidth = 0,
         measuringRange = CPMakeRange(glyphIndex, 0),
         currentAnchor = 0,
-        _previousFont;
+        previousFont;
 
     if (glyphIndex > 0)
         lineOrigin = CGPointCreateCopy([_layoutManager lineFragmentRectForGlyphAtIndex:glyphIndex effectiveRange:nil].origin);
@@ -299,7 +299,7 @@ var CPSystemTypesetterFactory;
     if (![_textStorage length])
         return;
 
-    _thisLineFragments = [];
+    _lineFragments = [];
 
     for (; numLines != maxNumLines && glyphIndex < numberOfGlyphs; glyphIndex++)
     {
@@ -312,23 +312,26 @@ var CPSystemTypesetterFactory;
             if (!_currentFont)
                 _currentFont = [_textStorage font] || [CPFont systemFontOfSize:12.0];
 
-            ascent = ["x" sizeWithFont:_currentFont].height; //FIXME
-            descent = 0;    //FIXME
-            leading = (ascent - descent) * 0.2; // FAKE leading
+            ascent = [_currentFont ascender]
+            descent = [_currentFont descender]
+            leading = (ascent - descent) * 0.2; // FAKE<!>
         }
 
-        if (_previousFont !== _currentFont)
+        if (previousFont !== _currentFont)
         {
             measuringRange = CPMakeRange(glyphIndex, 0);
             currentAnchor = prevRangeWidth;
-            _previousFont = _currentFont;
+            previousFont = _currentFont;
         }
 
         lineRange.length++;
         measuringRange.length++;
 
+        _lineHeight = MAX(_lineHeight, ascent - descent + leading);
+        _lineBase = MAX(_lineBase, ascent);
+
         var currentChar = theString[glyphIndex],  // use pure javascript methods for performance reasons
-            rangeWidth = _widthOfStringForFont(theString.substr(measuringRange.location, measuringRange.length), _currentFont).width  + currentAnchor;
+            rangeWidth = _widthOfStringForFont(theString.substr(measuringRange.location, measuringRange.length), _currentFont).width + currentAnchor;
 
         switch (currentChar)    // faster than sending actionForControlCharacterAtIndex: called for each char.
         {
@@ -345,6 +348,8 @@ var CPSystemTypesetterFactory;
             }  // fallthrough intentional
             case  ' ':
                 wrapRange = CPMakeRangeCopy(lineRange);
+                wrapRange._height = _lineHeight;
+                wrapRange._base = _lineBase;
                 wrapWidth = rangeWidth;
                 break;
             default:
@@ -354,7 +359,10 @@ var CPSystemTypesetterFactory;
                 }
         }
 
-        advancements.push(rangeWidth - prevRangeWidth);
+        var advancement = CPMakeSize(rangeWidth - prevRangeWidth, ascent);
+        advancement.descent=descent;
+        advancements.push(advancement);
+
         prevRangeWidth = _lineWidth = rangeWidth;
 
         if (lineOrigin.x + rangeWidth > containerSize.width)
@@ -363,6 +371,8 @@ var CPSystemTypesetterFactory;
             {
                 lineRange = wrapRange;
                _lineWidth = wrapWidth;
+               _lineHeight = wrapRange._height;
+               _lineBase = wrapRange._base;
             }
 
             isNewline = YES;
@@ -370,12 +380,9 @@ var CPSystemTypesetterFactory;
             glyphIndex = CPMaxRange(lineRange) - 1;  // start the line starts directly at current character
         }
 
-        _lineHeight = MAX(_lineHeight, ascent - descent + leading);
-        _lineBase = MAX(_lineBase, ascent);
-
         if (isNewline || isTabStop)
         {
-            if ([self _flushRange:lineRange lineOrigin:lineOrigin currentContainer:_currentTextContainer advancements:advancements lineCount:numLines])
+            if ([self _flushRange:lineRange lineOrigin:lineOrigin currentContainer:_currentTextContainer advancements:advancements lineCount:numLines sameLine:!isNewline])
                 return;
 
             if (isTabStop)
@@ -407,7 +414,7 @@ var CPSystemTypesetterFactory;
                 lineOrigin.x = 0;
                 numLines++;
                 isNewline = NO;
-                [self _fixupLineFragmentsOfCurrentLine];
+                _lineFragments = [];
             }
 
             _lineWidth      = 0;
@@ -427,17 +434,11 @@ var CPSystemTypesetterFactory;
     // this is to "flush" the remaining characters
     if (lineRange.length)
     {
-        [self _flushRange:lineRange lineOrigin:lineOrigin currentContainer:_currentTextContainer advancements:advancements lineCount:numLines];
-        [self _fixupLineFragmentsOfCurrentLine]
+        [self _flushRange:lineRange lineOrigin:lineOrigin currentContainer:_currentTextContainer advancements:advancements lineCount:numLines sameLine:NO];
     }
 
-    if (_isNewlineCharacter(theString.charAt(theString.length - 1)))
-    {
-        // fixme: row-height is crudely hacked
-        var rect = CGRectMake(0, lineOrigin.y, containerSize.width, [_layoutManager._lineFragments lastObject]._usedRect.size.height);
-
-        [_layoutManager setExtraLineFragmentRect:rect usedRect:rect textContainer:_currentTextContainer];
-    }
+    var rect = CGRectMake(0, lineOrigin.y, containerSize.width, [_layoutManager._lineFragments lastObject]._usedRect.size.height - descent);
+    [_layoutManager setExtraLineFragmentRect:rect usedRect:rect textContainer:_currentTextContainer];
 }
 
 @end

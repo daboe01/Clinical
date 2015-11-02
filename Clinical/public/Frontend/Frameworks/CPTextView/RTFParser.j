@@ -24,8 +24,7 @@ e.g. using zaach/jison on github
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 */
 
-//@import <Foundation/CPAttributedString.j>
-@import "CPAttributedString.j"
+@import <Foundation/CPAttributedString.j>
 
 // Hold the attributs of the current run
 @implementation _RTFAttribute: CPObject

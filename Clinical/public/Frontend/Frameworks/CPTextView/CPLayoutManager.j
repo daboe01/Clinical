@@ -36,6 +36,10 @@ function _isNewlineCharacter(chr)
 {
     return (chr === '\n' || chr === '\r');
 }
+function _isWhitespaceCharacter(chr)
+{
+    return (chr === '\n' || chr === '\r' || chr === ' ' || chr === '\t');
+}
 
 function _RectEqualToRectHorizontally(lhsRect, rhsRect)
 {
@@ -146,8 +150,10 @@ var _objectsInRange = function(aList, aRange)
 @implementation _CPLineFragment : CPObject
 {
     CPArray         _glyphsFrames @accessors(getter=glyphFrames);
+    CPArray         _glyphsOffsets;
 
     BOOL            _isInvalid;
+    BOOL            _isLast;
     CGRect          _fragmentRect;
     CGRect          _usedRect;
     CGPoint         _location;
@@ -229,15 +235,28 @@ var _objectsInRange = function(aList, aRange)
 - (void)setAdvancements:(CPArray)someAdvancements
 {
     var count = someAdvancements.length,
-        origin = CGPointMake(_fragmentRect.origin.x + _location.x, _fragmentRect.origin.y);
+        origin = CGPointMake(_fragmentRect.origin.x + _location.x, _fragmentRect.origin.y),
+        height = _usedRect.size.height;
 
     _glyphsFrames = new Array(count);
+    _glyphsOffsets = new Array(count);
 
     for (var i = 0; i < count; i++)
     {
-        _glyphsFrames[i] = CGRectMake(origin.x, origin.y, someAdvancements[i], _usedRect.size.height);
-        origin.x += someAdvancements[i];
+        _glyphsFrames[i] = CGRectMake(origin.x, origin.y, someAdvancements[i].width, height);
+        _glyphsFrames[i]._descent = someAdvancements[i].descent
+        _glyphsOffsets[i] = height - someAdvancements[i].height;
+        origin.x += someAdvancements[i].width;
     }
+}
+- (void)_adjustForHeight:(double)height
+{
+    var count = _glyphsFrames.length;
+
+    for (var i = 0; i < count; i++)
+        _glyphsFrames[i].origin.y += (height - _fragmentRect.size.height);
+
+    _fragmentRect.size.height=height;
 }
 
 - (CPString)description
@@ -287,8 +306,6 @@ var _objectsInRange = function(aList, aRange)
         c = runs.length,
         orig = CGPointMake(_fragmentRect.origin.x, _fragmentRect.origin.y);
 
-    orig.y += aPoint.y;
-
     for (var i = 0; i < c; i++)
     {
         var run = runs[i];
@@ -299,8 +316,9 @@ var _objectsInRange = function(aList, aRange)
         if(!_glyphsFrames)
             continue;
 
-        orig.x = _glyphsFrames[run._range.location - _runs[0]._range.location].origin.x + aPoint.x;
-
+        var loc = run._range.location - _runs[0]._range.location;
+        orig.x = _glyphsFrames[loc].origin.x + aPoint.x;
+        orig.y = _glyphsFrames[loc].origin.y + aPoint.y + _glyphsOffsets[loc];
         run.elem.style.left = (orig.x) + "px";
         run.elem.style.top = (orig.y) + "px";
 
@@ -923,7 +941,7 @@ var _objectsInRange = function(aList, aRange)
             }
         }
     }
-    return CPNotFound;
+    return point.y > 0? [[_textStorage string] length] : 0;
 }
 
 - (unsigned)glyphIndexForPoint:(CGPoint)point inTextContainer:(CPTextContainer)container
@@ -995,6 +1013,69 @@ var _objectsInRange = function(aList, aRange)
         return fragments[0];
 
     return nil;
+}
+- (id)_firstLineFragmentForLineFromLocation:(unsigned)location
+{
+    var l = _lineFragments.length;
+
+    for (var i = 0; i < l; i++)
+    {
+        if (CPLocationInRange(location, _lineFragments[i]._range))
+        {
+            var j = i;
+
+            while (--j > 0 && !_lineFragments[j]._isLast)
+            {
+                // body intentionally left empty
+            }
+
+            return _lineFragments[j + 1];
+        }
+    }
+
+    return nil;
+}
+- (id)_lastLineFragmentForLineFromLocation:(unsigned)location
+{
+    var l = _lineFragments.length;
+
+    for (var i = 0; i < l; i++)
+    {
+        if (CPLocationInRange(location, _lineFragments[i]._range))
+        {
+            var j = i;
+
+            while (!_lineFragments[j]._isLast)
+                j++;
+
+            return _lineFragments[j];
+        }
+    }
+
+    return nil;
+}
+
+- (double)_characterOffsetAtLocation:(unsigned)location
+{
+    var lineFragment = _objectWithLocationInRange(_lineFragments, location);
+
+    if (!lineFragment)
+        return 0.0;
+
+    var index = location - lineFragment._range.location;
+
+    return lineFragment._glyphsOffsets[index];
+}
+- (double)_descentAtLocation:(unsigned)location
+{
+    var lineFragment = _objectWithLocationInRange(_lineFragments, location);
+
+    if (!lineFragment)
+        return 0.0;
+
+    var index = location - lineFragment._range.location;
+
+    return lineFragment._glyphsFrames[index]._descent;
 }
 
 - (void)setLineFragmentRect:(CGRect)fragmentRect forGlyphRange:(CPRange)glyphRange usedRect:(CGRect)usedRect
@@ -1203,10 +1284,13 @@ var _objectsInRange = function(aList, aRange)
             {
                 if (CPLocationInRange(fragment._range.location + j, selectedCharRange))
                 {
+                    var correctedRect = CGRectCreateCopy(frames[j]);
+                    correctedRect.size.height -= frames[j]._descent;
+                    correctedRect.origin.y -= frames[j]._descent;
                     if (!rect)
-                        rect = CGRectCreateCopy(frames[j]);
+                        rect = CGRectCreateCopy(correctedRect);
                     else
-                        rect = CGRectUnion(rect, frames[j]);
+                        rect = CGRectUnion(rect, correctedRect);
 
                     if (_isNewlineCharacter([[_textStorage string] characterAtIndex:MAX(0, CPMaxRange(selectedCharRange) - 1)]))
                     {
@@ -1224,7 +1308,7 @@ var _objectsInRange = function(aList, aRange)
 
     for (var i = 0; i < len - 1; i++) // extend the width of all but the last one
     {
-        if (rectArray[i].origin.y == rectArray[i + 1].origin.y)
+        if (FLOOR(CGRectGetMaxY(rectArray[i])) == FLOOR(CGRectGetMaxY(rectArray[i + 1])))
             continue;
 
         rectArray[i].size.width = containerSize.width - rectArray[i].origin.x;

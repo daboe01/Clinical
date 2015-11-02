@@ -21,8 +21,7 @@
  */
 
 
-//@import <Foundation/CPAttributedString.j>
-@import "CPAttributedString.j"
+@import <Foundation/CPAttributedString.j>
 @import "CPLayoutManager.j"
 
 
