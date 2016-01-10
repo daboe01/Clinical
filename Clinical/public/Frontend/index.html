@@ -26,7 +26,7 @@ OBJJ_COMPILER_FLAGS = ["IncludeDebugSymbols", "IncludeTypeSignatures", "InlineMs
 // taken from http://code.google.com/p/miniajax/
 			ajax={};
 			ajax.x=function(){try{return new ActiveXObject('Msxml2.XMLHTTP')}catch(e){try{return new ActiveXObject('Microsoft.XMLHTTP')}catch(e){return new XMLHttpRequest()}}};
-			ajax.gets=function(url){var x=ajax.x();x.open('GET',url,false);x.send(null);return x.responseText};
+			ajax.gets=function(url, data){var x=ajax.x();x.open('POST',url,false);x.send(data);return x.responseText};
 
 			OBJJ_PROGRESS_CALLBACK = function(percent) {
 				percent = 100 * percent;
@@ -67,7 +67,7 @@ OBJJ_COMPILER_FLAGS = ["IncludeDebugSymbols", "IncludeTypeSignatures", "InlineMs
 				submit.value = "...";
 				submit.style.opacity = "0.5";
 				window.G_USERNAME= document.getElementById("username").value.toLowerCase();
-				if(window.G_SESSION =ajax.gets("/AUTH?u="+escape(window.G_USERNAME)+"&p="+escape(document.getElementById("password").value)))
+				if(window.G_SESSION=ajax.gets("/AUTH", window.G_USERNAME+"\n"+document.getElementById("password").value))
 				{
 					authenticationDidSucceed();
 				} else

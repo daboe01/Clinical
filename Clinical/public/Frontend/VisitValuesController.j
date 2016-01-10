@@ -1,6 +1,7 @@
 @import <AppKit/CPControl.j>
 @import "Widgets/WidgetSimpleString.j"
 @import "Widgets/WidgetCappusance.j"
+@import "Widgets/WidgetCappusanceAC.j"
 @import "Widgets/WidgetOSDI.j"
 @import "Widgets/WidgetTOSS.j"
 @import "Widgets/WidgetTimestamp.j"

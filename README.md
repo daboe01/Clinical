@@ -47,6 +47,17 @@ morbo backend.pl # this starts the testing server
 # you may eventually want to automatically launch hypnotoad backend.pl (production server) during system boot
 ```
 
+Update database schema
+=====
+```bash
+# from github
+pg_dump aug_clinical_incoming -s  >sql_template_new.sql 
+# from production
+pg_dump aug_clinical -s  >sql_template_old.sql 
+java -jar apgdiff-2.4/apgdiff-2.4.jar sql_template_old.sql sql_template_new.sql > diff.sql
+psql -d aug_clinical -a -f diff.sql
+```
+
 LICENCE
 =====
 This program is free software: you can redistribute it and/or modify

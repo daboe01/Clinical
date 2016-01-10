@@ -826,10 +826,10 @@ return 1;
     return $msg->code==0;
 };
 
-get '/AUTH' => sub {
+post '/AUTH' => sub {
     my $self=shift;
-    my $user= $self->param('u');
-    my $pass= $self->param('p');
+    my ($user, $pass)= split("\n", $self->req->body);
+warn "$user, $pass";
     my $sessionid='';
     if($user)
     {   if($self->LDAPChallenge($user,$pass))
