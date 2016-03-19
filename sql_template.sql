@@ -97,9 +97,9 @@ ALTER TYPE public.tablefunc_crosstab_4 OWNER TO postgres;
 -- Name: calendar_function(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
-CREATE OR REPLACE FUNCTION calendar_function(IN integer, IN integer)
-  RETURNS TABLE(day date, weekday integer) AS
-$BODY$
+CREATE FUNCTION calendar_function(integer, integer) RETURNS TABLE(day date, weekday integer)
+    LANGUAGE sql ROWS 35
+    AS $_$
 
 select day, wd from (
 select day::date, to_char(day,'D')::integer as wd, to_char(day,'IW')::integer as kw   from (
@@ -110,18 +110,7 @@ or  (($1=12 ) and (kw>=48 or kw=1)) or ($1 =1 and ( kw>=53 or kw<5)) )
  and ( abs(day - ($2::text||'-'|| $1::text ||'-1')::date) < 60)
  -- and (abs(date_part('month', day)-$1)<2 or date_part('year', day)<$2 )
   order by 1 ; 
-$BODY$
-  LANGUAGE sql VOLATILE
-  COST 100
-  ROWS 35;
-ALTER FUNCTION calendar_function(integer, integer)
-  OWNER TO postgres;
-
- and ( abs(day - ($2::text||'-'|| $1::text ||'-1')::date) < 60)
- -- and (abs(date_part('month', day)-$1)<2 or date_part('year', day)<$2 )
-  order by 1 ; 
 $_$;
-
 
 ALTER FUNCTION public.calendar_function(integer, integer) OWNER TO postgres;
 
