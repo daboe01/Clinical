@@ -247,7 +247,7 @@
     for(var i=0; i< l; i++)
     {   var pk= [[selected objectAtIndex:i] valueForKey:"id"];
         var val=[[selected objectAtIndex:i] valueForKey:"default_value"];
-        [pController addObject:@{"idproperty": pk, "idtrial": idtrial, "value": val} ];
+        [pController addObject:@{"idproperty":pk, "idtrial":idtrial, "value":val || ''} ];
     }
 }
 -(void) addProperty: sender
