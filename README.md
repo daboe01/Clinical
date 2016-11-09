@@ -33,7 +33,7 @@ cat sql_template.sql | psql aug_clinical
 #
 # we need a current TeX distribution such as <https://tug.org/mactex/>
 # perl is already installed on linux and mac but we need quite a bunch of non-core perl modules
-cpan Mojolicious Mojolicious::Plugin::Database Mojolicious::Plugin::RenderFile SQL::Abstract::More Apache::Session::File Spreadsheet::WriteExcel Spreadsheet::ParseExcel Business::IBAN DBD::Pg Date::ICal Data::ICal Data::ICal::Entry::TimeZone Net::LDAP DateTime File::Find::Rule MIME::Lite Net::IMAP::Simple Email::MIME Email::MIME::Attachment::Stripper
+cpan Math::Expression String::Random Mojolicious Mojolicious::Plugin::Database Mojolicious::Plugin::RenderFile SQL::Abstract::More Apache::Session::File Spreadsheet::WriteExcel Spreadsheet::ParseExcel Business::IBAN DBD::Pg Date::ICal Data::ICal Data::ICal::Entry::TimeZone Net::LDAP DateTime File::Find::Rule MIME::Lite Net::IMAP::Simple Email::MIME Email::MIME::Attachment::Stripper
 # now download this repo and cd into it
 # change the constants on the top of this file as needed
 # this includes the directory paths, passwords and the database connection string:
