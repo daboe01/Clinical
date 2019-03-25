@@ -25,7 +25,7 @@ use Email::MIME;
 use Email::MIME::Attachment::Stripper; 
 use Data::Dumper;
 
-use lib qw {/Users/daboe01/src/daboe01_Clinical/Clinical};
+use lib qw {/app/Clinical};
 use TempFileNames;
 use pdfgen;
 
@@ -34,8 +34,8 @@ $ENV{MOJO_MAX_MESSAGE_SIZE} = 1_073_741_824;
 
 plugin 'database', {
     dsn      => 'dbi:Pg:dbname=aug_clinical;host=localhost',
-    username => 'root',
-    password => 'root',
+    username => 'docker',
+    password => 'docker',
     options  => { 'pg_enable_utf8' => 1, AutoCommit => 1 },
     helper   => 'db'
 };
@@ -58,11 +58,11 @@ use constant email_password => 'mypassword';
 
 helper getLSDocuments => sub { my ($self)=@_;
     my $_docrepo= doku_repo_path.'/';
-    return    grep { defined $_->{idtrial} && $_->{tag} !~ /^\./ }
+    return grep { defined $_->{idtrial} && $_->{tag} !~ /^\./ }
     map  { my ($p,$f)=split /\//o; ($f or '')=~/^([0-9]+)_(.+)/; 
            my $date = POSIX::strftime( "%Y-%m-%d", localtime( ( stat $_docrepo.$_ )[9] ) ); 
-          {id=>"$1$2", idtrial=>$1, name=> $2, tag=>$p, date=> $date} }
-    map  { s/^$_docrepo//ogs;$_}
+          { id=>"$1$2", idtrial=>$1, name=> $2, tag=>$p, date=> $date} }
+    map   { s/^$_docrepo//ogs;$_ }
     File::Find::Rule->in($_docrepo);
 # <!> fixme: use the ->name('') method instead of the grep by hindsight
 };

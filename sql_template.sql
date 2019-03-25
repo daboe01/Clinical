@@ -710,7 +710,7 @@ CREATE FUNCTION normal_rand(integer, double precision, double precision) RETURNS
 ALTER FUNCTION public.normal_rand(integer, double precision, double precision) OWNER TO postgres;
 
 --
--- Name: textcat_all(text); Type: AGGREGATE; Schema: public; Owner: root
+-- Name: textcat_all(text); Type: AGGREGATE; Schema: public; Owner: docker
 --
 
 CREATE AGGREGATE textcat_all(text) (
@@ -720,10 +720,10 @@ CREATE AGGREGATE textcat_all(text) (
 );
 
 
-ALTER AGGREGATE public.textcat_all(text) OWNER TO root;
+ALTER AGGREGATE public.textcat_all(text) OWNER TO docker;
 
 --
--- Name: textcat_all2(text); Type: AGGREGATE; Schema: public; Owner: root
+-- Name: textcat_all2(text); Type: AGGREGATE; Schema: public; Owner: docker
 --
 
 CREATE AGGREGATE textcat_all2(text) (
@@ -733,7 +733,7 @@ CREATE AGGREGATE textcat_all2(text) (
 );
 
 
-ALTER AGGREGATE public.textcat_all2(text) OWNER TO root;
+ALTER AGGREGATE public.textcat_all2(text) OWNER TO docker;
 
 SET default_tablespace = '';
 
@@ -755,7 +755,7 @@ CREATE TABLE all_trials (
 ALTER TABLE public.all_trials OWNER TO postgres;
 
 --
--- Name: patients; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+-- Name: patients; Type: TABLE; Schema: public; Owner: docker; Tablespace: 
 --
 
 CREATE TABLE patients (
@@ -782,7 +782,7 @@ CREATE TABLE patients (
 );
 
 
-ALTER TABLE public.patients OWNER TO root;
+ALTER TABLE public.patients OWNER TO docker;
 
 --
 -- Name: process_steps_catalogue; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -845,7 +845,7 @@ CREATE TABLE trial_properties_catalogue (
 ALTER TABLE public.trial_properties_catalogue OWNER TO postgres;
 
 --
--- Name: full_text_search; Type: VIEW; Schema: public; Owner: root
+-- Name: full_text_search; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW full_text_search AS
@@ -886,10 +886,10 @@ CREATE VIEW full_text_search AS
   GROUP BY a.idtrial;
 
 
-ALTER TABLE public.full_text_search OWNER TO root;
+ALTER TABLE public.full_text_search OWNER TO docker;
 
 --
--- Name: __study_count_per_indication; Type: VIEW; Schema: public; Owner: root
+-- Name: __study_count_per_indication; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW __study_count_per_indication AS
@@ -919,10 +919,10 @@ CREATE VIEW __study_count_per_indication AS
   GROUP BY a.date, indications_time_course.indication;
 
 
-ALTER TABLE public.__study_count_per_indication OWNER TO root;
+ALTER TABLE public.__study_count_per_indication OWNER TO docker;
 
 --
--- Name: account_transaction; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+-- Name: account_transaction; Type: TABLE; Schema: public; Owner: docker; Tablespace: 
 --
 
 CREATE TABLE account_transaction (
@@ -936,10 +936,10 @@ CREATE TABLE account_transaction (
 );
 
 
-ALTER TABLE public.account_transaction OWNER TO root;
+ALTER TABLE public.account_transaction OWNER TO docker;
 
 --
--- Name: account_transaction_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+-- Name: account_transaction_id_seq; Type: SEQUENCE; Schema: public; Owner: docker
 --
 
 CREATE SEQUENCE account_transaction_id_seq
@@ -950,17 +950,17 @@ CREATE SEQUENCE account_transaction_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.account_transaction_id_seq OWNER TO root;
+ALTER TABLE public.account_transaction_id_seq OWNER TO docker;
 
 --
--- Name: account_transaction_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+-- Name: account_transaction_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: docker
 --
 
 ALTER SEQUENCE account_transaction_id_seq OWNED BY account_transaction.id;
 
 
 --
--- Name: billings; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+-- Name: billings; Type: TABLE; Schema: public; Owner: docker; Tablespace: 
 --
 
 CREATE TABLE billings (
@@ -976,7 +976,7 @@ CREATE TABLE billings (
 );
 
 
-ALTER TABLE public.billings OWNER TO root;
+ALTER TABLE public.billings OWNER TO docker;
 
 --
 -- Name: personnel_costs; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -995,7 +995,7 @@ CREATE TABLE personnel_costs (
 ALTER TABLE public.personnel_costs OWNER TO postgres;
 
 --
--- Name: personnel_costs_projected; Type: VIEW; Schema: public; Owner: root
+-- Name: personnel_costs_projected; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW personnel_costs_projected AS
@@ -1021,10 +1021,10 @@ CREATE VIEW personnel_costs_projected AS
      JOIN generate_series(((now())::timestamp without time zone)::timestamp with time zone, (now() + '1 year'::interval), '1 mon'::interval) future_date(future_date) ON (true));
 
 
-ALTER TABLE public.personnel_costs_projected OWNER TO root;
+ALTER TABLE public.personnel_costs_projected OWNER TO docker;
 
 --
--- Name: shadow_accounts; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+-- Name: shadow_accounts; Type: TABLE; Schema: public; Owner: docker; Tablespace: 
 --
 
 CREATE TABLE shadow_accounts (
@@ -1035,10 +1035,10 @@ CREATE TABLE shadow_accounts (
 );
 
 
-ALTER TABLE public.shadow_accounts OWNER TO root;
+ALTER TABLE public.shadow_accounts OWNER TO docker;
 
 --
--- Name: all_transactions; Type: VIEW; Schema: public; Owner: root
+-- Name: all_transactions; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW all_transactions AS
@@ -1078,7 +1078,7 @@ UNION ALL
           WHERE (personnel_costs_projected.idpersonnel = personnel_costs.idpersonnel)));
 
 
-ALTER TABLE public.all_transactions OWNER TO root;
+ALTER TABLE public.all_transactions OWNER TO docker;
 
 --
 -- Name: accounts_balanced; Type: VIEW; Schema: public; Owner: postgres
@@ -1131,7 +1131,7 @@ CREATE TABLE personnel_catalogue (
 ALTER TABLE public.personnel_catalogue OWNER TO postgres;
 
 --
--- Name: accounts_balanced_ldap; Type: VIEW; Schema: public; Owner: root
+-- Name: accounts_balanced_ldap; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW accounts_balanced_ldap AS
@@ -1150,7 +1150,7 @@ CREATE VIEW accounts_balanced_ldap AS
   WHERE ((personnel_catalogue.level > 0) AND (group_assignments.permission_level > 0));
 
 
-ALTER TABLE public.accounts_balanced_ldap OWNER TO root;
+ALTER TABLE public.accounts_balanced_ldap OWNER TO docker;
 
 --
 -- Name: all_trials_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -1212,7 +1212,7 @@ ALTER SEQUENCE audittrail_id_seq OWNED BY audittrail.id;
 
 
 --
--- Name: bic_catalogue; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+-- Name: bic_catalogue; Type: TABLE; Schema: public; Owner: docker; Tablespace: 
 --
 
 CREATE TABLE bic_catalogue (
@@ -1223,10 +1223,10 @@ CREATE TABLE bic_catalogue (
 );
 
 
-ALTER TABLE public.bic_catalogue OWNER TO root;
+ALTER TABLE public.bic_catalogue OWNER TO docker;
 
 --
--- Name: patient_visits; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+-- Name: patient_visits; Type: TABLE; Schema: public; Owner: docker; Tablespace: 
 --
 
 CREATE TABLE patient_visits (
@@ -1243,10 +1243,10 @@ CREATE TABLE patient_visits (
 );
 
 
-ALTER TABLE public.patient_visits OWNER TO root;
+ALTER TABLE public.patient_visits OWNER TO docker;
 
 --
--- Name: trial_visits; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+-- Name: trial_visits; Type: TABLE; Schema: public; Owner: docker; Tablespace: 
 --
 
 CREATE TABLE trial_visits (
@@ -1264,10 +1264,10 @@ CREATE TABLE trial_visits (
 );
 
 
-ALTER TABLE public.trial_visits OWNER TO root;
+ALTER TABLE public.trial_visits OWNER TO docker;
 
 --
--- Name: billing_print; Type: VIEW; Schema: public; Owner: root
+-- Name: billing_print; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW billing_print AS
@@ -1290,10 +1290,10 @@ CREATE VIEW billing_print AS
   ORDER BY patients.idtrial, patient_visits.visit_date;
 
 
-ALTER TABLE public.billing_print OWNER TO root;
+ALTER TABLE public.billing_print OWNER TO docker;
 
 --
--- Name: billings_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+-- Name: billings_id_seq; Type: SEQUENCE; Schema: public; Owner: docker
 --
 
 CREATE SEQUENCE billings_id_seq
@@ -1304,17 +1304,17 @@ CREATE SEQUENCE billings_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.billings_id_seq OWNER TO root;
+ALTER TABLE public.billings_id_seq OWNER TO docker;
 
 --
--- Name: billings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+-- Name: billings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: docker
 --
 
 ALTER SEQUENCE billings_id_seq OWNED BY billings.id;
 
 
 --
--- Name: calendar; Type: VIEW; Schema: public; Owner: root
+-- Name: calendar; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW calendar AS
@@ -1325,10 +1325,10 @@ CREATE VIEW calendar AS
     NULL::integer AS id;
 
 
-ALTER TABLE public.calendar OWNER TO root;
+ALTER TABLE public.calendar OWNER TO docker;
 
 --
--- Name: global_state; Type: VIEW; Schema: public; Owner: root
+-- Name: global_state; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW global_state AS
@@ -1361,7 +1361,7 @@ CREATE VIEW global_state AS
           ORDER BY a_1.idtrial) a;
 
 
-ALTER TABLE public.global_state OWNER TO root;
+ALTER TABLE public.global_state OWNER TO docker;
 
 --
 -- Name: trials; Type: VIEW; Schema: public; Owner: postgres
@@ -1394,7 +1394,7 @@ CREATE VIEW trials AS
 ALTER TABLE public.trials OWNER TO postgres;
 
 --
--- Name: due_billings_list; Type: VIEW; Schema: public; Owner: root
+-- Name: due_billings_list; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW due_billings_list AS
@@ -1411,7 +1411,7 @@ CREATE VIEW due_billings_list AS
   WHERE ((billings.end_date IS NULL) AND (billings.start_date < now()));
 
 
-ALTER TABLE public.due_billings_list OWNER TO root;
+ALTER TABLE public.due_billings_list OWNER TO docker;
 
 --
 -- Name: meeting_attendees; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -1446,7 +1446,7 @@ CREATE TABLE personnel_event (
 ALTER TABLE public.personnel_event OWNER TO postgres;
 
 --
--- Name: procedures_catalogue; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+-- Name: procedures_catalogue; Type: TABLE; Schema: public; Owner: docker; Tablespace: 
 --
 
 CREATE TABLE procedures_catalogue (
@@ -1463,7 +1463,7 @@ CREATE TABLE procedures_catalogue (
 );
 
 
-ALTER TABLE public.procedures_catalogue OWNER TO root;
+ALTER TABLE public.procedures_catalogue OWNER TO docker;
 
 --
 -- Name: procedures_personnel; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -1495,7 +1495,7 @@ CREATE TABLE team_meetings (
 ALTER TABLE public.team_meetings OWNER TO postgres;
 
 --
--- Name: visit_procedures; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+-- Name: visit_procedures; Type: TABLE; Schema: public; Owner: docker; Tablespace: 
 --
 
 CREATE TABLE visit_procedures (
@@ -1508,10 +1508,10 @@ CREATE TABLE visit_procedures (
 );
 
 
-ALTER TABLE public.visit_procedures OWNER TO root;
+ALTER TABLE public.visit_procedures OWNER TO docker;
 
 --
--- Name: visit_time_interval; Type: VIEW; Schema: public; Owner: root
+-- Name: visit_time_interval; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW visit_time_interval AS
@@ -1531,10 +1531,10 @@ CREATE VIEW visit_time_interval AS
           GROUP BY visit_procedures.idvisit, procedures_personnel.idpersonnel) a ON ((a.idvisit = patient_visits.idvisit)));
 
 
-ALTER TABLE public.visit_time_interval OWNER TO root;
+ALTER TABLE public.visit_time_interval OWNER TO docker;
 
 --
--- Name: event_overview; Type: VIEW; Schema: public; Owner: root
+-- Name: event_overview; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW event_overview AS
@@ -1666,10 +1666,10 @@ UNION
   ORDER BY 2;
 
 
-ALTER TABLE public.event_overview OWNER TO root;
+ALTER TABLE public.event_overview OWNER TO docker;
 
 --
--- Name: full_billing_list; Type: VIEW; Schema: public; Owner: root
+-- Name: full_billing_list; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW full_billing_list AS
@@ -1688,10 +1688,10 @@ CREATE VIEW full_billing_list AS
   ORDER BY patients.idtrial, patient_visits.visit_date;
 
 
-ALTER TABLE public.full_billing_list OWNER TO root;
+ALTER TABLE public.full_billing_list OWNER TO docker;
 
 --
--- Name: full_travelbilling_list; Type: VIEW; Schema: public; Owner: root
+-- Name: full_travelbilling_list; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW full_travelbilling_list AS
@@ -1711,7 +1711,7 @@ CREATE VIEW full_travelbilling_list AS
   ORDER BY patients.idtrial, patient_visits.visit_date;
 
 
-ALTER TABLE public.full_travelbilling_list OWNER TO root;
+ALTER TABLE public.full_travelbilling_list OWNER TO docker;
 
 --
 -- Name: group_assignments_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -1735,7 +1735,7 @@ ALTER SEQUENCE group_assignments_id_seq OWNED BY group_assignments.id;
 
 
 --
--- Name: group_assignments_name; Type: VIEW; Schema: public; Owner: root
+-- Name: group_assignments_name; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW group_assignments_name AS
@@ -1748,7 +1748,7 @@ CREATE VIEW group_assignments_name AS
   ORDER BY personnel_catalogue.name;
 
 
-ALTER TABLE public.group_assignments_name OWNER TO root;
+ALTER TABLE public.group_assignments_name OWNER TO docker;
 
 --
 -- Name: groups_catalogue; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -1788,7 +1788,7 @@ ALTER SEQUENCE groups_catalogue_id_seq OWNED BY groups_catalogue.id;
 
 
 --
--- Name: list_for_billing; Type: VIEW; Schema: public; Owner: root
+-- Name: list_for_billing; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW list_for_billing AS
@@ -1806,10 +1806,10 @@ CREATE VIEW list_for_billing AS
                   WHERE (billings.idtrial = full_billing_list.idtrial)), '[, ]+'::text)) AS unnest))) AND (full_billing_list.visit_date < now()));
 
 
-ALTER TABLE public.list_for_billing OWNER TO root;
+ALTER TABLE public.list_for_billing OWNER TO docker;
 
 --
--- Name: list_for_travelbilling; Type: VIEW; Schema: public; Owner: root
+-- Name: list_for_travelbilling; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW list_for_travelbilling AS
@@ -1827,7 +1827,7 @@ CREATE VIEW list_for_travelbilling AS
                   WHERE (billings.idtrial = full_travelbilling_list.idtrial)), '[, ]+'::text)) AS unnest)));
 
 
-ALTER TABLE public.list_for_travelbilling OWNER TO root;
+ALTER TABLE public.list_for_travelbilling OWNER TO docker;
 
 --
 -- Name: meeting_attendees_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -1851,7 +1851,7 @@ ALTER SEQUENCE meeting_attendees_id_seq OWNED BY meeting_attendees.id;
 
 
 --
--- Name: visit_calculator; Type: VIEW; Schema: public; Owner: root
+-- Name: visit_calculator; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW visit_calculator AS
@@ -1867,7 +1867,7 @@ CREATE VIEW visit_calculator AS
      JOIN patient_visits b ON (((b.idvisit = trial_visits.idreference_visit) AND (a.idpatient = b.idpatient))));
 
 
-ALTER TABLE public.visit_calculator OWNER TO root;
+ALTER TABLE public.visit_calculator OWNER TO docker;
 
 --
 -- Name: missing_service; Type: VIEW; Schema: public; Owner: postgres
@@ -1898,7 +1898,7 @@ CREATE VIEW missing_service AS
 ALTER TABLE public.missing_service OWNER TO postgres;
 
 --
--- Name: status_catalogue; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+-- Name: status_catalogue; Type: TABLE; Schema: public; Owner: docker; Tablespace: 
 --
 
 CREATE TABLE status_catalogue (
@@ -1909,10 +1909,10 @@ CREATE TABLE status_catalogue (
 );
 
 
-ALTER TABLE public.status_catalogue OWNER TO root;
+ALTER TABLE public.status_catalogue OWNER TO docker;
 
 --
--- Name: patient_identification_log; Type: VIEW; Schema: public; Owner: root
+-- Name: patient_identification_log; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW patient_identification_log AS
@@ -1948,10 +1948,10 @@ CREATE VIEW patient_identification_log AS
   ORDER BY personnel_catalogue.ldap;
 
 
-ALTER TABLE public.patient_identification_log OWNER TO root;
+ALTER TABLE public.patient_identification_log OWNER TO docker;
 
 --
--- Name: patient_visits_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+-- Name: patient_visits_id_seq; Type: SEQUENCE; Schema: public; Owner: docker
 --
 
 CREATE SEQUENCE patient_visits_id_seq
@@ -1962,17 +1962,17 @@ CREATE SEQUENCE patient_visits_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.patient_visits_id_seq OWNER TO root;
+ALTER TABLE public.patient_visits_id_seq OWNER TO docker;
 
 --
--- Name: patient_visits_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+-- Name: patient_visits_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: docker
 --
 
 ALTER SEQUENCE patient_visits_id_seq OWNED BY patient_visits.id;
 
 
 --
--- Name: patient_visits_rich; Type: VIEW; Schema: public; Owner: root
+-- Name: patient_visits_rich; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW patient_visits_rich AS
@@ -2038,10 +2038,10 @@ CREATE VIEW patient_visits_rich AS
      LEFT JOIN visit_conflicts ON ((visit_conflicts.id = patient_visits.id)));
 
 
-ALTER TABLE public.patient_visits_rich OWNER TO root;
+ALTER TABLE public.patient_visits_rich OWNER TO docker;
 
 --
--- Name: patients_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+-- Name: patients_id_seq; Type: SEQUENCE; Schema: public; Owner: docker
 --
 
 CREATE SEQUENCE patients_id_seq
@@ -2052,17 +2052,17 @@ CREATE SEQUENCE patients_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.patients_id_seq OWNER TO root;
+ALTER TABLE public.patients_id_seq OWNER TO docker;
 
 --
--- Name: patients_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+-- Name: patients_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: docker
 --
 
 ALTER SEQUENCE patients_id_seq OWNED BY patients.id;
 
 
 --
--- Name: personnel; Type: VIEW; Schema: public; Owner: root
+-- Name: personnel; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW personnel AS
@@ -2073,7 +2073,7 @@ CREATE VIEW personnel AS
    FROM personnel_catalogue;
 
 
-ALTER TABLE public.personnel OWNER TO root;
+ALTER TABLE public.personnel OWNER TO docker;
 
 --
 -- Name: personnel_catalogue_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -2118,7 +2118,7 @@ ALTER SEQUENCE personnel_costs_id_seq OWNED BY personnel_costs.id;
 
 
 --
--- Name: personnel_costs_ldap; Type: VIEW; Schema: public; Owner: root
+-- Name: personnel_costs_ldap; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW personnel_costs_ldap AS
@@ -2134,7 +2134,7 @@ CREATE VIEW personnel_costs_ldap AS
   WHERE (personnel_catalogue.level > 0);
 
 
-ALTER TABLE public.personnel_costs_ldap OWNER TO root;
+ALTER TABLE public.personnel_costs_ldap OWNER TO docker;
 
 --
 -- Name: personnel_event_catalogue; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -2191,7 +2191,7 @@ ALTER SEQUENCE personnel_event_id_seq OWNED BY personnel_event.id;
 
 
 --
--- Name: personnel_properties; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+-- Name: personnel_properties; Type: TABLE; Schema: public; Owner: docker; Tablespace: 
 --
 
 CREATE TABLE personnel_properties (
@@ -2203,10 +2203,10 @@ CREATE TABLE personnel_properties (
 );
 
 
-ALTER TABLE public.personnel_properties OWNER TO root;
+ALTER TABLE public.personnel_properties OWNER TO docker;
 
 --
--- Name: personnel_properties_catalogue; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+-- Name: personnel_properties_catalogue; Type: TABLE; Schema: public; Owner: docker; Tablespace: 
 --
 
 CREATE TABLE personnel_properties_catalogue (
@@ -2218,10 +2218,10 @@ CREATE TABLE personnel_properties_catalogue (
 );
 
 
-ALTER TABLE public.personnel_properties_catalogue OWNER TO root;
+ALTER TABLE public.personnel_properties_catalogue OWNER TO docker;
 
 --
--- Name: personnel_properties_catalogue_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+-- Name: personnel_properties_catalogue_id_seq; Type: SEQUENCE; Schema: public; Owner: docker
 --
 
 CREATE SEQUENCE personnel_properties_catalogue_id_seq
@@ -2232,17 +2232,17 @@ CREATE SEQUENCE personnel_properties_catalogue_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.personnel_properties_catalogue_id_seq OWNER TO root;
+ALTER TABLE public.personnel_properties_catalogue_id_seq OWNER TO docker;
 
 --
--- Name: personnel_properties_catalogue_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+-- Name: personnel_properties_catalogue_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: docker
 --
 
 ALTER SEQUENCE personnel_properties_catalogue_id_seq OWNED BY personnel_properties_catalogue.id;
 
 
 --
--- Name: personnel_properties_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+-- Name: personnel_properties_id_seq; Type: SEQUENCE; Schema: public; Owner: docker
 --
 
 CREATE SEQUENCE personnel_properties_id_seq
@@ -2253,17 +2253,17 @@ CREATE SEQUENCE personnel_properties_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.personnel_properties_id_seq OWNER TO root;
+ALTER TABLE public.personnel_properties_id_seq OWNER TO docker;
 
 --
--- Name: personnel_properties_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+-- Name: personnel_properties_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: docker
 --
 
 ALTER SEQUENCE personnel_properties_id_seq OWNED BY personnel_properties.id;
 
 
 --
--- Name: procedure_statistics; Type: VIEW; Schema: public; Owner: root
+-- Name: procedure_statistics; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW procedure_statistics AS
@@ -2282,10 +2282,10 @@ CREATE VIEW procedure_statistics AS
   GROUP BY a.idprocedure;
 
 
-ALTER TABLE public.procedure_statistics OWNER TO root;
+ALTER TABLE public.procedure_statistics OWNER TO docker;
 
 --
--- Name: procedures_catalogue_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+-- Name: procedures_catalogue_id_seq; Type: SEQUENCE; Schema: public; Owner: docker
 --
 
 CREATE SEQUENCE procedures_catalogue_id_seq
@@ -2296,10 +2296,10 @@ CREATE SEQUENCE procedures_catalogue_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.procedures_catalogue_id_seq OWNER TO root;
+ALTER TABLE public.procedures_catalogue_id_seq OWNER TO docker;
 
 --
--- Name: procedures_catalogue_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+-- Name: procedures_catalogue_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: docker
 --
 
 ALTER SEQUENCE procedures_catalogue_id_seq OWNED BY procedures_catalogue.id;
@@ -2369,7 +2369,7 @@ ALTER SEQUENCE process_steps_catalogue_id_seq OWNED BY process_steps_catalogue.i
 
 
 --
--- Name: recruiting_overview; Type: VIEW; Schema: public; Owner: root
+-- Name: recruiting_overview; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW recruiting_overview AS
@@ -2403,7 +2403,7 @@ CREATE VIEW recruiting_overview AS
                  LIMIT 1), all_trials.name) a;
 
 
-ALTER TABLE public.recruiting_overview OWNER TO root;
+ALTER TABLE public.recruiting_overview OWNER TO docker;
 
 --
 -- Name: roles_catalogue; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -2439,7 +2439,7 @@ ALTER SEQUENCE roles_catalogue_id_seq OWNED BY roles_catalogue.id;
 
 
 --
--- Name: shadow_accounts_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+-- Name: shadow_accounts_id_seq; Type: SEQUENCE; Schema: public; Owner: docker
 --
 
 CREATE SEQUENCE shadow_accounts_id_seq
@@ -2450,17 +2450,17 @@ CREATE SEQUENCE shadow_accounts_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.shadow_accounts_id_seq OWNER TO root;
+ALTER TABLE public.shadow_accounts_id_seq OWNER TO docker;
 
 --
--- Name: shadow_accounts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+-- Name: shadow_accounts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: docker
 --
 
 ALTER SEQUENCE shadow_accounts_id_seq OWNED BY shadow_accounts.id;
 
 
 --
--- Name: shadow_accounts_ldap; Type: VIEW; Schema: public; Owner: root
+-- Name: shadow_accounts_ldap; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW shadow_accounts_ldap AS
@@ -2482,10 +2482,10 @@ CREATE VIEW shadow_accounts_ldap AS
   WHERE (personnel_catalogue.level > 0);
 
 
-ALTER TABLE public.shadow_accounts_ldap OWNER TO root;
+ALTER TABLE public.shadow_accounts_ldap OWNER TO docker;
 
 --
--- Name: status_catalogue_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+-- Name: status_catalogue_id_seq; Type: SEQUENCE; Schema: public; Owner: docker
 --
 
 CREATE SEQUENCE status_catalogue_id_seq
@@ -2496,17 +2496,17 @@ CREATE SEQUENCE status_catalogue_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.status_catalogue_id_seq OWNER TO root;
+ALTER TABLE public.status_catalogue_id_seq OWNER TO docker;
 
 --
--- Name: status_catalogue_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+-- Name: status_catalogue_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: docker
 --
 
 ALTER SEQUENCE status_catalogue_id_seq OWNED BY status_catalogue.id;
 
 
 --
--- Name: tagesinfos; Type: VIEW; Schema: public; Owner: root
+-- Name: tagesinfos; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW tagesinfos AS
@@ -2516,7 +2516,7 @@ CREATE VIEW tagesinfos AS
    FROM dblink('dbname=ical_joe'::text, 'select source, date_trunc(''day'',startdate) as startdate, summary from data where source =''Abwesenheiten'''::text) t1(source text, caldate date, summary text);
 
 
-ALTER TABLE public.tagesinfos OWNER TO root;
+ALTER TABLE public.tagesinfos OWNER TO docker;
 
 --
 -- Name: team_meetings_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -2540,7 +2540,7 @@ ALTER SEQUENCE team_meetings_id_seq OWNED BY team_meetings.id;
 
 
 --
--- Name: travel_billing_print; Type: VIEW; Schema: public; Owner: root
+-- Name: travel_billing_print; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW travel_billing_print AS
@@ -2563,7 +2563,7 @@ CREATE VIEW travel_billing_print AS
   ORDER BY patients.idtrial, patient_visits.visit_date;
 
 
-ALTER TABLE public.travel_billing_print OWNER TO root;
+ALTER TABLE public.travel_billing_print OWNER TO docker;
 
 --
 -- Name: trial_personnel; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -2664,7 +2664,7 @@ ALTER SEQUENCE trial_properties_id_seq OWNED BY trial_properties.id;
 
 
 --
--- Name: trial_property_annotations; Type: TABLE; Schema: public; Owner: root; Tablespace: 
+-- Name: trial_property_annotations; Type: TABLE; Schema: public; Owner: docker; Tablespace: 
 --
 
 CREATE TABLE trial_property_annotations (
@@ -2676,10 +2676,10 @@ CREATE TABLE trial_property_annotations (
 );
 
 
-ALTER TABLE public.trial_property_annotations OWNER TO root;
+ALTER TABLE public.trial_property_annotations OWNER TO docker;
 
 --
--- Name: trial_property_annotations_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+-- Name: trial_property_annotations_id_seq; Type: SEQUENCE; Schema: public; Owner: docker
 --
 
 CREATE SEQUENCE trial_property_annotations_id_seq
@@ -2690,17 +2690,17 @@ CREATE SEQUENCE trial_property_annotations_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.trial_property_annotations_id_seq OWNER TO root;
+ALTER TABLE public.trial_property_annotations_id_seq OWNER TO docker;
 
 --
--- Name: trial_property_annotations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+-- Name: trial_property_annotations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: docker
 --
 
 ALTER SEQUENCE trial_property_annotations_id_seq OWNED BY trial_property_annotations.id;
 
 
 --
--- Name: trial_visits_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+-- Name: trial_visits_id_seq; Type: SEQUENCE; Schema: public; Owner: docker
 --
 
 CREATE SEQUENCE trial_visits_id_seq
@@ -2711,17 +2711,17 @@ CREATE SEQUENCE trial_visits_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.trial_visits_id_seq OWNER TO root;
+ALTER TABLE public.trial_visits_id_seq OWNER TO docker;
 
 --
--- Name: trial_visits_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+-- Name: trial_visits_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: docker
 --
 
 ALTER SEQUENCE trial_visits_id_seq OWNED BY trial_visits.id;
 
 
 --
--- Name: unbilled_visits; Type: VIEW; Schema: public; Owner: root
+-- Name: unbilled_visits; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW unbilled_visits AS
@@ -2748,10 +2748,10 @@ CREATE VIEW unbilled_visits AS
   ORDER BY all_trials.idgroup, a.first_visit;
 
 
-ALTER TABLE public.unbilled_visits OWNER TO root;
+ALTER TABLE public.unbilled_visits OWNER TO docker;
 
 --
--- Name: visit_clashes; Type: VIEW; Schema: public; Owner: root
+-- Name: visit_clashes; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW visit_clashes AS
@@ -2787,10 +2787,10 @@ CREATE VIEW visit_clashes AS
   WHERE (((a.start_time >= b.start_time) AND (a.start_time <= b.end_time)) AND (a.idvisit > b.idvisit));
 
 
-ALTER TABLE public.visit_clashes OWNER TO root;
+ALTER TABLE public.visit_clashes OWNER TO docker;
 
 --
--- Name: visit_conflicts_overview; Type: VIEW; Schema: public; Owner: root
+-- Name: visit_conflicts_overview; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW visit_conflicts_overview AS
@@ -2835,10 +2835,10 @@ UNION
   ORDER BY 2, 5;
 
 
-ALTER TABLE public.visit_conflicts_overview OWNER TO root;
+ALTER TABLE public.visit_conflicts_overview OWNER TO docker;
 
 --
--- Name: visit_dates; Type: VIEW; Schema: public; Owner: root
+-- Name: visit_dates; Type: VIEW; Schema: public; Owner: docker
 --
 
 CREATE VIEW visit_dates AS
@@ -2908,7 +2908,7 @@ CREATE VIEW visit_dates AS
   GROUP BY a.idvisit, a.dcid;
 
 
-ALTER TABLE public.visit_dates OWNER TO root;
+ALTER TABLE public.visit_dates OWNER TO docker;
 
 --
 -- Name: visit_procedure_values; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
@@ -2963,7 +2963,7 @@ CREATE VIEW visit_procedure_values_ordered AS
 ALTER TABLE public.visit_procedure_values_ordered OWNER TO postgres;
 
 --
--- Name: visit_procedures_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+-- Name: visit_procedures_id_seq; Type: SEQUENCE; Schema: public; Owner: docker
 --
 
 CREATE SEQUENCE visit_procedures_id_seq
@@ -2974,10 +2974,10 @@ CREATE SEQUENCE visit_procedures_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.visit_procedures_id_seq OWNER TO root;
+ALTER TABLE public.visit_procedures_id_seq OWNER TO docker;
 
 --
--- Name: visit_procedures_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+-- Name: visit_procedures_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: docker
 --
 
 ALTER SEQUENCE visit_procedures_id_seq OWNED BY visit_procedures.id;
@@ -3002,7 +3002,7 @@ CREATE VIEW visit_procedures_name AS
 ALTER TABLE public.visit_procedures_name OWNER TO postgres;
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: root
+-- Name: id; Type: DEFAULT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY account_transaction ALTER COLUMN id SET DEFAULT nextval('account_transaction_id_seq'::regclass);
@@ -3023,7 +3023,7 @@ ALTER TABLE ONLY audittrail ALTER COLUMN id SET DEFAULT nextval('audittrail_id_s
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: root
+-- Name: id; Type: DEFAULT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY billings ALTER COLUMN id SET DEFAULT nextval('billings_id_seq'::regclass);
@@ -3051,14 +3051,14 @@ ALTER TABLE ONLY meeting_attendees ALTER COLUMN id SET DEFAULT nextval('meeting_
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: root
+-- Name: id; Type: DEFAULT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY patient_visits ALTER COLUMN id SET DEFAULT nextval('patient_visits_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: root
+-- Name: id; Type: DEFAULT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY patients ALTER COLUMN id SET DEFAULT nextval('patients_id_seq'::regclass);
@@ -3093,21 +3093,21 @@ ALTER TABLE ONLY personnel_event_catalogue ALTER COLUMN id SET DEFAULT nextval('
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: root
+-- Name: id; Type: DEFAULT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY personnel_properties ALTER COLUMN id SET DEFAULT nextval('personnel_properties_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: root
+-- Name: id; Type: DEFAULT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY personnel_properties_catalogue ALTER COLUMN id SET DEFAULT nextval('personnel_properties_catalogue_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: root
+-- Name: id; Type: DEFAULT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY procedures_catalogue ALTER COLUMN id SET DEFAULT nextval('procedures_catalogue_id_seq'::regclass);
@@ -3135,14 +3135,14 @@ ALTER TABLE ONLY roles_catalogue ALTER COLUMN id SET DEFAULT nextval('roles_cata
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: root
+-- Name: id; Type: DEFAULT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY shadow_accounts ALTER COLUMN id SET DEFAULT nextval('shadow_accounts_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: root
+-- Name: id; Type: DEFAULT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY status_catalogue ALTER COLUMN id SET DEFAULT nextval('status_catalogue_id_seq'::regclass);
@@ -3184,14 +3184,14 @@ ALTER TABLE ONLY trial_properties_catalogue ALTER COLUMN id SET DEFAULT nextval(
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: root
+-- Name: id; Type: DEFAULT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY trial_property_annotations ALTER COLUMN id SET DEFAULT nextval('trial_property_annotations_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: root
+-- Name: id; Type: DEFAULT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY trial_visits ALTER COLUMN id SET DEFAULT nextval('trial_visits_id_seq'::regclass);
@@ -3205,14 +3205,14 @@ ALTER TABLE ONLY visit_procedure_values ALTER COLUMN id SET DEFAULT nextval('vis
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: root
+-- Name: id; Type: DEFAULT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY visit_procedures ALTER COLUMN id SET DEFAULT nextval('visit_procedures_id_seq'::regclass);
 
 
 --
--- Data for Name: account_transaction; Type: TABLE DATA; Schema: public; Owner: root
+-- Data for Name: account_transaction; Type: TABLE DATA; Schema: public; Owner: docker
 --
 
 COPY account_transaction (id, idaccount, date_transaction, type, amount_change, description, receiptid) FROM stdin;
@@ -3220,7 +3220,7 @@ COPY account_transaction (id, idaccount, date_transaction, type, amount_change, 
 
 
 --
--- Name: account_transaction_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+-- Name: account_transaction_id_seq; Type: SEQUENCE SET; Schema: public; Owner: docker
 --
 
 SELECT pg_catalog.setval('account_transaction_id_seq', 610, true);
@@ -3261,7 +3261,7 @@ SELECT pg_catalog.setval('audittrail_id_seq', 342, true);
 
 
 --
--- Data for Name: bic_catalogue; Type: TABLE DATA; Schema: public; Owner: root
+-- Data for Name: bic_catalogue; Type: TABLE DATA; Schema: public; Owner: docker
 --
 
 COPY bic_catalogue ("row.names", blz, name, bic) FROM stdin;
@@ -3269,7 +3269,7 @@ COPY bic_catalogue ("row.names", blz, name, bic) FROM stdin;
 
 
 --
--- Data for Name: billings; Type: TABLE DATA; Schema: public; Owner: root
+-- Data for Name: billings; Type: TABLE DATA; Schema: public; Owner: docker
 --
 
 COPY billings (id, idtrial, creation_date, start_date, end_date, comment, visit_ids, amount, visit_ids_travel_costs) FROM stdin;
@@ -3278,7 +3278,7 @@ COPY billings (id, idtrial, creation_date, start_date, end_date, comment, visit_
 
 
 --
--- Name: billings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+-- Name: billings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: docker
 --
 
 SELECT pg_catalog.setval('billings_id_seq', 220, true);
@@ -3335,7 +3335,7 @@ SELECT pg_catalog.setval('meeting_attendees_id_seq', 1, false);
 
 
 --
--- Data for Name: patient_visits; Type: TABLE DATA; Schema: public; Owner: root
+-- Data for Name: patient_visits; Type: TABLE DATA; Schema: public; Owner: docker
 --
 
 COPY patient_visits (id, idpatient, idvisit, visit_date, state, travel_costs, date_reimbursed, travel_comment, travel_additional_costs, actual_costs) FROM stdin;
@@ -3364,14 +3364,14 @@ COPY patient_visits (id, idpatient, idvisit, visit_date, state, travel_costs, da
 
 
 --
--- Name: patient_visits_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+-- Name: patient_visits_id_seq; Type: SEQUENCE SET; Schema: public; Owner: docker
 --
 
 SELECT pg_catalog.setval('patient_visits_id_seq', 3826, true);
 
 
 --
--- Data for Name: patients; Type: TABLE DATA; Schema: public; Owner: root
+-- Data for Name: patients; Type: TABLE DATA; Schema: public; Owner: docker
 --
 
 COPY patients (id, idtrial, piz, code1, code2, comment, state, name, givenname, birthdate, street, zip, town, telephone, insertion_date, female, iban, bic, bank, travel_distance) FROM stdin;
@@ -3384,7 +3384,7 @@ COPY patients (id, idtrial, piz, code1, code2, comment, state, name, givenname, 
 
 
 --
--- Name: patients_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+-- Name: patients_id_seq; Type: SEQUENCE SET; Schema: public; Owner: docker
 --
 
 SELECT pg_catalog.setval('patients_id_seq', 614, true);
@@ -3460,7 +3460,7 @@ SELECT pg_catalog.setval('personnel_event_id_seq', 2, true);
 
 
 --
--- Data for Name: personnel_properties; Type: TABLE DATA; Schema: public; Owner: root
+-- Data for Name: personnel_properties; Type: TABLE DATA; Schema: public; Owner: docker
 --
 
 COPY personnel_properties (id, propertydate, idpersonnel, idproperty, value) FROM stdin;
@@ -3476,7 +3476,7 @@ COPY personnel_properties (id, propertydate, idpersonnel, idproperty, value) FRO
 
 
 --
--- Data for Name: personnel_properties_catalogue; Type: TABLE DATA; Schema: public; Owner: root
+-- Data for Name: personnel_properties_catalogue; Type: TABLE DATA; Schema: public; Owner: docker
 --
 
 COPY personnel_properties_catalogue (id, type, name, expires, ordering) FROM stdin;
@@ -3490,21 +3490,21 @@ COPY personnel_properties_catalogue (id, type, name, expires, ordering) FROM std
 
 
 --
--- Name: personnel_properties_catalogue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+-- Name: personnel_properties_catalogue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: docker
 --
 
 SELECT pg_catalog.setval('personnel_properties_catalogue_id_seq', 9, true);
 
 
 --
--- Name: personnel_properties_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+-- Name: personnel_properties_id_seq; Type: SEQUENCE SET; Schema: public; Owner: docker
 --
 
 SELECT pg_catalog.setval('personnel_properties_id_seq', 156, true);
 
 
 --
--- Data for Name: procedures_catalogue; Type: TABLE DATA; Schema: public; Owner: root
+-- Data for Name: procedures_catalogue; Type: TABLE DATA; Schema: public; Owner: docker
 --
 
 COPY procedures_catalogue (id, name, type, base_cost, widgetclassname, widgetparameters, latex_representation, ecrf_name, procedure_time, internal_cost) FROM stdin;
@@ -3575,7 +3575,7 @@ COPY procedures_catalogue (id, name, type, base_cost, widgetclassname, widgetpar
 
 
 --
--- Name: procedures_catalogue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+-- Name: procedures_catalogue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: docker
 --
 
 SELECT pg_catalog.setval('procedures_catalogue_id_seq', 168, true);
@@ -3655,7 +3655,7 @@ SELECT pg_catalog.setval('roles_catalogue_id_seq', 4, true);
 
 
 --
--- Data for Name: shadow_accounts; Type: TABLE DATA; Schema: public; Owner: root
+-- Data for Name: shadow_accounts; Type: TABLE DATA; Schema: public; Owner: docker
 --
 
 COPY shadow_accounts (id, account_number, idgroup, name) FROM stdin;
@@ -3663,14 +3663,14 @@ COPY shadow_accounts (id, account_number, idgroup, name) FROM stdin;
 
 
 --
--- Name: shadow_accounts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+-- Name: shadow_accounts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: docker
 --
 
 SELECT pg_catalog.setval('shadow_accounts_id_seq', 91, true);
 
 
 --
--- Data for Name: status_catalogue; Type: TABLE DATA; Schema: public; Owner: root
+-- Data for Name: status_catalogue; Type: TABLE DATA; Schema: public; Owner: docker
 --
 
 COPY status_catalogue (id, idtrial, name, alerting) FROM stdin;
@@ -3690,7 +3690,7 @@ COPY status_catalogue (id, idtrial, name, alerting) FROM stdin;
 
 
 --
--- Name: status_catalogue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+-- Name: status_catalogue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: docker
 --
 
 SELECT pg_catalog.setval('status_catalogue_id_seq', 515, true);
@@ -3937,7 +3937,7 @@ SELECT pg_catalog.setval('trial_properties_id_seq', 5661, true);
 
 
 --
--- Data for Name: trial_property_annotations; Type: TABLE DATA; Schema: public; Owner: root
+-- Data for Name: trial_property_annotations; Type: TABLE DATA; Schema: public; Owner: docker
 --
 
 COPY trial_property_annotations (id, ldap, idfield, key, value) FROM stdin;
@@ -3945,14 +3945,14 @@ COPY trial_property_annotations (id, ldap, idfield, key, value) FROM stdin;
 
 
 --
--- Name: trial_property_annotations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+-- Name: trial_property_annotations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: docker
 --
 
 SELECT pg_catalog.setval('trial_property_annotations_id_seq', 48, true);
 
 
 --
--- Data for Name: trial_visits; Type: TABLE DATA; Schema: public; Owner: root
+-- Data for Name: trial_visits; Type: TABLE DATA; Schema: public; Owner: docker
 --
 
 COPY trial_visits (id, name, idtrial, idreference_visit, visit_interval, lower_margin, upper_margin, reimbursement, additional_docscal_booking_name, ordering, comment) FROM stdin;
@@ -3968,7 +3968,7 @@ COPY trial_visits (id, name, idtrial, idreference_visit, visit_interval, lower_m
 
 
 --
--- Name: trial_visits_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+-- Name: trial_visits_id_seq; Type: SEQUENCE SET; Schema: public; Owner: docker
 --
 
 SELECT pg_catalog.setval('trial_visits_id_seq', 300, true);
@@ -3994,7 +3994,7 @@ SELECT pg_catalog.setval('visit_procedure_values_id_seq', 11, true);
 
 
 --
--- Data for Name: visit_procedures; Type: TABLE DATA; Schema: public; Owner: root
+-- Data for Name: visit_procedures; Type: TABLE DATA; Schema: public; Owner: docker
 --
 
 COPY visit_procedures (id, idvisit, idprocedure, actual_cost, ordering, parameter) FROM stdin;
@@ -4022,14 +4022,14 @@ COPY visit_procedures (id, idvisit, idprocedure, actual_cost, ordering, paramete
 
 
 --
--- Name: visit_procedures_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+-- Name: visit_procedures_id_seq; Type: SEQUENCE SET; Schema: public; Owner: docker
 --
 
 SELECT pg_catalog.setval('visit_procedures_id_seq', 181, true);
 
 
 --
--- Name: account_transaction_pkey; Type: CONSTRAINT; Schema: public; Owner: root; Tablespace: 
+-- Name: account_transaction_pkey; Type: CONSTRAINT; Schema: public; Owner: docker; Tablespace: 
 --
 
 ALTER TABLE ONLY account_transaction
@@ -4053,7 +4053,7 @@ ALTER TABLE ONLY audittrail
 
 
 --
--- Name: billings_pkey; Type: CONSTRAINT; Schema: public; Owner: root; Tablespace: 
+-- Name: billings_pkey; Type: CONSTRAINT; Schema: public; Owner: docker; Tablespace: 
 --
 
 ALTER TABLE ONLY billings
@@ -4093,7 +4093,7 @@ ALTER TABLE ONLY meeting_attendees
 
 
 --
--- Name: onetransaction; Type: CONSTRAINT; Schema: public; Owner: root; Tablespace: 
+-- Name: onetransaction; Type: CONSTRAINT; Schema: public; Owner: docker; Tablespace: 
 --
 
 ALTER TABLE ONLY account_transaction
@@ -4101,7 +4101,7 @@ ALTER TABLE ONLY account_transaction
 
 
 --
--- Name: patient_visits_pkey; Type: CONSTRAINT; Schema: public; Owner: root; Tablespace: 
+-- Name: patient_visits_pkey; Type: CONSTRAINT; Schema: public; Owner: docker; Tablespace: 
 --
 
 ALTER TABLE ONLY patient_visits
@@ -4109,7 +4109,7 @@ ALTER TABLE ONLY patient_visits
 
 
 --
--- Name: patients_pkey; Type: CONSTRAINT; Schema: public; Owner: root; Tablespace: 
+-- Name: patients_pkey; Type: CONSTRAINT; Schema: public; Owner: docker; Tablespace: 
 --
 
 ALTER TABLE ONLY patients
@@ -4149,7 +4149,7 @@ ALTER TABLE ONLY personnel_event
 
 
 --
--- Name: personnel_properties_catalogue_pkey; Type: CONSTRAINT; Schema: public; Owner: root; Tablespace: 
+-- Name: personnel_properties_catalogue_pkey; Type: CONSTRAINT; Schema: public; Owner: docker; Tablespace: 
 --
 
 ALTER TABLE ONLY personnel_properties_catalogue
@@ -4157,7 +4157,7 @@ ALTER TABLE ONLY personnel_properties_catalogue
 
 
 --
--- Name: personnel_properties_pkey; Type: CONSTRAINT; Schema: public; Owner: root; Tablespace: 
+-- Name: personnel_properties_pkey; Type: CONSTRAINT; Schema: public; Owner: docker; Tablespace: 
 --
 
 ALTER TABLE ONLY personnel_properties
@@ -4165,7 +4165,7 @@ ALTER TABLE ONLY personnel_properties
 
 
 --
--- Name: procedures_catalogue_pkey; Type: CONSTRAINT; Schema: public; Owner: root; Tablespace: 
+-- Name: procedures_catalogue_pkey; Type: CONSTRAINT; Schema: public; Owner: docker; Tablespace: 
 --
 
 ALTER TABLE ONLY procedures_catalogue
@@ -4205,7 +4205,7 @@ ALTER TABLE ONLY roles_catalogue
 
 
 --
--- Name: shadow_accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: root; Tablespace: 
+-- Name: shadow_accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: docker; Tablespace: 
 --
 
 ALTER TABLE ONLY shadow_accounts
@@ -4213,7 +4213,7 @@ ALTER TABLE ONLY shadow_accounts
 
 
 --
--- Name: status_catalogue_pkey; Type: CONSTRAINT; Schema: public; Owner: root; Tablespace: 
+-- Name: status_catalogue_pkey; Type: CONSTRAINT; Schema: public; Owner: docker; Tablespace: 
 --
 
 ALTER TABLE ONLY status_catalogue
@@ -4261,7 +4261,7 @@ ALTER TABLE ONLY trial_properties
 
 
 --
--- Name: trial_property_annotations_pkey; Type: CONSTRAINT; Schema: public; Owner: root; Tablespace: 
+-- Name: trial_property_annotations_pkey; Type: CONSTRAINT; Schema: public; Owner: docker; Tablespace: 
 --
 
 ALTER TABLE ONLY trial_property_annotations
@@ -4269,7 +4269,7 @@ ALTER TABLE ONLY trial_property_annotations
 
 
 --
--- Name: trial_visits_pkey; Type: CONSTRAINT; Schema: public; Owner: root; Tablespace: 
+-- Name: trial_visits_pkey; Type: CONSTRAINT; Schema: public; Owner: docker; Tablespace: 
 --
 
 ALTER TABLE ONLY trial_visits
@@ -4285,7 +4285,7 @@ ALTER TABLE ONLY visit_procedure_values
 
 
 --
--- Name: visit_procedures_pkey; Type: CONSTRAINT; Schema: public; Owner: root; Tablespace: 
+-- Name: visit_procedures_pkey; Type: CONSTRAINT; Schema: public; Owner: docker; Tablespace: 
 --
 
 ALTER TABLE ONLY visit_procedures
@@ -4293,14 +4293,14 @@ ALTER TABLE ONLY visit_procedures
 
 
 --
--- Name: reference_visit_idx; Type: INDEX; Schema: public; Owner: root; Tablespace: 
+-- Name: reference_visit_idx; Type: INDEX; Schema: public; Owner: docker; Tablespace: 
 --
 
 CREATE INDEX reference_visit_idx ON trial_visits USING btree (idreference_visit);
 
 
 --
--- Name: enrich_newperson; Type: RULE; Schema: public; Owner: root
+-- Name: enrich_newperson; Type: RULE; Schema: public; Owner: docker
 --
 
 CREATE RULE enrich_newperson AS
@@ -4344,7 +4344,7 @@ CREATE RULE enrich_newtrial AS
 
 
 --
--- Name: procedure_statistics_writable; Type: RULE; Schema: public; Owner: root
+-- Name: procedure_statistics_writable; Type: RULE; Schema: public; Owner: docker
 --
 
 CREATE RULE procedure_statistics_writable AS
@@ -4366,7 +4366,7 @@ CREATE RULE visit_procedures_name_writable AS
 
 
 --
--- Name: account_transaction_account_number_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- Name: account_transaction_account_number_fkey; Type: FK CONSTRAINT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY account_transaction
@@ -4374,7 +4374,7 @@ ALTER TABLE ONLY account_transaction
 
 
 --
--- Name: billings_idtrial_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- Name: billings_idtrial_fkey; Type: FK CONSTRAINT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY billings
@@ -4414,7 +4414,7 @@ ALTER TABLE ONLY meeting_attendees
 
 
 --
--- Name: patient_visits_idpatient_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- Name: patient_visits_idpatient_fkey; Type: FK CONSTRAINT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY patient_visits
@@ -4422,7 +4422,7 @@ ALTER TABLE ONLY patient_visits
 
 
 --
--- Name: patient_visits_idvisit_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- Name: patient_visits_idvisit_fkey; Type: FK CONSTRAINT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY patient_visits
@@ -4430,7 +4430,7 @@ ALTER TABLE ONLY patient_visits
 
 
 --
--- Name: patients_idtrial_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- Name: patients_idtrial_fkey; Type: FK CONSTRAINT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY patients
@@ -4462,7 +4462,7 @@ ALTER TABLE ONLY personnel_event
 
 
 --
--- Name: personnel_properties_idpersonnel_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- Name: personnel_properties_idpersonnel_fkey; Type: FK CONSTRAINT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY personnel_properties
@@ -4470,7 +4470,7 @@ ALTER TABLE ONLY personnel_properties
 
 
 --
--- Name: personnel_properties_idproperty_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- Name: personnel_properties_idproperty_fkey; Type: FK CONSTRAINT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY personnel_properties
@@ -4494,7 +4494,7 @@ ALTER TABLE ONLY procedures_personnel
 
 
 --
--- Name: shadow_accounts_idgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- Name: shadow_accounts_idgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY shadow_accounts
@@ -4502,7 +4502,7 @@ ALTER TABLE ONLY shadow_accounts
 
 
 --
--- Name: status_catalogue_idtrial_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- Name: status_catalogue_idtrial_fkey; Type: FK CONSTRAINT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY status_catalogue
@@ -4518,7 +4518,7 @@ ALTER TABLE ONLY team_meetings
 
 
 --
--- Name: tp_annot_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- Name: tp_annot_fkey; Type: FK CONSTRAINT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY trial_property_annotations
@@ -4566,7 +4566,7 @@ ALTER TABLE ONLY trial_properties
 
 
 --
--- Name: trial_visits_idtrial_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- Name: trial_visits_idtrial_fkey; Type: FK CONSTRAINT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY trial_visits
@@ -4590,7 +4590,7 @@ ALTER TABLE ONLY visit_procedure_values
 
 
 --
--- Name: visit_procedures_idprocedure_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- Name: visit_procedures_idprocedure_fkey; Type: FK CONSTRAINT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY visit_procedures
@@ -4598,7 +4598,7 @@ ALTER TABLE ONLY visit_procedures
 
 
 --
--- Name: visit_procedures_idvisit_fkey; Type: FK CONSTRAINT; Schema: public; Owner: root
+-- Name: visit_procedures_idvisit_fkey; Type: FK CONSTRAINT; Schema: public; Owner: docker
 --
 
 ALTER TABLE ONLY visit_procedures
@@ -4635,21 +4635,21 @@ GRANT ALL ON FUNCTION dblink_connect_u(text, text) TO postgres;
 
 
 --
--- Name: calendar; Type: ACL; Schema: public; Owner: root
+-- Name: calendar; Type: ACL; Schema: public; Owner: docker
 --
 
 REVOKE ALL ON TABLE calendar FROM PUBLIC;
-REVOKE ALL ON TABLE calendar FROM root;
-GRANT ALL ON TABLE calendar TO root;
+REVOKE ALL ON TABLE calendar FROM docker;
+GRANT ALL ON TABLE calendar TO docker;
 
 
 --
--- Name: patient_visits_rich; Type: ACL; Schema: public; Owner: root
+-- Name: patient_visits_rich; Type: ACL; Schema: public; Owner: docker
 --
 
 REVOKE ALL ON TABLE patient_visits_rich FROM PUBLIC;
-REVOKE ALL ON TABLE patient_visits_rich FROM root;
-GRANT ALL ON TABLE patient_visits_rich TO root;
+REVOKE ALL ON TABLE patient_visits_rich FROM docker;
+GRANT ALL ON TABLE patient_visits_rich TO docker;
 
 
 --
