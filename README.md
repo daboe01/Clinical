@@ -20,6 +20,12 @@ Features include:
 
 Manual: https://github.com/daboe01/ClinicalManual/blob/master/manual.pdf?raw=true
 
+Demo from Docker
+=====
+```bash
+docker run -t -i  -p 3004:3004 daboe01/clinical:latest
+```
+
 INSTALL
 =====
 ```bash
@@ -46,12 +52,6 @@ morbo backend.pl # this starts the testing server
 #
 # you may eventually want to automatically launch hypnotoad backend.pl (production server) during system boot
 ```
-Docker
-=====
-```bash
-docker run -t -i  -p 3004:3004 daboe01/clinical:latest
-```
-
 
 Update database schema
 =====
