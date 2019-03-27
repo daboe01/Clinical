@@ -4606,12 +4606,12 @@ ALTER TABLE ONLY visit_procedures
 
 
 --
--- Name: public; Type: ACL; Schema: -; Owner: daboe01
+-- Name: public; Type: ACL; Schema: -; Owner: docker
 --
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM daboe01;
-GRANT ALL ON SCHEMA public TO daboe01;
+REVOKE ALL ON SCHEMA public FROM docker;
+GRANT ALL ON SCHEMA public TO docker;
 GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 

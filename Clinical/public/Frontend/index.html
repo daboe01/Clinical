@@ -205,7 +205,7 @@ OBJJ_COMPILER_FLAGS = ["IncludeDebugSymbols", "IncludeTypeSignatures", "InlineMs
 		<body style="" onLoad="document.getElementById('username').focus();">
 			<div id="loadingcontainer" style=" overflow:hidden; width:100%; height:100%; position: absolute; top: 0; left: 0;">
 				<script type="text/javascript">
-						document.write( "<div id='container'>" +
+                    document.write( "<div id='container'>" +
 											"<div id='content'>" +
 												"<div id='interior'>" +
 													"<div id='formContainer'>" +
@@ -214,7 +214,7 @@ OBJJ_COMPILER_FLAGS = ["IncludeDebugSymbols", "IncludeTypeSignatures", "InlineMs
 														"<br />" +
 														"<input type='text' class='text' id='username' />" +
 														"<input type='password' class='text' id='password'  onKeyUp='checkReturn(event)'/>" +
-														"<input type='submit' class='submit' id='submit' name='submit' value='Login' onclick='submitForm()'/>" +
+														"<input type='submit' class='submit' id='submit' name='submit' value='Login' onclick='submitForm()'/>  <h3>Demo, alle Daten gehen mit einem Neustart verloren! User: pi, kein Password</h3>" +
 													"</div>"+
 													"<div id='progressContainer'>" +
 														"<div id='textcontent'>Loading... </div>" + 

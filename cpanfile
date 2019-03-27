@@ -6,7 +6,6 @@ requires "SQL::Abstract::More";
 requires "Data::Dumper";
 requires "POSIX";
 requires "File::Find::Rule";
-requires "Pg::hstore"; # session persistence
 requires "Net::LDAP";
 requires "Mojolicious::Plugin::RenderFile";
 requires "DateTime";
@@ -15,7 +14,16 @@ requires "URI::Escape";
 requires "Image::Magick";
 requires "Net::FTP";
 requires "MIME::Lite";
+requires "Email::MIME";
+requires "Email::MIME::Attachment::Stripper";
 requires "Encode";
-requires "Locale::Recode";
-# requires "Statistics::R"; # fuer superdash
 requires "Archive::Zip::SimpleZip";
+requires "Apache::Session::File";
+requires "Date::ICal";
+requires "Data::ICal";
+requires "Data::ICal::Entry::Event";
+requires "Data::ICal::Entry::TimeZone";
+requires "Net::IMAP::Simple";
+requires "Spreadsheet::WriteExcel";
+requires "Business::IBAN";
+requires "Spreadsheet::ParseExcel";

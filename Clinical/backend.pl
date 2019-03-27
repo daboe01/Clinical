@@ -71,8 +71,8 @@ helper getLSPDocuments => sub { my ($self)=@_;
     return    grep { defined $_->{idpersonnel} && $_->{tag} !~ /^\./ }
     map  { my ($p,$f)=split /\//o; ($f or '')=~/^([0-9]+)_(.+)/; 
         my $date = POSIX::strftime( "%Y-%m-%d", localtime( ( stat $_docrepo.$_ )[9] ) ); 
-        {id=>"$1$2", idpersonnel=>$1, name=> $2, tag=>$p, date=> $date} }
-    map  { s/^$_docrepo//ogs;$_}
+         { id=>"$1$2", idpersonnel=>$1, name=> $2, tag=>$p, date=> $date} }
+    map  { s/^$_docrepo//ogs;$_ }
     File::Find::Rule->in($_docrepo);
 # <!> fixme: use the ->name('') method instead of the grep by hindsight
 };
