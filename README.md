@@ -1,7 +1,3 @@
-Here is the updated README and Dockerfile containing a warning about the volatility of the default Docker run command, along with two methods for making the database installation permanent.
-
-***
-
 # Clinical trials in a box
 ========
 
