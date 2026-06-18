@@ -1,5 +1,5 @@
 # Clinical trials in a box
-========
+=====
 
 Features include:
  * 100% browser based
@@ -53,7 +53,7 @@ For production environments, running PostgreSQL inside the same container as the
    docker run -t -i -p 3004:3004 -v /absolute/path/to/your/backend.pl:/app/backend.pl daboe01/clinical:latest
    ```
 
-INSTALL
+BARE METAL INSTALL
 =====
 ```bash
 # you need build-essentials (linux) or XCode (mac)
