@@ -20,7 +20,7 @@ Features include:
 
 Manual: https://github.com/daboe01/ClinicalManual/blob/master/manual.pdf?raw=true
 
-Demo from Docker
+Via Docker
 =====
 ```bash
 docker run -t -i  -p 3004:3004 daboe01/clinical:latest
